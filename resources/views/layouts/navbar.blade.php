@@ -31,19 +31,19 @@
 
         <div class="col-span-3 flex w-full h-full items-center justify-around">
 
-            <p>Inicio</p>
-            <p>Evento</p>
-            <p>Chat</p>
-            <p>Pase de paseo</p>
-            <p>Tienda</p>
+            <a href="{{ route('home') }}">Inicio</a>
+            <a>Evento</a>
+            <a>Chat</a>
+            <a>Pase de paseo</a>
+            <a>Tienda</a>
 
         </div>
 
 
-        <div class="items-center h-full w-full flex justify-center">
+        <a class="items-center h-full w-full flex justify-center">
             <img src="{{ asset('img/Exit.png') }}" alt="No se ha podido cargar la imagen">
             <p>Salir</p>
-        </div>
+        </a>
 
     </div>
 
