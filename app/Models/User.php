@@ -2,31 +2,97 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    protected $fillable = [
+        'name', 'email', 'password', 'dni', 'nacimiento',
+        'telefono', 'premium', 'nivel', 'puntos', 'ruta_imagen',
+    ];
+
+    protected $hidden = ['password', 'remember_token'];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'nacimiento'        => 'date',
+        'premium'           => 'boolean',
+        'password'          => 'hashed',
+    ];
+
+    // ── Misiones ────────────────────────────────────────────────
+    public function misiones()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->belongsToMany(Mision::class, 'user_mision')
+                    ->withPivot(['completada', 'fecha_asignacion', 'fecha_limite', 'fecha_completado'])
+                    ->withTimestamps();
+    }
+
+    public function misionesDiarias()
+    {
+        return $this->misiones()->where('semanal', false);
+    }
+
+    public function misionesSemanales()
+    {
+        return $this->misiones()->where('semanal', true);
+    }
+
+    // ── Contactos ───────────────────────────────────────────────
+    public function contactos()
+    {
+        return $this->hasMany(Contacto::class);
+    }
+
+    public function solicitudesEnviadas()
+    {
+        return $this->hasMany(SolicitudAmistad::class, 'emisor_id');
+    }
+
+    public function solicitudesRecibidas()
+    {
+        return $this->hasMany(SolicitudAmistad::class, 'receptor_id');
+    }
+
+    // ── Pase de paseo ───────────────────────────────────────────
+    public function pasesDePaseo()
+    {
+        return $this->belongsToMany(PaseDePaseo::class, 'user_pase_de_paseo')
+                    ->withPivot(['nivel_actual', 'fecha_inicio', 'fecha_fin'])
+                    ->withTimestamps();
+    }
+
+    public function paseActivo()
+    {
+        return $this->pasesDePaseo()->wherePivotNull('fecha_fin')->latest('pivot_fecha_inicio');
+    }
+
+    // ── Inventario ──────────────────────────────────────────────
+    public function inventario()
+    {
+        return $this->hasMany(Inventario::class);
+    }
+
+    public function recompensas()
+    {
+        return $this->belongsToMany(Recompensa::class, 'inventario')
+                    ->withPivot(['origen', 'obtenida_at'])
+                    ->withTimestamps();
+    }
+
+    // ── Tarjeta bancaria ────────────────────────────────────────
+    public function tarjetaBancaria()
+    {
+        return $this->hasOne(TarjetaBancaria::class);
+    }
+
+    // ── Tienda ──────────────────────────────────────────────────
+    public function comprasTienda()
+    {
+        return $this->hasMany(CompraTienda::class);
     }
 }

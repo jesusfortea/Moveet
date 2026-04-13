@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Mensaje extends Model
+{
+    protected $fillable = ['chat_id', 'emisor_id', 'contenido', 'leido_at'];
+
+    protected $casts = [
+        'leido_at' => 'datetime',
+    ];
+
+    public function chat()
+    {
+        return $this->belongsTo(Chat::class);
+    }
+
+    public function emisor()
+    {
+        return $this->belongsTo(User::class, 'emisor_id');
+    }
+}
