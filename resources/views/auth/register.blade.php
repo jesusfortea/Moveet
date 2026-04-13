@@ -105,11 +105,11 @@
             </div>
 
             <div class="form-group">
-                <label for="confirm_password">Confirmar contraseña</label>
+                <label for="password_confirmation">Confirmar contraseña</label>
                 <input
                     type="password"
-                    id="confirm_password"
-                    name="confirm_password"
+                    id="password_confirmation"
+                    name="password_confirmation"
                     placeholder="Escribe aquí..."
                     required
                 >

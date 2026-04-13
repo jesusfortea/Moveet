@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const dniInput = document.getElementById('dni');
     const phoneInput = document.getElementById('phone');
     const passwordInput = document.getElementById('password');
-    const confirmPasswordInput = document.getElementById('confirm_password');
+    const confirmPasswordInput = document.getElementById('password_confirmation');
     const birthDateInput = document.getElementById('birth_date');
 
     // Validar email
@@ -15,17 +15,18 @@ document.addEventListener('DOMContentLoaded', function() {
         return emailRegex.test(email);
     }
 
-    // Validar DNI (formato simple)
+    // Validar DNI (formato español: 8 números + 1 letra)
     function validateDNI(dni) {
-        return dni.length >= 8 && /^[0-9]+$/.test(dni);
+        return /^[0-9]{8}[a-zA-Z]$/.test(dni.toUpperCase());
     }
 
-    // Validar teléfono (solo números)
+    // Validar teléfono (números, +, espacios, guiones)
     function validatePhone(phone) {
-        return /^[0-9]+$/.test(phone) && phone.length >= 10;
+        const cleanPhone = phone.replace(/[\s\-\+]/g, '');
+        return /^[0-9]{9,}$/.test(cleanPhone);
     }
 
-    // Validar contraseña
+    // Validar contraseña (mínimo 6 caracteres, sin restricciones)
     function validatePassword(password) {
         return password.length >= 6;
     }
@@ -88,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (this.value === '') {
             showError(this, 'El DNI es requerido');
         } else if (!validateDNI(this.value)) {
-            showError(this, 'DNI inválido');
+            showError(this, 'DNI inválido (formato: 8 números + 1 letra, ej: 12345678A)');
         } else {
             clearError(this);
         }
@@ -102,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (this.value === '') {
             showError(this, 'El teléfono es requerido');
         } else if (!validatePhone(this.value)) {
-            showError(this, 'Teléfono inválido (mínimo 10 dígitos)');
+            showError(this, 'Teléfono inválido (mínimo 9 dígitos)');
         } else {
             clearError(this);
         }
@@ -116,9 +117,17 @@ document.addEventListener('DOMContentLoaded', function() {
         if (this.value === '') {
             showError(this, 'La contraseña es requerida');
         } else if (!validatePassword(this.value)) {
-            showError(this, 'Mínimo 6 caracteres');
+            showError(this, 'La contraseña debe tener mínimo 6 caracteres');
         } else {
             clearError(this);
+            // Validar confirmación si ya tiene valor
+            if (confirmPasswordInput.value !== '') {
+                if (this.value !== confirmPasswordInput.value) {
+                    showError(confirmPasswordInput, 'Las contraseñas no coinciden');
+                } else {
+                    clearError(confirmPasswordInput);
+                }
+            }
         }
     });
 
@@ -183,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showError(dniInput, 'El DNI es requerido');
             isValid = false;
         } else if (!validateDNI(dniInput.value)) {
-            showError(dniInput, 'DNI inválido');
+            showError(dniInput, 'DNI inválido (formato: 8 números + 1 letra, ej: 12345678A)');
             isValid = false;
         } else {
             clearError(dniInput);
@@ -194,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showError(phoneInput, 'El teléfono es requerido');
             isValid = false;
         } else if (!validatePhone(phoneInput.value)) {
-            showError(phoneInput, 'Teléfono inválido (mínimo 10 dígitos)');
+            showError(phoneInput, 'Teléfono inválido (mínimo 9 dígitos)');
             isValid = false;
         } else {
             clearError(phoneInput);
@@ -205,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
             showError(passwordInput, 'La contraseña es requerida');
             isValid = false;
         } else if (!validatePassword(passwordInput.value)) {
-            showError(passwordInput, 'Mínimo 6 caracteres');
+            showError(passwordInput, 'La contraseña debe tener mínimo 6 caracteres');
             isValid = false;
         } else {
             clearError(passwordInput);
@@ -213,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Validar confirmación de contraseña
         if (confirmPasswordInput.value === '') {
-            showError(confirmPasswordInput, 'Confirma la contraseña');
+            showError(confirmPasswordInput, 'Por favor confirma la contraseña');
             isValid = false;
         } else if (confirmPasswordInput.value !== passwordInput.value) {
             showError(confirmPasswordInput, 'Las contraseñas no coinciden');
