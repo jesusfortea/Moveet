@@ -24,6 +24,17 @@ class MisionSeeder extends Seeder
                 'semanal' => false,
                 'puntos' => 30,
             ],
+            [
+                'nombre' => 'Visitar Londres',
+                'descripcion' => 'Visitar Londres.',
+                'metros_requeridos' => null,
+                'ejeX' => null,
+                'ejeY' => null,
+                'direccion' => null,
+                'premium' => false,
+                'semanal' => false,
+                'puntos' => 30,
+            ],
         ];
 
         foreach ($misiones as $data) {

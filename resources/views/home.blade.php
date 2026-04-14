@@ -29,6 +29,10 @@
         {{-- Mapa --}}
         <div id="map"></div>
 
+        {{-- Botón de ubicación --}}
+        <button class="location-btn" id="location-btn" title="Ir a mi ubicación">
+            <span class="location-icon">📍</span>
+        </button>
 
     </div>
 

@@ -395,6 +395,18 @@ function iniciarGeolocalizacion() {
 }
 
 /**
+ * Centra el mapa en la ubicación del usuario actual.
+ */
+function centrarEnUbicacion() {
+    if (!userCoords || !mapa) {
+        console.warn('Ubicación del usuario no disponible aún');
+        return;
+    }
+
+    mapa.setView(userCoords, 15, { animate: true, duration: 0.8 });
+}
+
+/**
  * Asigna coords de demo a misiones con ejeX/ejeY nulos
  * (para visualizar rutas de ejemplo en el mapa).
  */
@@ -511,4 +523,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* 3. Mapa con geolocalización */
     iniciarGeolocalizacion();
+
+    /* 4. Botón de ubicación */
+    const locationBtn = document.getElementById('location-btn');
+    if (locationBtn) {
+        locationBtn.addEventListener('click', centrarEnUbicacion);
+    }
 });

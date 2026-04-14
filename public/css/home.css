@@ -173,6 +173,57 @@ html, body {
     box-shadow: 0 2px 8px rgba(0,0,0,.25);
 }
 
+/* ── Botón de ubicación ────────────────────────────────────────── */
+.location-btn {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    z-index: 400;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    background: var(--clr-surface);
+    color: var(--clr-primary-dk);
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .25s var(--ease-out);
+    animation: location-btn-in .4s .3s var(--ease-out) both;
+}
+
+.location-btn:hover {
+    background: var(--clr-primary-lt);
+    transform: scale(1.1);
+    box-shadow: var(--shadow-lg);
+}
+
+.location-btn:active {
+    transform: scale(0.95);
+}
+
+.location-icon {
+    display: inline-block;
+    transition: transform .3s var(--ease-out);
+}
+
+.location-btn:hover .location-icon {
+    animation: bounce .4s ease;
+}
+
+@keyframes location-btn-in {
+    from { opacity: 0; transform: translate(20px, 20px); }
+    to   { opacity: 1; transform: translate(0, 0); }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    PANEL DERECHO — Misiones
    ═══════════════════════════════════════════════════════════════════ */
