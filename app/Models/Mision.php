@@ -10,12 +10,14 @@ class Mision extends Model
 
     protected $fillable = [
         'evento_id', 'nombre', 'descripcion',
+        'metros_requeridos',
         'ejeX', 'ejeY', 'direccion', 'premium', 'semanal', 'puntos',
     ];
 
     protected $casts = [
         'premium' => 'boolean',
         'semanal'  => 'boolean',
+        'metros_requeridos' => 'integer',
     ];
 
     public function evento()
