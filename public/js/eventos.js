@@ -1,7 +1,7 @@
 'use strict';
 
-const EVENTO = window.eventoData ?? null;
-const MISIONES = window.misionesData ?? [];
+const EVENTO     = window.eventoData ?? null;
+const MISIONES   = window.misionesData ?? [];
 const EVENTO_FIN = window.fechaFinEvento ? new Date(window.fechaFinEvento) : null;
 
 const elLoading     = document.getElementById('map-loading');
@@ -11,12 +11,13 @@ const elLocationBtn = document.getElementById('location-btn');
 
 let mapa               = null;
 let marcadorUsuario    = null;
-let marcadoresMisiones = [];
+let marcadoresMisiones = [];   // markers + círculos
+let rutasCapas         = {};   // { [misionId]: [L.Layer, ...] }
 let userCoords         = null;
-let lastPosition       = null;
 
-/* ── Sets de control de completado ─────────────────────────────── */
+/* ── Control de completado ──────────────────────────────────────── */
 const misionesProximidadCompletadas = new Set();
+const RADIO_PROXIMIDAD_M = 50;
 
 /* ── CSRF ───────────────────────────────────────────────────────── */
 function getCsrfToken() {
@@ -24,7 +25,7 @@ function getCsrfToken() {
     return el ? el.content : '';
 }
 
-/* ── Llamada al servidor para completar misión ──────────────────── */
+/* ── Completar misión en servidor ───────────────────────────────── */
 function completarMisionEnServidor(mision) {
     return fetch(`/misiones/${mision.id}/completar`, {
         method: 'POST',
@@ -35,18 +36,14 @@ function completarMisionEnServidor(mision) {
         },
         body: JSON.stringify({}),
     }).then(res => {
-        if (!res.ok) {
-            return res.json().then(body => {
-                throw new Error(body.message || 'Error al completar misión');
-            });
-        }
+        if (!res.ok) return res.json().then(b => { throw new Error(b.message || 'Error'); });
         return res.json();
     });
 }
 
-/* ── Calcular distancia en metros (Haversine) ───────────────────── */
+/* ── Haversine ──────────────────────────────────────────────────── */
 function calcularDistanciaMetros([lat1, lng1], [lat2, lng2]) {
-    const toRad = deg => deg * Math.PI / 180;
+    const toRad = d => d * Math.PI / 180;
     const R = 6371000;
     const dLat = toRad(lat2 - lat1);
     const dLng = toRad(lng2 - lng1);
@@ -55,40 +52,138 @@ function calcularDistanciaMetros([lat1, lng1], [lat2, lng2]) {
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-/* ── Verificar proximidad (≤ 50 m) a misiones con coordenadas ───── */
-const RADIO_PROXIMIDAD_M = 50;
+/* ══════════════════════════════════════════════════════════════════
+   ROUTING (OSRM público — walking)
+   ══════════════════════════════════════════════════════════════════ */
 
+/**
+ * Llama a OSRM y devuelve la geometría de la ruta como array de [lat, lng].
+ * Usa el perfil "foot" (a pie).
+ */
+async function obtenerRutaOSRM(userLat, userLng, misionLat, misionLng) {
+    const url = `https://router.project-osrm.org/route/v1/foot/`
+              + `${userLng},${userLat};${misionLng},${misionLat}`
+              + `?geometries=geojson&overview=full`;
+    const res  = await fetch(url);
+    const data = await res.json();
+    if (!data.routes || !data.routes[0]) return null;
+
+    // GeoJSON coordinates son [lng, lat] → invertir a [lat, lng] para Leaflet
+    return data.routes[0].geometry.coordinates.map(([lng, lat]) => [lat, lng]);
+}
+
+/**
+ * Dibuja (o reemplaza) la ruta para una misión concreta.
+ */
+async function trazarRutaMision(mision, userLat, userLng) {
+    if (!mapa) return;
+    if (mision.completada) return;
+    if (mision.ejeX == null || mision.ejeY == null) return;
+
+    // Eliminar ruta anterior de esta misión si existe
+    eliminarRutaMision(mision.id);
+
+    const mLat = parseFloat(mision.ejeX);
+    const mLng = parseFloat(mision.ejeY);
+
+    let puntos;
+    try {
+        puntos = await obtenerRutaOSRM(userLat, userLng, mLat, mLng);
+    } catch {
+        // Si falla OSRM, dibujar línea recta como fallback
+        puntos = [[userLat, userLng], [mLat, mLng]];
+    }
+
+    if (!puntos || !mapa) return;
+
+    const distancia = calcularDistanciaMetros([userLat, userLng], [mLat, mLng]);
+    const distLabel = distancia < 1000
+        ? `${Math.round(distancia)} m`
+        : `${(distancia / 1000).toFixed(1)} km`;
+
+    // Sombra blanca para legibilidad
+    const sombra = L.polyline(puntos, {
+        color: '#fff',
+        weight: 7,
+        opacity: 0.6,
+    }).addTo(mapa);
+
+    // Línea principal animada
+    const linea = L.polyline(puntos, {
+        color: '#4F46E5',
+        weight: 4,
+        opacity: 0.9,
+        dashArray: '10 6',
+        lineCap: 'round',
+        lineJoin: 'round',
+    }).addTo(mapa);
+
+    // Etiqueta de distancia en el punto medio de la ruta
+    const mid = puntos[Math.floor(puntos.length / 2)];
+    const etiqueta = L.marker(mid, {
+        icon: L.divIcon({
+            className: '',
+            html: `<div class="route-distance-label">${distLabel}</div>`,
+            iconAnchor: [30, 12],
+        }),
+        interactive: false,
+        zIndexOffset: -100,
+    }).addTo(mapa);
+
+    rutasCapas[mision.id] = [sombra, linea, etiqueta];
+}
+
+/**
+ * Elimina las capas de ruta de una misión del mapa.
+ */
+function eliminarRutaMision(misionId) {
+    if (rutasCapas[misionId]) {
+        rutasCapas[misionId].forEach(layer => mapa && mapa.removeLayer(layer));
+        delete rutasCapas[misionId];
+    }
+}
+
+/**
+ * (Re)traza rutas para todas las misiones con coordenadas no completadas.
+ */
+async function trazarTodasLasRutas(userLat, userLng) {
+    for (const m of MISIONES) {
+        if (!m.completada && m.ejeX != null && m.ejeY != null) {
+            await trazarRutaMision(m, userLat, userLng);
+        }
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PROXIMIDAD — completar misión al acercarse
+   ══════════════════════════════════════════════════════════════════ */
 function verificarProximidadMisiones(userLat, userLng) {
     MISIONES
         .filter(m => !m.completada && m.ejeX != null && m.ejeY != null)
         .forEach(m => {
             if (misionesProximidadCompletadas.has(m.id)) return;
-
             const dist = calcularDistanciaMetros(
                 [userLat, userLng],
                 [parseFloat(m.ejeX), parseFloat(m.ejeY)]
             );
-
             if (dist <= RADIO_PROXIMIDAD_M) {
                 misionesProximidadCompletadas.add(m.id);
-                console.log(`Proximidad ≤ ${RADIO_PROXIMIDAD_M} m (${dist.toFixed(1)} m) — '${m.nombre}'`);
+                console.log(`✓ Proximidad: ${dist.toFixed(1)} m — '${m.nombre}'`);
 
                 completarMisionEnServidor(m)
                     .then(data => {
                         m.completada = true;
+                        eliminarRutaMision(m.id);   // quitar la ruta del mapa
                         renderMisiones();
-                        if (mapa && userCoords) {
-                            renderMapaMisiones(userCoords[0], userCoords[1]);
-                        }
+                        if (mapa && userCoords) renderMapaMisiones(userCoords[0], userCoords[1]);
                         mostrarToastMision(m.nombre, data.puntos_ganados ?? m.puntos);
-                        console.log(`Misión '${m.nombre}' completada. Puntos: ${data.puntos}`);
                     })
-                    .catch(err => console.error('Error completando misión por proximidad:', err));
+                    .catch(err => console.error('Error completando misión:', err));
             }
         });
 }
 
-/* ── Toast de misión completada ─────────────────────────────────── */
+/* ── Toast ──────────────────────────────────────────────────────── */
 function mostrarToastMision(nombre, puntos) {
     const toast = document.createElement('div');
     toast.className = 'mission-toast';
@@ -108,27 +203,22 @@ function mostrarToastMision(nombre, puntos) {
     }, 3500);
 }
 
-/* ── Formatear ms en HH:MM:SS ───────────────────────────────────── */
+/* ── Formatear ms ───────────────────────────────────────────────── */
 function formatMs(ms) {
     if (ms <= 0) return '00:00:00';
-    const totalSecs = Math.floor(ms / 1000);
-    const h = Math.floor(totalSecs / 3600);
-    const m = Math.floor((totalSecs % 3600) / 60);
-    const s = totalSecs % 60;
-    return [h, m, s].map(n => String(n).padStart(2, '0')).join(':');
+    const s = Math.floor(ms / 1000);
+    return [Math.floor(s / 3600), Math.floor((s % 3600) / 60), s % 60]
+        .map(n => String(n).padStart(2, '0')).join(':');
 }
 
 /* ── Tarjeta de misión ──────────────────────────────────────────── */
 function tarjetaMision(m) {
     const premiumBadge = m.premium
-        ? '<span class="mission-card__premium">⭐ Premium</span>'
-        : '';
+        ? '<span class="mission-card__premium">⭐ Premium</span>' : '';
     const direccion = m.direccion
-        ? `<div class="mission-card__sub">📍 ${m.direccion}</div>`
-        : '';
-    const radioInfo = (m.ejeX != null && !m.completada)
-        ? `<div class="mission-card__sub">🎯 Acércate a ${RADIO_PROXIMIDAD_M} m para completarla</div>`
-        : '';
+        ? `<div class="mission-card__sub">📍 ${m.direccion}</div>` : '';
+    const rutaHint = (m.ejeX != null && !m.completada)
+        ? `<div class="mission-card__sub">🗺️ Ruta activa · acércate a ${RADIO_PROXIMIDAD_M} m</div>` : '';
 
     return `
         <div class="mission-card ${m.completada ? 'completed' : ''}" data-id="${m.id}" role="listitem">
@@ -137,44 +227,30 @@ function tarjetaMision(m) {
                 <div class="mission-card__name">${m.nombre}</div>
                 ${premiumBadge}
                 ${direccion}
-                ${radioInfo}
+                ${rutaHint}
             </div>
             <div class="mission-card__points">+${m.puntos} ptos</div>
         </div>
     `.trim();
 }
 
-/* ── Renderizar lista de misiones ───────────────────────────────── */
+/* ── Renderizar lista ───────────────────────────────────────────── */
 function renderMisiones() {
     if (!EVENTO) {
-        elMissions.innerHTML = `
-            <div class="missions-empty">
-                <div class="missions-empty__icon">🎯</div>
-                <p>No hay misiones de evento disponibles.</p>
-            </div>
-        `;
+        elMissions.innerHTML = `<div class="missions-empty"><div class="missions-empty__icon">🎯</div><p>No hay misiones de evento disponibles.</p></div>`;
         return;
     }
-
     if (MISIONES.length === 0) {
-        elMissions.innerHTML = `
-            <div class="missions-empty">
-                <div class="missions-empty__icon">🎯</div>
-                <p>El evento no tiene misiones disponibles.</p>
-            </div>
-        `;
+        elMissions.innerHTML = `<div class="missions-empty"><div class="missions-empty__icon">🎯</div><p>El evento no tiene misiones disponibles.</p></div>`;
         return;
     }
-
-    // Completadas al final
-    const ordenadas = [
-        ...MISIONES.filter(m => !m.completada),
-        ...MISIONES.filter(m =>  m.completada),
-    ];
+    const ordenadas = [...MISIONES.filter(m => !m.completada), ...MISIONES.filter(m => m.completada)];
     elMissions.innerHTML = ordenadas.map(tarjetaMision).join('');
 }
 
-/* ── Mapa (Leaflet) ─────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════
+   MAPA (Leaflet)
+   ══════════════════════════════════════════════════════════════════ */
 function initMap(lat, lng) {
     mapa = L.map('map', { center: [lat, lng], zoom: 15, zoomControl: true });
 
@@ -187,13 +263,15 @@ function initMap(lat, lng) {
         icon: L.divIcon({
             className: '',
             html: '<div style="width:18px;height:18px;background:#8FA8A6;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>',
-            iconSize: [18, 18],
-            iconAnchor: [9, 9],
+            iconSize: [18, 18], iconAnchor: [9, 9],
         }),
         zIndexOffset: 1000,
     }).addTo(mapa).bindTooltip('Tu posición', { direction: 'top' });
 
     renderMapaMisiones(lat, lng);
+
+    // Trazar rutas OSRM para las misiones con coordenadas
+    trazarTodasLasRutas(lat, lng);
 }
 
 function misionIcon(completada) {
@@ -201,16 +279,14 @@ function misionIcon(completada) {
     return L.divIcon({
         className: '',
         html: `<div style="width:22px;height:22px;background:${bg};border:3px solid #fff;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>`,
-        iconSize: [22, 22],
-        iconAnchor: [11, 11],
+        iconSize: [22, 22], iconAnchor: [11, 11],
     });
 }
 
-/* Dibuja un círculo de 50 m alrededor de cada misión con coordenadas */
 function renderMapaMisiones(userLat, userLng) {
     if (!mapa) return;
 
-    marcadoresMisiones.forEach(layer => mapa.removeLayer(layer));
+    marcadoresMisiones.forEach(l => mapa.removeLayer(l));
     marcadoresMisiones = [];
 
     MISIONES.forEach(m => {
@@ -219,58 +295,58 @@ function renderMapaMisiones(userLat, userLng) {
         const lat = parseFloat(m.ejeX);
         const lng = parseFloat(m.ejeY);
 
-        // Círculo radio 50 m
+        // Círculo de radio 50 m
         const circulo = L.circle([lat, lng], {
             radius: RADIO_PROXIMIDAD_M,
             color: m.completada ? '#56C470' : '#4F46E5',
             fillColor: m.completada ? '#56C470' : '#4F46E5',
-            fillOpacity: 0.15,
+            fillOpacity: 0.12,
             weight: 2,
         }).addTo(mapa);
         marcadoresMisiones.push(circulo);
 
-        const popup = L.popup({ closeButton: false, maxWidth: 220 }).setContent(`
+        const popup = L.popup({ closeButton: false, maxWidth: 240 }).setContent(`
             <div class="mission-popup">
                 <div class="mission-popup__title">${m.nombre}</div>
                 <div class="mission-popup__pts">+${m.puntos} ptos</div>
-                ${m.completada ? '<div class="mission-popup__completed">✓ Completada</div>' : `<div style="font-size:.72rem;color:#7A9190;margin-top:4px">Acércate a ${RADIO_PROXIMIDAD_M} m</div>`}
+                ${m.completada
+                    ? '<div class="mission-popup__completed">✓ Completada</div>'
+                    : `<div style="font-size:.72rem;color:#7A9190;margin-top:4px">🗺️ Ruta activa · acércate a ${RADIO_PROXIMIDAD_M} m</div>`}
                 ${m.direccion ? `<div style="font-size:.75rem;color:#64748b;margin-top:6px">${m.direccion}</div>` : ''}
             </div>
         `.trim());
 
         const marker = L.marker([lat, lng], { icon: misionIcon(m.completada) })
-            .addTo(mapa)
-            .bindPopup(popup);
-
+            .addTo(mapa).bindPopup(popup);
         marcadoresMisiones.push(marker);
     });
 }
 
-/* ── Ocultar spinner ────────────────────────────────────────────── */
+/* ── Geolocalización ────────────────────────────────────────────── */
+// Actualizar rutas como máximo cada 60 s para no saturar OSRM
+let lastRouteUpdate = 0;
+const ROUTE_UPDATE_INTERVAL = 60_000;
+
 function esconderLoading() {
     if (elLoading) elLoading.classList.add('hidden');
 }
 
 function usarFallback() {
-    const lat = 40.4168, lng = -3.7038;
+    const lat = 41.3851, lng = 2.1734;  // Barcelona
     userCoords = [lat, lng];
     initMap(lat, lng);
     esconderLoading();
 }
 
-/* ── Geolocalización ────────────────────────────────────────────── */
 function iniciarGeolocalizacion() {
-    if (!navigator.geolocation) {
-        usarFallback();
-        return;
-    }
+    if (!navigator.geolocation) { usarFallback(); return; }
 
     navigator.geolocation.watchPosition(
         pos => {
             const coords = [pos.coords.latitude, pos.coords.longitude];
             userCoords = coords;
 
-            // Comprobar proximidad a misiones con coordenadas
+            // Verificar proximidad
             verificarProximidadMisiones(coords[0], coords[1]);
 
             if (!mapa) {
@@ -279,10 +355,15 @@ function iniciarGeolocalizacion() {
                 return;
             }
 
-            if (marcadorUsuario) {
-                marcadorUsuario.setLatLng(coords);
-            }
+            if (marcadorUsuario) marcadorUsuario.setLatLng(coords);
             mapa.panTo(coords, { animate: true });
+
+            // Actualizar rutas si han pasado ≥ 60 s
+            const ahora = Date.now();
+            if (ahora - lastRouteUpdate >= ROUTE_UPDATE_INTERVAL) {
+                lastRouteUpdate = ahora;
+                trazarTodasLasRutas(coords[0], coords[1]);
+            }
         },
         () => usarFallback(),
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
@@ -301,12 +382,10 @@ function tickTimer() {
         return;
     }
     const restante = EVENTO_FIN.getTime() - Date.now();
-    if (elCountdown) {
-        elCountdown.textContent = restante > 0 ? formatMs(restante) : 'Evento finalizado';
-    }
+    if (elCountdown) elCountdown.textContent = restante > 0 ? formatMs(restante) : 'Evento finalizado';
 }
 
-/* ── Click en tarjeta → centrar mapa ───────────────────────────── */
+/* ── Click en tarjeta → centrar en misión ───────────────────────── */
 function abrirTarjetaEnMapa(event) {
     const card = event.target.closest('.mission-card');
     if (!card || !mapa) return;
@@ -315,16 +394,14 @@ function abrirTarjetaEnMapa(event) {
     if (!mision || mision.ejeX == null || mision.ejeY == null) return;
 
     mapa.setView([parseFloat(mision.ejeX), parseFloat(mision.ejeY)], 16, { animate: true });
+
     marcadoresMisiones.forEach(layer => {
-        if (layer.getLatLng) {
-            const ll = layer.getLatLng();
-            if (
-                Math.abs(ll.lat - parseFloat(mision.ejeX)) < 0.0001 &&
-                Math.abs(ll.lng - parseFloat(mision.ejeY)) < 0.0001
-            ) {
-                layer.openPopup();
-            }
-        }
+        if (!layer.getLatLng) return;
+        const ll = layer.getLatLng();
+        if (
+            Math.abs(ll.lat - parseFloat(mision.ejeX)) < 0.0001 &&
+            Math.abs(ll.lng - parseFloat(mision.ejeY)) < 0.0001
+        ) layer.openPopup();
     });
 }
 
@@ -333,14 +410,9 @@ function inicializarEvento() {
     renderMisiones();
     tickTimer();
     setInterval(tickTimer, 1000);
-
     iniciarGeolocalizacion();
-    if (elLocationBtn) {
-        elLocationBtn.addEventListener('click', centrarEnUbicacion);
-    }
+    if (elLocationBtn) elLocationBtn.addEventListener('click', centrarEnUbicacion);
     document.addEventListener('click', abrirTarjetaEnMapa);
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-    inicializarEvento();
-});
+window.addEventListener('DOMContentLoaded', inicializarEvento);
