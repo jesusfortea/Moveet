@@ -12,9 +12,6 @@ Route::get('/usuario/tarjeta/nueva', [UserController::class, 'createCard'])->nam
 Route::post('/usuario/tarjeta', [UserController::class, 'storeCard'])->name('usuario.tarjeta.store');
 use App\Http\Controllers\AuthController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
 // Rutas de autenticación
 Route::get('/login', [AuthController::class, 'login'])->name('login');
