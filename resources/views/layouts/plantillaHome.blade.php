@@ -40,8 +40,7 @@
     {{-- Leaflet JS --}}
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    {{-- Lógica de la página home --}}
-    <script src="{{ asset('js/home.js') }}"></script>
+    @stack('scripts')
 
 </body>
 </html>
