@@ -20,9 +20,9 @@
 
                 {{-- Info del user --}}
                 <div class="col-span-2">
-                    <p>Nombre</p>
-                    <p>Puntos</p>
-                    <p>Nivel</p>
+                    <p class="font-bold text-white">{{ Auth::user()->name ?? 'Usuario' }}</p>
+                    <p class="text-white text-sm">{{ Auth::user()->puntos ?? 0 }} Puntos</p>
+                    <p class="text-white text-sm">Nivel {{ Auth::user()->nivel ?? 1 }}</p>
                 </div>
 
             </div>

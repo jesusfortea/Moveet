@@ -22,6 +22,10 @@
 
     {{-- 3. Estilos de la página home (sobreescribe Tailwind y Leaflet) --}}
     <link rel="stylesheet" href="{{ asset('css/home.css') }}">
+    
+    {{-- Estilos adicionales de subsecciones --}}
+    @stack('styles')
+    
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
 </head>
