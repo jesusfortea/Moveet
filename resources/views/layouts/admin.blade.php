@@ -4,9 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Dashboard Admin · Moveet</title>
+    <title>@yield('title', 'Admin - Moveet')</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    
     <style>
         body {
             background: #f5f5f5;
@@ -109,6 +114,7 @@
             font-size: 12px;
             opacity: 0.9;
         }
+        
         .admin-main {
             display: grid;
             grid-template-columns: 260px 1fr;
@@ -150,24 +156,6 @@
             background: #9db3b0;
             color: white;
             font-weight: 700;
-        }
-        
-        .admin-sidebar-logout {
-            margin-top: auto;
-            padding: 16px 20px;
-            background: #a8968f;
-            border: none;
-            border-radius: 6px;
-            color: white;
-            cursor: pointer;
-            font-family: 'Nunito', sans-serif;
-            font-weight: 600;
-            font-size: 15px;
-            transition: all 0.2s;
-        }
-        
-        .admin-sidebar-logout:hover {
-            background: #9d8b82;
         }
         
         /* Content area */
@@ -266,32 +254,7 @@
             
             <!-- Content -->
             <div class="admin-content">
-                <div class="admin-stats-grid">
-                    <div class="admin-stat-card">
-                        <div class="admin-stat-number">{{ $total_usuarios }}</div>
-                        <div class="admin-stat-label">Total usuarios</div>
-                    </div>
-                    <div class="admin-stat-card">
-                        <div class="admin-stat-number">{{ $total_misiones }}</div>
-                        <div class="admin-stat-label">Total misiones</div>
-                    </div>
-                    <div class="admin-stat-card">
-                        <div class="admin-stat-number">{{ $total_eventos }}</div>
-                        <div class="admin-stat-label">Total eventos</div>
-                    </div>
-                    <div class="admin-stat-card">
-                        <div class="admin-stat-number">{{ $total_paseos }}</div>
-                        <div class="admin-stat-label">Pase de paseo</div>
-                    </div>
-                    <div class="admin-stat-card">
-                        <div class="admin-stat-number">{{ $total_lugares }}</div>
-                        <div class="admin-stat-label">Total lugares</div>
-                    </div>
-                    <div class="admin-stat-card">
-                        <div class="admin-stat-number">{{ $total_recompensas }}</div>
-                        <div class="admin-stat-label">Recompensas</div>
-                    </div>
-                </div>
+                @yield('content')
             </div>
         </div>
         
@@ -301,7 +264,6 @@
             @2025<br>
             www.moveet.es
         </footer>
-        
     </div>
 </body>
 </html>
