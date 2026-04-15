@@ -19,7 +19,6 @@ class UserController extends Controller
             abort(404, 'No hay usuarios disponibles.');
         }
 
-        $user->loadMissing(['tarjetaBancaria', 'inventario.recompensa']);
 
         $inventario = $user->inventario
             ->sortByDesc('obtenida_at')
