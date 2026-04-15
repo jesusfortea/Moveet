@@ -38,7 +38,7 @@
         <div class="col-span-3 flex w-full h-full items-center justify-around">
 
             <a href="{{ route('home') }}">Inicio</a>
-            <a>Evento</a>
+            <a href="{{ route('eventos') }}">Evento</a>
             <a>Chat</a>
             <a>Pase de paseo</a>
             <a>Tienda</a>
