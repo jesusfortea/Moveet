@@ -1,0 +1,612 @@
+/* ═══════════════════════════════════════════════════════════════════
+   home.css — Moveet · Página principal
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
+
+/* ── Variables ─────────────────────────────────────────────────────── */
+:root {
+    --nav-h:          15vh;
+
+    --clr-primary:    #8FA8A6;
+    --clr-primary-dk: #6B8F8D;
+    --clr-primary-lt: #C5D8D6;
+    --clr-accent:     #56C470;
+    --clr-accent-lt:  #E8F8EC;
+    --clr-accent-dk:  #3DA855;
+    --clr-danger:     #E06060;
+    --clr-gold:       #F4A62A;
+
+    --clr-bg:         #EEF2F1;
+    --clr-surface:    #FFFFFF;
+    --clr-text:       #1E2A28;
+    --clr-muted:      #7A9190;
+    --clr-border:     #D5E0DF;
+
+    --radius-sm:      8px;
+    --radius-md:      14px;
+    --radius-lg:      20px;
+    --radius-pill:    100px;
+
+    --shadow-sm:      0 2px 8px rgba(30,42,40,.07);
+    --shadow-md:      0 4px 20px rgba(30,42,40,.12);
+    --shadow-lg:      0 8px 32px rgba(30,42,40,.16);
+
+    --font:           'Nunito', sans-serif;
+
+    --ease-out:       cubic-bezier(.22,.61,.36,1);
+}
+
+/* ── Reset / Base ───────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+    height: 100%;
+    font-family: var(--font);
+    background: var(--clr-bg);
+    color: var(--clr-text);
+    overflow: hidden;
+}
+
+/* ── Layout raíz ────────────────────────────────────────────────────── */
+.page-content {
+    padding-top: var(--nav-h);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;  /* FIX: columna para que home-layout use el espacio restante */
+    overflow: hidden;
+}
+
+.home-layout {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    width: 100%;
+    flex: 1;           /* FIX: ocupa el espacio restante tras el padding de la navbar */
+    min-height: 0;     /* FIX: permite que los hijos grid colapsen correctamente */
+    overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PANEL IZQUIERDO — Mapa
+   ═══════════════════════════════════════════════════════════════════ */
+
+.map-panel {
+    position: relative;
+    overflow: hidden;
+    height: 100%;      /* FIX: necesario para que #map herede la altura correctamente */
+    min-height: 0;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* Overlay de carga */
+.map-loading {
+    position: absolute;
+    inset: 0;
+    z-index: 500;
+    background: rgba(238,242,241,.92);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    transition: opacity .4s var(--ease-out), visibility .4s;
+}
+
+.map-loading.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.map-loading p {
+    font-size: .95rem;
+    font-weight: 600;
+    color: var(--clr-muted);
+    letter-spacing: .02em;
+}
+
+/* Spinner */
+.spinner {
+    width: 42px;
+    height: 42px;
+    border: 4px solid var(--clr-primary-lt);
+    border-top-color: var(--clr-primary);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Badge flotante */
+.map-info-badge {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 400;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--clr-surface);
+    border-radius: var(--radius-pill);
+    padding: 9px 18px 9px 14px;
+    box-shadow: var(--shadow-md);
+    font-size: .88rem;
+    font-weight: 600;
+    color: var(--clr-text);
+    animation: badge-in .5s .6s var(--ease-out) both;
+    white-space: nowrap;
+}
+
+.map-info-badge strong { color: var(--clr-primary-dk); }
+
+.badge-dot {
+    width: 10px;
+    height: 10px;
+    background: var(--clr-accent);
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px var(--clr-accent-lt);
+    animation: pulse-dot 2s ease infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 0 3px var(--clr-accent-lt); }
+    50%       { box-shadow: 0 0 0 6px rgba(86,196,112,.18); }
+}
+
+@keyframes badge-in {
+    from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* ── Leaflet marker customizado ─────────────────────────────────── */
+.leaflet-marker-icon.user-marker {
+    background: var(--clr-primary);
+    border: 3px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,.25);
+}
+
+/* ── Botón de ubicación ────────────────────────────────────────── */
+.location-btn {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    z-index: 400;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    background: var(--clr-surface);
+    color: var(--clr-primary-dk);
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .25s var(--ease-out);
+    animation: location-btn-in .4s .3s var(--ease-out) both;
+}
+
+.location-btn:hover {
+    background: var(--clr-primary-lt);
+    transform: scale(1.1);
+    box-shadow: var(--shadow-lg);
+}
+
+.location-btn:active {
+    transform: scale(0.95);
+}
+
+.location-icon {
+    display: inline-block;
+    transition: transform .3s var(--ease-out);
+}
+
+.location-btn:hover .location-icon {
+    animation: bounce .4s ease;
+}
+
+@keyframes location-btn-in {
+    from { opacity: 0; transform: translate(20px, 20px); }
+    to   { opacity: 1; transform: translate(0, 0); }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PANEL DERECHO — Misiones
+   ═══════════════════════════════════════════════════════════════════ */
+
+.missions-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--clr-surface);
+    border-left: 1px solid var(--clr-border);
+    box-shadow: -4px 0 24px rgba(30,42,40,.06);
+    overflow: hidden;
+    animation: panel-in .45s var(--ease-out) both;
+}
+
+@keyframes panel-in {
+    from { opacity: 0; transform: translateX(24px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Cabecera ─────────────────────────────────────────────────── */
+.missions-header {
+    padding: 28px 24px 0;
+    flex-shrink: 0;
+}
+
+.missions-title {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--clr-text);
+    letter-spacing: -.02em;
+    margin-bottom: 16px;
+}
+
+/* Tabs */
+.missions-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 14px;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font);
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--clr-muted);
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    transition: color .2s, background .2s;
+    position: relative;
+}
+
+.tab-btn::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 14px;
+    right: 14px;
+    height: 2px;
+    background: var(--clr-primary);
+    border-radius: 2px;
+    transform: scaleX(0);
+    transition: transform .25s var(--ease-out);
+}
+
+.tab-btn.active {
+    color: var(--clr-primary-dk);
+}
+
+.tab-btn.active::after {
+    transform: scaleX(1);
+}
+
+.tab-btn:hover:not(.active) {
+    background: var(--clr-bg);
+    color: var(--clr-text);
+}
+
+/* Botón cambiar misiones */
+.change-missions-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font);
+    font-size: .85rem;
+    font-weight: 700;
+    color: var(--clr-muted);
+    padding: 6px 0;
+    transition: color .2s;
+    margin-bottom: 4px;
+}
+
+.change-missions-btn:hover { color: var(--clr-primary-dk); }
+
+.btn-icon {
+    font-size: 1.1rem;
+    display: inline-block;
+    transition: transform .4s var(--ease-out);
+}
+
+.change-missions-btn:hover .btn-icon {
+    transform: rotate(180deg);
+}
+
+.btn-price {
+    font-weight: 800;
+    color: var(--clr-primary-dk);
+}
+
+/* Divider */
+.panel-divider {
+    height: 1px;
+    background: var(--clr-border);
+    margin: 6px 24px 0;
+    flex-shrink: 0;
+}
+
+/* ── Lista de misiones ────────────────────────────────────────── */
+.missions-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--clr-primary-lt) transparent;
+}
+
+.missions-list::-webkit-scrollbar       { width: 4px; }
+.missions-list::-webkit-scrollbar-track { background: transparent; }
+.missions-list::-webkit-scrollbar-thumb { background: var(--clr-primary-lt); border-radius: 4px; }
+
+/* Tarjeta de misión */
+.mission-card {
+    background: var(--clr-bg);
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    cursor: pointer;
+    transition:
+        border-color .2s,
+        background .2s,
+        transform .15s var(--ease-out),
+        box-shadow .2s;
+    animation: card-in .35s var(--ease-out) both;
+}
+
+.mission-card:hover:not(.completed) {
+    border-color: var(--clr-primary-lt);
+    background: var(--clr-surface);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+}
+
+.mission-card.completed {
+    background: var(--clr-accent-lt);
+    border-color: var(--clr-accent);
+}
+
+/* Stagger animation */
+.mission-card:nth-child(1) { animation-delay: .05s; }
+.mission-card:nth-child(2) { animation-delay: .10s; }
+.mission-card:nth-child(3) { animation-delay: .15s; }
+.mission-card:nth-child(4) { animation-delay: .20s; }
+.mission-card:nth-child(5) { animation-delay: .25s; }
+
+@keyframes card-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.mission-card__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.mission-card__name {
+    font-size: .92rem;
+    font-weight: 700;
+    color: var(--clr-text);
+    line-height: 1.4;
+}
+
+.mission-card.completed .mission-card__name {
+    text-decoration: line-through;
+    color: var(--clr-muted);
+}
+
+.mission-card__sub {
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--clr-muted);
+    margin-top: 2px;
+}
+
+.mission-card.completed .mission-card__sub {
+    color: var(--clr-accent-dk);
+}
+
+.mission-card__points {
+    flex-shrink: 0;
+    font-size: .85rem;
+    font-weight: 800;
+    color: var(--clr-muted);
+    text-align: right;
+    white-space: nowrap;
+}
+
+.mission-card.completed .mission-card__points {
+    color: var(--clr-accent-dk);
+    font-size: .95rem;
+}
+
+.mission-card__check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--clr-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: border-color .2s, background .2s;
+    font-size: .75rem;
+}
+
+.mission-card.completed .mission-card__check {
+    background: var(--clr-accent);
+    border-color: var(--clr-accent);
+    color: #fff;
+}
+
+/* Premium badge */
+.mission-card__premium {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: .7rem;
+    font-weight: 800;
+    color: var(--clr-gold);
+    background: rgba(244,166,42,.12);
+    border-radius: var(--radius-pill);
+    padding: 2px 7px;
+    margin-top: 4px;
+}
+
+/* Estado vacío */
+.missions-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--clr-muted);
+}
+
+.missions-empty__icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    opacity: .5;
+}
+
+.missions-empty p {
+    font-size: .9rem;
+    font-weight: 600;
+}
+
+/* ── Footer: temporizador ─────────────────────────────────────── */
+.missions-footer {
+    flex-shrink: 0;
+    padding: 12px 24px 20px;
+    border-top: 1px solid var(--clr-border);
+    background: var(--clr-surface);
+}
+
+.timer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.timer-label {
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--clr-muted);
+}
+
+.timer-countdown {
+    font-size: .88rem;
+    font-weight: 800;
+    color: var(--clr-primary-dk);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .04em;
+}
+
+.timer-bar {
+    height: 5px;
+    background: var(--clr-border);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+}
+
+.timer-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--clr-primary), var(--clr-accent));
+    border-radius: var(--radius-pill);
+    transition: width 1s linear;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Leaflet overrides
+   ═══════════════════════════════════════════════════════════════════ */
+.leaflet-control-attribution {
+    font-size: .65rem !important;
+    opacity: .7;
+}
+
+.leaflet-control-zoom a {
+    font-family: var(--font) !important;
+    font-weight: 700 !important;
+    color: var(--clr-text) !important;
+}
+
+/* ── Popup de misión ─────────────────────────────────────────── */
+.mission-popup {
+    font-family: var(--font);
+    min-width: 180px;
+}
+
+.mission-popup__title {
+    font-size: .88rem;
+    font-weight: 700;
+    color: var(--clr-text);
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.mission-popup__pts {
+    font-size: .78rem;
+    font-weight: 800;
+    color: var(--clr-primary-dk);
+}
+
+.mission-popup__completed {
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--clr-accent-dk);
+    margin-top: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+    .home-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: 55vh 1fr;
+        overflow: auto;
+    }
+
+    html, body { overflow: auto; }
+
+    .page-content {
+        height: auto;
+        overflow: auto;
+    }
+
+    .missions-panel {
+        height: auto;
+        overflow: visible;
+        border-left: none;
+        border-top: 1px solid var(--clr-border);
+    }
+
+    .missions-list {
+        max-height: 40vh;
+    }
+}

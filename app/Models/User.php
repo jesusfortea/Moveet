@@ -18,10 +18,12 @@ class User extends Authenticatable
     protected $hidden = ['password', 'remember_token'];
 
     protected $casts = [
-        'email_verified_at' => 'datetime',
-        'nacimiento'        => 'date',
-        'premium'           => 'boolean',
-        'password'          => 'hashed',
+        'email_verified_at'      => 'datetime',
+        'nacimiento'             => 'date',
+        'premium'                => 'boolean',
+        'password'               => 'hashed',
+        'daily_mission_cycle_end'   => 'datetime',
+        'weekly_mission_cycle_end'  => 'datetime',
     ];
 
     // ── Misiones ────────────────────────────────────────────────
