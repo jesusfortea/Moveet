@@ -44,6 +44,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Llamar a seeders
+        $this->call(EventoSeeder::class);
         $this->call(MisionSeeder::class);
     }
 }
