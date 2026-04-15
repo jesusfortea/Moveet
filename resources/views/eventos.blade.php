@@ -1,92 +1,73 @@
 @extends('layouts.plantillaHome')
 
-@section('title', 'Eventos · Moveet')
+@section('title', 'Evento · Moveet')
 
-@section('content')
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/home.css') }}">
+@endpush
 
-{{-- Inyectar datos de misiones y evento --}}
+@push('scripts')
 <script>
     window.misionesData = @json($misiones);
-    window.misionesReset = {
-        diarias: @json($fechaLimiteDiarias),
-        semanales: @json($fechaLimiteSemanales),
-    };
     window.eventoData = @json($evento);
     window.fechaFinEvento = @json($fechaFinEvento);
 </script>
+<script src="{{ asset('js/eventos.js') }}"></script>
+@endpush
 
-<div class="event-page">
-    <section class="event-summary p-4 bg-white rounded-lg shadow-sm mb-4">
-        @if($evento)
-            <h1 class="text-2xl font-bold mb-2">{{ $evento['nombre'] }}</h1>
-            <p class="text-base text-slate-700 mb-2">{{ $evento['descripcion'] }}</p>
-            <p class="text-sm text-slate-500 mb-1"><strong>Fechas:</strong> {{ $evento['fecha_inicio'] }} — {{ $evento['fecha_fin'] }}</p>
-            <p class="text-sm text-slate-500"><strong>Ubicación:</strong> {{ $evento['direccion'] }}</p>
-        @else
-            <h1 class="text-2xl font-bold mb-2">No hay eventos activos</h1>
-            <p class="text-base text-slate-700">En este momento no se ha encontrado ningún evento activo. Vuelve más tarde.</p>
-        @endif
-    </section>
+@section('content')
 
-@if($evento)
-    <div class="home-layout">
+<div class="event-page flex flex-col flex-1 h-full min-h-0">
+    @if($evento)
+        <div class="home-layout">
 
-    {{-- ══════════════════════════════════════════════════════
-         PANEL IZQUIERDO — Mapa Leaflet
-    ══════════════════════════════════════════════════════ --}}
-    <div class="map-panel">
-
-        {{-- Loading overlay --}}
-        <div class="map-loading" id="map-loading">
-            <div class="spinner"></div>
-            <p>Obteniendo tu ubicación...</p>
-        </div>
-
-        {{-- Mapa --}}
-        <div id="map"></div>
-
-        {{-- Botón de ubicación --}}
-        <button class="location-btn" id="location-btn" title="Ir a mi ubicación">
-            <span class="location-icon">📍</span>
-        </button>
-
-    </div>
-
-    {{-- ══════════════════════════════════════════════════════
-         PANEL DERECHO — Misiones
-    ══════════════════════════════════════════════════════ --}}
-    <div class="missions-panel">
-
-        {{-- Cabecera --}}
-        <div class="missions-header">
-
-            <h2 class="missions-title">Misiones del Evento</h2>
-
-        </div>
-
-        <div class="panel-divider"></div>
-
-        {{-- Lista de misiones --}}
-        <div class="missions-list" id="missions-list" role="list">
-            {{-- Renderizado dinámico vía JS --}}
-        </div>
-
-        {{-- Pie: temporizador --}}
-        <div class="missions-footer">
-            <div class="timer-row">
-                <span class="timer-label">Evento activo hasta…</span>
-                <span class="timer-countdown" id="timer-countdown">--:--:--</span>
+            <div class="map-panel">
+                <div class="map-loading" id="map-loading">
+                    <div class="spinner"></div>
+                    <p>Obteniendo tu ubicación...</p>
+                </div>
+                <div id="map"></div>
+                <button class="location-btn" id="location-btn" title="Ir a mi ubicación">
+                    <span class="location-icon">📍</span>
+                </button>
             </div>
-            <div class="timer-bar">
-                <div class="timer-bar-fill" id="timer-bar-fill" style="width: 0%"></div>
+
+            <div class="missions-panel">
+                <div class="missions-header">
+                    <div class="event-header-title">
+                        <span class="event-label">Evento</span>
+                        <h2 class="missions-title">{{ $evento['nombre'] }}</h2>
+                        <p class="event-subtitle">{{ $evento['descripcion'] }}</p>
+                    </div>
+                    <div class="event-meta">
+                        <span><strong>Fechas:</strong> {{ $evento['fecha_inicio'] }} — {{ $evento['fecha_fin'] }}</span>
+                        <span><strong>Ubicación:</strong> {{ $evento['direccion'] }}</span>
+                    </div>
+                </div>
+
+                <div class="panel-divider"></div>
+
+                <div class="missions-list" id="missions-list" role="list"></div>
+
+                <div class="missions-footer">
+                    <div class="timer-row">
+                        <span class="timer-label">Evento activo hasta…</span>
+                        <span class="timer-countdown" id="timer-countdown">--:--:--</span>
+                    </div>
+                    <div class="timer-bar">
+                        <div class="timer-bar-fill" id="timer-bar-fill" style="width: 0%"></div>
+                    </div>
+                </div>
             </div>
+
         </div>
-
-    </div>
-
-</div>
-@endif
-
+    @else
+        <section class="event-summary p-8 rounded-3xl shadow-sm text-center bg-slate-50">
+            <h1 class="text-3xl font-bold text-slate-900">No hay eventos activos</h1>
+            <p class="mt-4 text-base text-slate-700">Ahora mismo no hay ningún evento en curso. Vuelve más tarde para descubrir nuevas misiones exclusivas.</p>
+            <a href="{{ route('home') }}" class="mt-8 inline-flex rounded-full bg-[#8FA8A6] px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#7a968f]">Volver al inicio</a>
+        </section>
+    @endif
 </div>
 
 @endsection

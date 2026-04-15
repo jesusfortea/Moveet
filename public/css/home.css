@@ -46,16 +46,24 @@ html, body {
     font-family: var(--font);
     background: var(--clr-bg);
     color: var(--clr-text);
-    overflow: hidden;
+    overflow: auto;
+}
+
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
 }
 
 /* ── Layout raíz ────────────────────────────────────────────────────── */
 .page-content {
     padding-top: var(--nav-h);
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;  /* FIX: columna para que home-layout use el espacio restante */
-    overflow: hidden;
+    overflow-y: auto;
 }
 
 .home-layout {
@@ -247,6 +255,23 @@ html, body {
 .missions-header {
     padding: 28px 24px 0;
     flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.event-header-title {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.event-label {
+    font-size: .75rem;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--clr-primary-dk);
 }
 
 .missions-title {
@@ -254,7 +279,25 @@ html, body {
     font-weight: 900;
     color: var(--clr-text);
     letter-spacing: -.02em;
-    margin-bottom: 16px;
+    margin: 0;
+}
+
+.event-subtitle {
+    font-size: .94rem;
+    color: var(--clr-muted);
+    line-height: 1.6;
+    max-width: 42rem;
+}
+
+.event-meta {
+    display: grid;
+    gap: 10px;
+    font-size: .85rem;
+    color: var(--clr-muted);
+}
+
+.event-meta span {
+    display: block;
 }
 
 /* Tabs */

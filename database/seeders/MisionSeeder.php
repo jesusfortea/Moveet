@@ -51,31 +51,7 @@ class MisionSeeder extends Seeder
                 'semanal' => false,
                 'puntos' => 50,
                 'evento_id' => $evento ? $evento->id : null,
-            ],
-            [
-                'nombre' => 'Foto en el stand principal',
-                'descripcion' => 'Haz una foto en el stand principal del Festival Moveet.',
-                'metros_requeridos' => null,
-                'ejeX' => 40.4172,
-                'ejeY' => -3.7080,
-                'direccion' => 'Stand principal, Plaza Mayor',
-                'premium' => true,
-                'semanal' => false,
-                'puntos' => 80,
-                'evento_id' => $evento ? $evento->id : null,
-            ],
-            [
-                'nombre' => 'Reúne 3 medallas del evento',
-                'descripcion' => 'Consigue tres medallas especiales del Festival Moveet.',
-                'metros_requeridos' => null,
-                'ejeX' => null,
-                'ejeY' => null,
-                'direccion' => null,
-                'premium' => false,
-                'semanal' => true,
-                'puntos' => 120,
-                'evento_id' => $evento ? $evento->id : null,
-            ],
+            ]
         ];
 
         foreach ($misiones as $data) {
