@@ -27,7 +27,13 @@
                 {{-- Info del user --}}
                 <div class="col-span-2">
                     <a href="{{ route('usuario.index') }}">{{ $navUser?->name ?? 'Usuario' }}</a>
-                    <p>{{ $navUser?->puntos ?? 0 }} puntos</p>
+                    <p class="flex items-center gap-1">
+                        <span>{{ $navUser?->puntos ?? 0 }} ptos</span>
+                        <a href="{{ route('tienda.puntos') }}"
+                           title="Conseguir más puntos"
+                           style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#fff;color:#6B7E7D;font-size:.75rem;font-weight:700;line-height:1;text-decoration:none;flex-shrink:0;"
+                        >+</a>
+                    </p>
                     <p>Nvl {{ $navUser?->nivel ?? 1 }}</p>
                 </div>
 

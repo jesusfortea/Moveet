@@ -33,4 +33,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/usuario',              [UserController::class, 'index'])->name('usuario.index');
     Route::get('/usuario/tarjeta/nueva',[UserController::class, 'createCard'])->name('usuario.tarjeta.create');
     Route::post('/usuario/tarjeta',     [UserController::class, 'storeCard'])->name('usuario.tarjeta.store');
+
+    Route::get('/tienda-puntos', fn() => view('tienda_puntos'))->name('tienda.puntos');
 });
