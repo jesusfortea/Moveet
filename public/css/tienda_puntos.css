@@ -1,0 +1,143 @@
+/* ════════════════════════════════════════════════════════════════
+   Tienda de Puntos — Moveet
+   ════════════════════════════════════════════════════════════════ */
+
+.shop-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 2.5rem 1.5rem;
+    background: #3a3a4a;
+    min-height: 100%;
+}
+
+/* ── Título ──────────────────────────────────────────────────── */
+.shop-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 2.5rem;
+    letter-spacing: -.01em;
+}
+
+/* ── Grid de cards ───────────────────────────────────────────── */
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    width: 100%;
+    max-width: 680px;
+    align-items: end; /* la card destacada sube al tener el badge */
+}
+
+/* ── Card base ───────────────────────────────────────────────── */
+.shop-card {
+    position: relative;
+    background: #b0bbb8;
+    border-radius: 12px;
+    padding: 1.5rem 1.25rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .75rem;
+    text-align: center;
+}
+
+/* ── Card destacada ──────────────────────────────────────────── */
+.shop-card--featured {
+    border: 2.5px solid #e07070;
+    padding-top: 2.25rem; /* espacio para el badge */
+}
+
+/* ── Badge "Destacado" ───────────────────────────────────────── */
+.shop-badge {
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #e07070;
+    color: #fff;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    padding: .25rem .9rem;
+    border-radius: 0 0 8px 8px;
+    white-space: nowrap;
+}
+
+/* ── Precio ──────────────────────────────────────────────────── */
+.shop-price {
+    font-size: .85rem;
+    font-weight: 600;
+    color: #2d2d3a;
+    background: #d4d9d7;
+    padding: .2rem .65rem;
+    border-radius: 999px;
+}
+
+/* ── Contenedor de monedas ───────────────────────────────────── */
+.shop-coins {
+    position: relative;
+    width: 90px;
+    height: 80px;
+    margin: .25rem 0;
+}
+
+/* Moneda simple (pack básico) */
+.shop-coin {
+    position: absolute;
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Moneda de fondo (apilada, pack medio y premium) */
+.shop-coin--back {
+    transform: translate(-62%, -54%) scale(.88) rotate(-10deg);
+    z-index: 0;
+}
+.shop-coin--back2 {
+    transform: translate(-80%, -58%) scale(.82) rotate(-20deg);
+    z-index: 0;
+}
+.shop-coin--front {
+    transform: translate(-40%, -48%) scale(1);
+    z-index: 1;
+}
+
+/* ── Puntos ──────────────────────────────────────────────────── */
+.shop-pts {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1e1e2e;
+}
+
+/* ── Botón Comprar ───────────────────────────────────────────── */
+.shop-btn {
+    width: 100%;
+    padding: .55rem 0;
+    border: none;
+    border-radius: 8px;
+    background: #7a9190;
+    color: #fff;
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s;
+}
+.shop-btn:hover {
+    background: #607877;
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 560px) {
+    .shop-grid {
+        grid-template-columns: 1fr;
+        align-items: center;
+    }
+}
