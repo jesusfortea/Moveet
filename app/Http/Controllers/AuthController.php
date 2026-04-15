@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -29,6 +31,35 @@ class AuthController extends Controller
             ->withErrors([
                 'email' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
             ]);
+    }
+
+    public function register()
+    {
+        return view('auth.register');
+    }
+
+    public function storeRegister(Request $request)
+    {
+        $validated = $request->validate([
+            'username' => ['required', 'string', 'min:3', 'unique:users'],
+            'email' => ['required', 'email', 'unique:users'],
+            'dni' => ['required', 'string', 'unique:users'],
+            'phone' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
+            'birth_date' => ['required', 'date'],
+        ]);
+
+        $validated['password'] = Hash::make($validated['password']);
+        $validated['nacimiento'] = $validated['birth_date'];
+        $validated['telefono'] = $validated['phone'];
+        $validated['name'] = $validated['username'];
+
+        unset($validated['birth_date']);
+        unset($validated['phone']);
+
+        User::create($validated);
+
+        return redirect('/login')->with('success', 'Usuario registrado exitosamente. Inicia sesión.');
     }
 
     public function logout(Request $request)
