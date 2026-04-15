@@ -35,7 +35,7 @@
         }
         
         .admin-navbar-logo img {
-            height: 45px;
+            height: 90px;
             width: auto;
         }
         
@@ -47,7 +47,7 @@
         }
         
         .admin-navbar-search input {
-            width: 300px;
+            width: 600px;
             padding: 10px 16px;
             border: none;
             border-radius: 6px;
@@ -61,7 +61,7 @@
             align-items: center;
             gap: 16px;
             color: white;
-            margin: 0 20px;
+            margin-left: 2px
         }
         
         .admin-navbar-logout {
