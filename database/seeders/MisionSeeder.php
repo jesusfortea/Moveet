@@ -29,18 +29,6 @@ class MisionSeeder extends Seeder
                 'evento_id' => null,
             ],
             [
-                'nombre' => 'Visitar Londres',
-                'descripcion' => 'Visitar Londres.',
-                'metros_requeridos' => null,
-                'ejeX' => 51.507351,
-                'ejeY' => -0.127758,
-                'direccion' => 'Londres',
-                'premium' => false,
-                'semanal' => false,
-                'puntos' => 30,
-                'evento_id' => null,
-            ],
-            [
                 'nombre' => 'Ruta del Festival',
                 'descripcion' => 'Completa la ruta especial dentro del Festival Moveet en Barcelona.',
                 'metros_requeridos' => 1000,
