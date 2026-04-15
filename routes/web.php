@@ -3,10 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\HomeController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::post('/misiones/{mision}/completar', [HomeController::class, 'completarMision']);
 
 // Rutas de autenticación
 Route::get('/login', [AuthController::class, 'login'])->name('login');

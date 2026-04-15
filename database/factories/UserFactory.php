@@ -32,8 +32,11 @@ class UserFactory extends Factory
             'dni' => fake()->unique()->numerify('########') . fake()->randomLetter(),
             'nacimiento' => fake()->dateTimeBetween('-50 years', '-18 years'),
             'telefono' => fake()->phoneNumber(),
-            'puntos' => 0,
             'password' => static::$password ??= Hash::make('password'),
+            'premium' => false,
+            'nivel' => 1,
+            'puntos' => fake()->numberBetween(0, 1000),
+            'ruta_imagen' => null,
             'remember_token' => Str::random(10),
         ];
     }

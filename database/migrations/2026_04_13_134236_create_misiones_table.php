@@ -13,9 +13,9 @@ return new class extends Migration
             $table->foreignId('evento_id')->nullable()->constrained('eventos')->nullOnDelete();
             $table->string('nombre');
             $table->string('descripcion');
-            $table->decimal('ejeX', 10, 7);
-            $table->decimal('ejeY', 10, 7);
-            $table->string('direccion');
+            $table->decimal('ejeX', 10, 7)->nullable();
+            $table->decimal('ejeY', 10, 7)->nullable();
+            $table->string('direccion')->nullable();
             $table->boolean('premium')->default(false);
             $table->boolean('semanal')->default(false);
             $table->integer('puntos')->default(0);
