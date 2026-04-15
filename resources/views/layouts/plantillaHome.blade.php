@@ -20,8 +20,7 @@
     <link rel="stylesheet"
           href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-    {{-- 3. Estilos de la página home (sobreescribe Tailwind y Leaflet) --}}
-    <link rel="stylesheet" href="{{ asset('css/home.css') }}">
+    @stack('styles')
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
 </head>
@@ -36,8 +35,7 @@
     {{-- Leaflet JS --}}
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    {{-- Lógica de la página home --}}
-    <script src="{{ asset('js/home.js') }}"></script>
+    @stack('scripts')
 
 </body>
 </html>
