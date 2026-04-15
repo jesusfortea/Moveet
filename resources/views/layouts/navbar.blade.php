@@ -1,3 +1,7 @@
+@php
+    $navUser = \Illuminate\Support\Facades\Auth::user() ?? \App\Models\User::first();
+@endphp
+
 <nav class="bg-[#8FA8A6] w-full h-[15vh] fixed">
 
     <div class="grid grid-cols-6">
@@ -15,14 +19,16 @@
 
                 {{-- Imagen del usuario --}}
                 <div class="bg-white border border-gray-200 rounded-full w-[70px] h-[12vh]">
-                    <img src="" alt="">
+                    @if ($navUser?->ruta_imagen)
+                        <img src="{{ asset($navUser->ruta_imagen) }}" alt="Avatar" class="w-full h-full object-cover rounded-full">
+                    @endif
                 </div>
 
                 {{-- Info del user --}}
                 <div class="col-span-2">
-                    <p>Nombre</p>
-                    <p>Puntos</p>
-                    <p>Nivel</p>
+                    <a href="{{ route('usuario.index') }}">{{ $navUser?->name ?? 'Usuario' }}</a>
+                    <p>{{ $navUser?->puntos ?? 0 }} puntos</p>
+                    <p>Nvl {{ $navUser?->nivel ?? 1 }}</p>
                 </div>
 
             </div>

@@ -19,7 +19,8 @@ class HomeController extends Controller
         if (!$user) {
             return view('home', [
                 'misiones' => [],
-                'fechaLimite' => Carbon::now()->addDay()->toISOString(),
+                'fechaLimiteDiarias' => Carbon::now()->addDay()->toISOString(),
+                'fechaLimiteSemanales' => Carbon::now()->addDays(7)->toISOString(),
             ]);
         }
 
