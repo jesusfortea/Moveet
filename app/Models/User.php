@@ -12,7 +12,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name', 'username', 'email', 'password', 'dni', 'nacimiento',
-        'telefono', 'phone', 'premium', 'nivel', 'puntos', 'ruta_imagen', 'birth_date',
+        'telefono', 'phone', 'premium', 'nivel', 'puntos', 'ruta_imagen', 'birth_date', 'is_admin',
     ];
 
     protected $attributes = [
@@ -27,6 +27,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'nacimiento'        => 'date',
         'premium'           => 'boolean',
+        'is_admin'          => 'boolean',
         'password'          => 'hashed',
     ];
 
