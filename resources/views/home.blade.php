@@ -2,6 +2,14 @@
 
 @section('title', 'Inicio · Moveet')
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/home.css') }}">
+@endpush
+
+@push('scripts')
+<script src="{{ asset('js/home.js') }}"></script>
+@endpush
+
 @section('content')
 
 {{-- Inyectar datos de misiones --}}
