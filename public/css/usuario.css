@@ -55,6 +55,12 @@ body {
     color: #2e6e3e;
 }
 
+.usuario-alert-warning {
+    background: #fff3df;
+    border-color: #f1c989;
+    color: #8a5a15;
+}
+
 .usuario-grid {
     display: grid;
     grid-template-columns: 300px 1fr;
@@ -67,6 +73,12 @@ body {
     border-radius: 4px;
     box-shadow: var(--usr-shadow);
     padding: 16px;
+}
+
+.perfil-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .perfil-card {
@@ -82,6 +94,23 @@ body {
     gap: 10px;
 }
 
+.file-input {
+    display: none;
+}
+
+.file-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: #eef4f3;
+    border: 1px solid #6a7b79;
+    color: #1d2a28;
+    cursor: pointer;
+}
+
 .perfil-avatar {
     width: 150px;
     height: 150px;
@@ -95,12 +124,14 @@ body {
     font-weight: 700;
     color: var(--usr-primary-dark);
     overflow: hidden;
+    flex-shrink: 0;
 }
 
 .perfil-avatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
 }
 
 .perfil-fields {
@@ -153,6 +184,29 @@ body {
     margin-bottom: 14px;
 }
 
+.inventario-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.usuario-page-title--center {
+    margin: 0;
+    flex: 1;
+    text-align: center;
+}
+
+.inventario-panel-full {
+    padding-bottom: 20px;
+}
+
+.inventario-count {
+    font-weight: 800;
+    color: #31403e;
+}
+
 .tarjeta-row {
     background: #f3f6f5;
     border: 1px solid #5f6f6d;
@@ -162,6 +216,47 @@ body {
     gap: 8px;
     font-size: .92rem;
     font-weight: 700;
+}
+
+.tarjeta-meta {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: .84rem;
+    color: #41514f;
+    font-weight: 700;
+}
+
+.tarjeta-status {
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: .75rem;
+}
+
+.tarjeta-status--active {
+    background: #e7f4eb;
+    color: #257a3a;
+}
+
+.tarjeta-status--expired {
+    background: #f9e3e3;
+    color: #9c2f2f;
+}
+
+.tarjeta-actions {
+    margin-top: 10px;
+}
+
+.btn-danger {
+    background: #e8b5b5;
+    border-color: #9a4b4b;
+    color: #4f1f1f;
+}
+
+.btn-danger:hover {
+    background: #de9f9f;
 }
 
 .panel-empty {
@@ -210,9 +305,32 @@ body {
     object-fit: contain;
 }
 
+.recompensa-visual--large {
+    width: 96px;
+    height: 96px;
+}
+
 .inventario-item p {
     margin: 8px 0 10px;
     font-size: .83rem;
+    font-weight: 700;
+}
+
+.inventario-item--full {
+    min-height: 210px;
+}
+
+.inventario-grid--full {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.inventario-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+    font-size: .76rem;
+    color: #41514f;
     font-weight: 700;
 }
 
@@ -240,6 +358,15 @@ body {
 .btn-main:disabled {
     opacity: .65;
     cursor: not-allowed;
+}
+
+.btn-link:hover {
+    text-decoration: underline;
+}
+
+.file-trigger:hover {
+    text-decoration: none;
+    background: #e6eeed;
 }
 
 .btn-small {
@@ -290,6 +417,31 @@ body {
     color: #6f2121;
     padding: 8px 10px;
     font-size: .85rem;
+}
+
+.tarjeta-resumen {
+    margin-bottom: 12px;
+    padding: 10px;
+    border: 1px solid #94a8a6;
+    background: #edf4f3;
+    display: grid;
+    gap: 6px;
+    font-size: .86rem;
+}
+
+.panel-empty--center {
+    text-align: center;
+    width: 100%;
+}
+
+@media (max-width: 700px) {
+    .inventario-topbar {
+        flex-direction: column;
+    }
+
+    .usuario-page-title--center {
+        text-align: left;
+    }
 }
 
 @media (max-width: 900px) {

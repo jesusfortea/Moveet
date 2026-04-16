@@ -14,38 +14,46 @@
         <div class="usuario-alert">{{ session('status') }}</div>
     @endif
 
+    @if (($tarjetaCaducada ?? false) === true)
+        <div class="usuario-alert usuario-alert-warning">Tu tarjeta actual esta caducada. Actualizala para seguir usandola.</div>
+    @endif
+
     <div class="usuario-grid">
-        <section class="perfil-card">
+        <form class="perfil-card perfil-form" method="POST" action="{{ route('usuario.update') }}" enctype="multipart/form-data">
+            @csrf
+
             <div class="perfil-avatar-wrap">
                 <div class="perfil-avatar">
-                    @if ($usuario->ruta_imagen)
-                        <img src="{{ asset($usuario->ruta_imagen) }}" alt="Avatar de usuario">
+                    @if ($usuario->ruta_imagen_url)
+                        <img src="{{ $usuario->ruta_imagen_url }}" alt="Foto de perfil">
                     @else
                         <span>{{ strtoupper(substr($usuario->name, 0, 1)) }}</span>
                     @endif
                 </div>
-                <button type="button" class="btn-link">Cambiar imagen</button>
+
+                <label class="btn-link file-trigger" for="ruta_imagen">Cambiar imagen</label>
+                <input id="ruta_imagen" name="ruta_imagen" type="file" accept="image/*" class="file-input">
             </div>
 
             <div class="perfil-fields">
-                <label for="nombre">Cambiar nombre</label>
-                <input id="nombre" type="text" value="{{ $usuario->name }}" readonly>
+                <label for="name">Cambiar nombre</label>
+                <input id="name" name="name" type="text" value="{{ old('name', $usuario->name) }}" required>
 
-                <label for="correo">Cambiar correo</label>
-                <input id="correo" type="text" value="{{ $usuario->email }}" readonly>
+                <label for="email">Cambiar correo</label>
+                <input id="email" name="email" type="email" value="{{ old('email', $usuario->email) }}" required>
 
                 <label for="telefono">Cambiar telefono</label>
-                <input id="telefono" type="text" value="{{ $usuario->telefono ?? 'Sin telefono' }}" readonly>
+                <input id="telefono" name="telefono" type="text" value="{{ old('telefono', $usuario->telefono) }}" placeholder="Sin telefono">
             </div>
 
-            <button type="button" class="btn-main" disabled>Guardar</button>
-        </section>
+            <button type="submit" class="btn-main">Guardar</button>
+        </form>
 
         <section class="usuario-main">
             <article class="panel-card">
                 <div class="panel-header">
                     <h2>Tarjetas</h2>
-                    <a class="btn-link" href="{{ route('usuario.tarjeta.create') }}">+ Anadir tarjeta</a>
+                    <a class="btn-link" href="{{ route('usuario.tarjeta.create') }}">+ Añadir tarjeta</a>
                 </div>
 
                 @if ($tarjeta)
@@ -53,15 +61,32 @@
                         <span>{{ $tarjeta->titular }}</span>
                         <span>{{ $tarjeta->numero_enmascarado }}</span>
                     </div>
+
+                    <div class="tarjeta-meta">
+                        <span>Caducidad: {{ $tarjeta->fecha_caducidad ?? 'No disponible' }}</span>
+                        @if (($tarjetaCaducada ?? false) === true)
+                            <strong class="tarjeta-status tarjeta-status--expired">Caducada</strong>
+                        @else
+                            <strong class="tarjeta-status tarjeta-status--active">Activa</strong>
+                        @endif
+                    </div>
+
+                    @if (($tarjetaCaducada ?? false) === false)
+                        <form method="POST" action="{{ route('usuario.tarjeta.destroy') }}" class="tarjeta-actions">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn-main btn-danger">Eliminar tarjeta</button>
+                        </form>
+                    @endif
                 @else
-                    <p class="panel-empty">Aun no tienes una tarjeta registrada.</p>
+                    <p class="panel-empty">Aún no tienes una tarjeta registrada.</p>
                 @endif
             </article>
 
             <article class="panel-card inventario-card">
                 <div class="panel-header panel-header-stack">
                     <h2>Inventario</h2>
-                    <a class="btn-link" href="#">Ver todos &gt;</a>
+                    <a class="btn-link" href="{{ route('usuario.inventario') }}">Ver todos &gt;</a>
                 </div>
 
                 <div class="inventario-grid">

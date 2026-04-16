@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
@@ -12,7 +14,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name', 'username', 'email', 'password', 'dni', 'nacimiento',
-        'telefono', 'phone', 'premium', 'nivel', 'puntos', 'ruta_imagen', 'birth_date',
+        'telefono', 'phone', 'premium', 'nivel', 'puntos', 'ruta_imagen', 'birth_date', 'is_admin',
     ];
 
     protected $attributes = [
@@ -27,6 +29,7 @@ class User extends Authenticatable
         'email_verified_at'      => 'datetime',
         'nacimiento'             => 'date',
         'premium'                => 'boolean',
+        'is_admin'               => 'boolean',
         'password'               => 'hashed',
         'daily_mission_cycle_end'   => 'datetime',
         'weekly_mission_cycle_end'  => 'datetime',
@@ -102,5 +105,26 @@ class User extends Authenticatable
     public function comprasTienda()
     {
         return $this->hasMany(CompraTienda::class);
+    }
+
+    public function getRutaImagenUrlAttribute(): ?string
+    {
+        if (!$this->ruta_imagen) {
+            return null;
+        }
+
+        if (Str::startsWith($this->ruta_imagen, ['http://', 'https://'])) {
+            return $this->ruta_imagen;
+        }
+
+        if (Str::startsWith($this->ruta_imagen, 'storage/')) {
+            return asset($this->ruta_imagen);
+        }
+
+        if (Storage::disk('public')->exists($this->ruta_imagen)) {
+            return asset('storage/' . $this->ruta_imagen);
+        }
+
+        return asset(ltrim($this->ruta_imagen, '/'));
     }
 }
