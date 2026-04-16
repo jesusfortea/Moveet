@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminMisionController;
+use App\Http\Controllers\AdminEventoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 
@@ -44,4 +45,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('/misiones/{mision}', [AdminMisionController::class, 'actualizar'])->name('admin.misiones.actualizar');
     Route::get('/misiones/{mision}/eliminar', [AdminMisionController::class, 'eliminar'])->name('admin.misiones.eliminar');
     Route::delete('/misiones/{mision}', [AdminMisionController::class, 'confirmarEliminar'])->name('admin.misiones.confirmar-eliminar');
+    
+    // Rutas de eventos
+    Route::get('/eventos', [AdminEventoController::class, 'index'])->name('admin.eventos');
+    Route::get('/eventos/crear', [AdminEventoController::class, 'crear'])->name('admin.eventos.crear');
+    Route::post('/eventos', [AdminEventoController::class, 'guardar'])->name('admin.eventos.guardar');
+    Route::get('/eventos/{evento}/editar', [AdminEventoController::class, 'editar'])->name('admin.eventos.editar');
+    Route::put('/eventos/{evento}', [AdminEventoController::class, 'actualizar'])->name('admin.eventos.actualizar');
+    Route::get('/eventos/{evento}/eliminar', [AdminEventoController::class, 'eliminar'])->name('admin.eventos.eliminar');
+    Route::delete('/eventos/{evento}', [AdminEventoController::class, 'confirmarEliminar'])->name('admin.eventos.confirmar-eliminar');
 });
