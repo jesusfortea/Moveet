@@ -57,4 +57,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/usuario/tarjeta',     [UserController::class, 'storeCard'])->name('usuario.tarjeta.store');
 
     Route::get('/tienda-puntos', fn() => view('tienda_puntos'))->name('tienda.puntos');
+    Route::get('/pase-paseo', [\App\Http\Controllers\PaseDePaseoController::class, 'index'])->name('pase.paseo');
+    Route::post('/pase-paseo/reclamar/{recompensa}', [\App\Http\Controllers\PaseDePaseoController::class, 'reclamar'])->name('pase.reclamar');
 });
