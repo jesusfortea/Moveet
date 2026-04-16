@@ -46,11 +46,27 @@ class AdminController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:users'],
-            'dni' => ['required', 'string', 'unique:users'],
-            'telefono' => ['required', 'string'],
+            'dni' => ['required', 'string', 'max:20', 'unique:users'],
+            'telefono' => ['required', 'string', 'max:20'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
-            'nacimiento' => ['required', 'date'],
+            'nacimiento' => ['required', 'date', 'before:today'],
             'username' => ['required', 'string', 'max:255', 'unique:users'],
+        ], [
+            'name.required' => 'El nombre de usuario es obligatorio.',
+            'name.max' => 'El nombre no puede exceder 255 caracteres.',
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'El correo debe ser una dirección válida.',
+            'email.unique' => 'El correo ya está registrado.',
+            'dni.required' => 'El DNI es obligatorio.',
+            'dni.unique' => 'El DNI ya está registrado.',
+            'telefono.required' => 'El teléfono es obligatorio.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+            'nacimiento.required' => 'La fecha de nacimiento es obligatoria.',
+            'nacimiento.before' => 'La fecha de nacimiento no puede ser futura.',
+            'username.required' => 'El nombre de usuario es obligatorio.',
+            'username.unique' => 'El nombre de usuario ya está registrado.',
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -70,10 +86,26 @@ class AdminController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:users,email,' . $user->id],
-            'dni' => ['required', 'string', 'unique:users,dni,' . $user->id],
-            'telefono' => ['required', 'string'],
-            'nacimiento' => ['required', 'date'],
+            'dni' => ['required', 'string', 'max:20', 'unique:users,dni,' . $user->id],
+            'telefono' => ['required', 'string', 'max:20'],
+            'nacimiento' => ['required', 'date', 'before:today'],
             'username' => ['required', 'string', 'max:255', 'unique:users,username,' . $user->id],
+            'password' => ['nullable', 'string', 'min:6', 'confirmed'],
+        ], [
+            'name.required' => 'El nombre de usuario es obligatorio.',
+            'name.max' => 'El nombre no puede exceder 255 caracteres.',
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'El correo debe ser una dirección válida.',
+            'email.unique' => 'El correo ya está registrado.',
+            'dni.required' => 'El DNI es obligatorio.',
+            'dni.unique' => 'El DNI ya está registrado.',
+            'telefono.required' => 'El teléfono es obligatorio.',
+            'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+            'nacimiento.required' => 'La fecha de nacimiento es obligatoria.',
+            'nacimiento.before' => 'La fecha de nacimiento no puede ser futura.',
+            'username.required' => 'El nombre de usuario es obligatorio.',
+            'username.unique' => 'El nombre de usuario ya está registrado.',
         ]);
 
         if ($request->filled('password')) {
