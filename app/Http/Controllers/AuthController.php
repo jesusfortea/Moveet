@@ -48,7 +48,7 @@ class AuthController extends Controller
     public function storeRegister(Request $request)
     {
         $validated = $request->validate([
-            'username' => ['required', 'string', 'min:3', 'unique:users'],
+            'username' => ['required', 'string', 'min:3', 'unique:users,name'],
             'email' => ['required', 'email', 'unique:users'],
             'dni' => ['required', 'string', 'unique:users'],
             'phone' => ['required', 'string'],
@@ -63,6 +63,7 @@ class AuthController extends Controller
 
         unset($validated['birth_date']);
         unset($validated['phone']);
+        unset($validated['username']);
 
         $user = User::create($validated);
         
@@ -78,10 +79,11 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+        $request->session()->flush();
 
-        return redirect('/');
+        return redirect()->route('login');
     }
 }

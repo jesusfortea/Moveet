@@ -13,15 +13,10 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        // Obtener usuario autenticado, o el primero para pruebas
-        $user = Auth::user() ?? User::first();
+        $user = Auth::user();
 
         if (!$user) {
-            return view('home', [
-                'misiones' => [],
-                'fechaLimiteDiarias' => Carbon::now()->addDay()->toISOString(),
-                'fechaLimiteSemanales' => Carbon::now()->addDays(7)->toISOString(),
-            ]);
+            return redirect()->route('login');
         }
 
         $this->assignDailyAndWeeklyMissions($user);
