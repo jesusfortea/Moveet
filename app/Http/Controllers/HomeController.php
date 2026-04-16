@@ -13,22 +13,37 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        // Obtener usuario autenticado, o el primero para pruebas
-        $user = Auth::user() ?? User::first();
+        $user = Auth::user();
 
         if (!$user) {
-            return view('home', [
-                'misiones' => [],
-                'fechaLimiteDiarias' => Carbon::now()->addDay()->toISOString(),
-                'fechaLimiteSemanales' => Carbon::now()->addDays(7)->toISOString(),
-            ]);
+            return redirect()->route('login');
         }
+
+        // Gestionar ciclo semanal basado en fecha de registro
+        if (!$user->weekly_mission_cycle_end) {
+            $initialCycleEnd = $user->created_at->copy()->addDays(7);
+            if (Carbon::now()->greaterThan($initialCycleEnd)) {
+                $user->weekly_mission_cycle_end = Carbon::now()->addDays(7);
+            } else {
+                $user->weekly_mission_cycle_end = $initialCycleEnd;
+            }
+            $user->save();
+        }
+
+        // Si el ciclo ha terminado, resetear a la siguiente semana
+        while (Carbon::now()->greaterThan($user->weekly_mission_cycle_end)) {
+            $user->weekly_mission_cycle_end = $user->weekly_mission_cycle_end->copy()->addDays(7);
+        }
+        $user->save();
 
         $this->assignDailyAndWeeklyMissions($user);
 
-        // Obtener misiones activas para el usuario, incluidas las completadas
+        $weeklyReset = $user->weekly_mission_cycle_end;
+
+        // Obtener misiones activas para el usuario, incluidas las completadas (solo normales, no de evento)
         $misiones = $user->misiones()
             ->wherePivot('fecha_limite', '>', Carbon::now())
+            ->where('evento_id', null) // Solo misiones normales
             ->with('evento') // si necesitas datos del evento
             ->get()
             ->map(function ($userMision) {
@@ -50,18 +65,14 @@ class HomeController extends Controller
 
         $activeDailyLimit = $user->misiones()
             ->where('misiones.semanal', false)
-            ->wherePivot('fecha_limite', '>', Carbon::now())
-            ->min('user_mision.fecha_limite');
-
-        $activeWeeklyLimit = $user->misiones()
-            ->where('misiones.semanal', true)
+            ->where('misiones.evento_id', null) // Solo normales
             ->wherePivot('fecha_limite', '>', Carbon::now())
             ->min('user_mision.fecha_limite');
 
         return view('home', [
             'misiones' => $misiones,
             'fechaLimiteDiarias' => $activeDailyLimit ? Carbon::parse($activeDailyLimit)->toISOString() : Carbon::now()->addDay()->toISOString(),
-            'fechaLimiteSemanales' => $activeWeeklyLimit ? Carbon::parse($activeWeeklyLimit)->toISOString() : Carbon::now()->addDays(7)->toISOString(),
+            'fechaLimiteSemanales' => $weeklyReset->toISOString(),
         ]);
     }
 
@@ -103,54 +114,68 @@ class HomeController extends Controller
         ]);
     }
 
-    private function assignDailyAndWeeklyMissions(User $user): void
+    private function assignWeeklyMissions(User $user): void
     {
         $now = Carbon::now();
-
-        $dailyActiveIds = $user->misiones()
-            ->where('misiones.semanal', false)
-            ->wherePivot('fecha_limite', '>', $now)
-            ->pluck('misiones.id')
-            ->all();
+        $weeklyLimit = $user->weekly_mission_cycle_end;
 
         $weeklyActiveIds = $user->misiones()
             ->where('misiones.semanal', true)
+            ->where('misiones.evento_id', null)
             ->wherePivot('fecha_limite', '>', $now)
             ->pluck('misiones.id')
             ->all();
 
-        $dailyNeeded = max(0, 3 - count($dailyActiveIds));
-        if ($dailyNeeded > 0) {
-            $dailyCandidates = Mision::where('semanal', false)
-                ->whereNotIn('id', $dailyActiveIds)
-                ->inRandomOrder()
-                ->limit($dailyNeeded)
-                ->get();
-
-            foreach ($dailyCandidates as $mision) {
-                $user->misiones()->attach($mision->id, [
-                    'completada' => false,
-                    'fecha_asignacion' => $now,
-                    'fecha_limite' => $now->copy()->addDay(),
-                ]);
-            }
-        }
-
-        $weeklyNeeded = max(0, 3 - count($weeklyActiveIds));
-        if ($weeklyNeeded > 0) {
+        if (count($weeklyActiveIds) == 0) {
             $weeklyCandidates = Mision::where('semanal', true)
+                ->where('evento_id', null)
                 ->whereNotIn('id', $weeklyActiveIds)
                 ->inRandomOrder()
-                ->limit($weeklyNeeded)
+                ->limit(3)
                 ->get();
 
             foreach ($weeklyCandidates as $mision) {
                 $user->misiones()->attach($mision->id, [
                     'completada' => false,
                     'fecha_asignacion' => $now,
-                    'fecha_limite' => $now->copy()->addDays(7),
+                    'fecha_limite' => $weeklyLimit,
                 ]);
             }
         }
+    }
+
+    private function assignDailyAndWeeklyMissions(User $user): void
+    {
+        $now = Carbon::now();
+
+        // Asignar misiones diarias si no hay activas
+        $dailyActiveIds = $user->misiones()
+            ->where('misiones.semanal', false)
+            ->where('misiones.evento_id', null)
+            ->wherePivot('fecha_limite', '>', $now)
+            ->pluck('misiones.id')
+            ->all();
+
+        if (count($dailyActiveIds) < 3) {
+            $dailyCandidates = Mision::where('semanal', false)
+                ->where('evento_id', null)
+                ->whereNotIn('id', $dailyActiveIds)
+                ->inRandomOrder()
+                ->limit(3 - count($dailyActiveIds))
+                ->get();
+
+            $dailyLimit = Carbon::now()->addDay();
+
+            foreach ($dailyCandidates as $mision) {
+                $user->misiones()->attach($mision->id, [
+                    'completada' => false,
+                    'fecha_asignacion' => $now,
+                    'fecha_limite' => $dailyLimit,
+                ]);
+            }
+        }
+
+        // Asignar misiones semanales si es necesario
+        $this->assignWeeklyMissions($user);
     }
 }
