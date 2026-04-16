@@ -80,7 +80,7 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
             <div>
                 <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333; font-size: 13px;">Coordenada X <span style="color: #c00;">*</span></label>
-                <input type="number" name="ejeX" value="{{ old('ejeX', $mision->ejeX) }}" required step="0.0001" min="-180" max="180" placeholder="-3.7038" style="width: 100%; padding: 10px 12px; border: 2px solid {{ $errors->has('ejeX') ? '#c00' : '#999' }}; border-radius: 4px; font-size: 13px; box-sizing: border-box; background: {{ $errors->has('ejeX') ? '#fff5f5' : '#fff' }};">
+                <input type="number" name="ejeX" value="{{ old('ejeX', $mision->ejeX) }}" required step="any" min="-180" max="180" placeholder="-3.7038" style="width: 100%; padding: 10px 12px; border: 2px solid {{ $errors->has('ejeX') ? '#c00' : '#999' }}; border-radius: 4px; font-size: 13px; box-sizing: border-box; background: {{ $errors->has('ejeX') ? '#fff5f5' : '#fff' }};">
                 @if ($errors->has('ejeX'))
                     <span style="color: #c00; font-size: 10px; margin-top: 2px; display: block;">❌ {{ $errors->first('ejeX') }}</span>
                 @else
@@ -89,7 +89,7 @@
             </div>
             <div>
                 <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333; font-size: 13px;">Coordenada Y <span style="color: #c00;">*</span></label>
-                <input type="number" name="ejeY" value="{{ old('ejeY', $mision->ejeY) }}" required step="0.0001" min="-90" max="90" placeholder="40.4168" style="width: 100%; padding: 10px 12px; border: 2px solid {{ $errors->has('ejeY') ? '#c00' : '#999' }}; border-radius: 4px; font-size: 13px; box-sizing: border-box; background: {{ $errors->has('ejeY') ? '#fff5f5' : '#fff' }};">
+                <input type="number" name="ejeY" value="{{ old('ejeY', $mision->ejeY) }}" required step="any" min="-90" max="90" placeholder="40.4168" style="width: 100%; padding: 10px 12px; border: 2px solid {{ $errors->has('ejeY') ? '#c00' : '#999' }}; border-radius: 4px; font-size: 13px; box-sizing: border-box; background: {{ $errors->has('ejeY') ? '#fff5f5' : '#fff' }};">
                 @if ($errors->has('ejeY'))
                     <span style="color: #c00; font-size: 10px; margin-top: 2px; display: block;">❌ {{ $errors->first('ejeY') }}</span>
                 @else
