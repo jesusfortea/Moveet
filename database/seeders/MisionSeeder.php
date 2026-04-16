@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Models\Evento;
 use App\Models\Mision;
 use App\Models\User;
 use Carbon\Carbon;
@@ -11,6 +12,8 @@ class MisionSeeder extends Seeder
 {
     public function run(): void
     {
+        $evento = Evento::where('nombre', 'Festival Moveet')->first();
+
         // Crear misiones de ejemplo
         $misiones = [
             [
@@ -23,18 +26,20 @@ class MisionSeeder extends Seeder
                 'premium' => false,
                 'semanal' => false,
                 'puntos' => 30,
+                'evento_id' => null,
             ],
             [
-                'nombre' => 'Visitar Londres',
-                'descripcion' => 'Visitar Londres.',
-                'metros_requeridos' => null,
-                'ejeX' => null,
-                'ejeY' => null,
-                'direccion' => null,
+                'nombre' => 'Ruta del Festival',
+                'descripcion' => 'Completa la ruta especial dentro del Festival Moveet en Barcelona.',
+                'metros_requeridos' => 1000,
+                'ejeX' => 41.3795,
+                'ejeY' => 2.1893,
+                'direccion' => 'La Barceloneta, Barcelona',
                 'premium' => false,
                 'semanal' => false,
-                'puntos' => 30,
-            ],
+                'puntos' => 50,
+                'evento_id' => $evento ? $evento->id : null,
+            ]
         ];
 
         foreach ($misiones as $data) {

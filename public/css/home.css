@@ -46,16 +46,24 @@ html, body {
     font-family: var(--font);
     background: var(--clr-bg);
     color: var(--clr-text);
-    overflow: hidden;
+    overflow: auto;
+}
+
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
 }
 
 /* ── Layout raíz ────────────────────────────────────────────────────── */
 .page-content {
     padding-top: var(--nav-h);
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;  /* FIX: columna para que home-layout use el espacio restante */
-    overflow: hidden;
+    overflow-y: auto;
 }
 
 .home-layout {
@@ -247,6 +255,23 @@ html, body {
 .missions-header {
     padding: 28px 24px 0;
     flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.event-header-title {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.event-label {
+    font-size: .75rem;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--clr-primary-dk);
 }
 
 .missions-title {
@@ -254,7 +279,25 @@ html, body {
     font-weight: 900;
     color: var(--clr-text);
     letter-spacing: -.02em;
-    margin-bottom: 16px;
+    margin: 0;
+}
+
+.event-subtitle {
+    font-size: .94rem;
+    color: var(--clr-muted);
+    line-height: 1.6;
+    max-width: 42rem;
+}
+
+.event-meta {
+    display: grid;
+    gap: 10px;
+    font-size: .85rem;
+    color: var(--clr-muted);
+}
+
+.event-meta span {
+    display: block;
 }
 
 /* Tabs */
@@ -609,4 +652,59 @@ html, body {
     .missions-list {
         max-height: 40vh;
     }
+}
+/* ════════════════════════════════════════════════════════════════
+   Mission Toast — notificación al completar misión por proximidad
+   ════════════════════════════════════════════════════════════════ */
+.mission-toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(120%);
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    background: #1e1e2e;
+    color: #fff;
+    padding: .85rem 1.4rem;
+    border-radius: 999px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.35);
+    z-index: 9999;
+    transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .35s;
+    opacity: 0;
+    white-space: nowrap;
+    max-width: 90vw;
+}
+.mission-toast.visible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+.mission-toast__icon {
+    width: 2rem; height: 2rem;
+    background: #56C470;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; font-weight: 700;
+    flex-shrink: 0;
+}
+.mission-toast__text {
+    display: flex; flex-direction: column; gap: .15rem;
+}
+.mission-toast__title { font-size: .7rem; opacity: .7; font-weight: 500; letter-spacing: .03em; }
+.mission-toast__name  { font-size: .9rem; font-weight: 600; }
+.mission-toast__pts   { font-size: .95rem; font-weight: 700; color: #FFD700; margin-left: auto; }
+
+/* ══════════════════════════════════════════════════════════════════
+   Route distance label — etiqueta flotante en la polilínea OSRM
+   ══════════════════════════════════════════════════════════════════ */
+.route-distance-label {
+    background: rgba(79, 70, 229, .9);
+    color: #fff;
+    font-size: .7rem;
+    font-weight: 600;
+    padding: .2rem .55rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    pointer-events: none;
 }

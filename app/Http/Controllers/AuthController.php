@@ -23,14 +23,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            $user = Auth::user();
-            
-            // Si no es admin, redirigir a home
-            if ($user->email !== 'admin@example.com') {
-                return redirect('/');
-            }
-            
-            return redirect()->intended('/');
+            return redirect()->intended(route('home'));
         }
 
         return back()
@@ -67,14 +60,9 @@ class AuthController extends Controller
 
         $user = User::create($validated);
         
-        // Si no es admin, redirigir a home
-        if ($user->email !== 'admin@example.com') {
-            Auth::login($user);
-            $request->session()->regenerate();
-            return redirect('/');
-        }
-
-        return redirect('/login')->with('success', 'Usuario registrado exitosamente. Inicia sesión.');
+        Auth::login($user);
+        $request->session()->regenerate();
+        return redirect()->route('home');
     }
 
     public function logout(Request $request)

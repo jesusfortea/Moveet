@@ -50,7 +50,9 @@ const MISIONES = window.misionesData ?? [
     },
 ];
 
-/* Fecha límite del ciclo: diarias / semanales.
+const EVENTO = window.eventoData ?? null;
+
+/* Fecha límite del ciclo: diarias / semanales / evento.
    En producción: window.misionesReset = { diarias, semanales } */
 const RESET_DATES = window.misionesReset || {
     diarias: (() => {
@@ -65,6 +67,7 @@ const RESET_DATES = window.misionesReset || {
         d.setHours(0, 0, 0, 0);
         return d.toISOString();
     })(),
+    evento: window.fechaFinEvento || null,
 };
 
 /* ── Estado de la UI ────────────────────────────────────────────── */
@@ -182,8 +185,14 @@ function renderMapaMisiones(userLat, userLng) {
     capasRutas = [];
     marcadoresMisiones = [];
 
-    const esSemanal = tabActiva === 'semanales';
-    const misiones  = MISIONES.filter(m => m.semanal === esSemanal);
+    let misiones;
+
+    if (EVENTO) {
+        misiones = MISIONES;
+    } else {
+        const esSemanal = tabActiva === 'semanales';
+        misiones = MISIONES.filter(m => m.semanal === esSemanal);
+    }
 
     misiones.forEach(m => {
         if (m.ejeX == null || m.ejeY == null) return;
@@ -248,17 +257,25 @@ function tarjetaMision(m) {
 }
 
 /**
- * Renderiza la lista de misiones según el tab activo.
+ * Renderiza la lista de misiones según el tab activo o todas si hay evento.
  */
 function renderMisiones() {
-    const esSemanal = tabActiva === 'semanales';
-    const lista     = MISIONES.filter(m => m.semanal === esSemanal);
+    let lista;
+
+    if (EVENTO) {
+        // Mostrar todas las misiones del evento
+        lista = MISIONES;
+    } else {
+        // Filtrar por tab activo
+        const esSemanal = tabActiva === 'semanales';
+        lista = MISIONES.filter(m => m.semanal === esSemanal);
+    }
 
     if (lista.length === 0) {
         elMissions.innerHTML = `
             <div class="missions-empty">
                 <div class="missions-empty__icon">🎯</div>
-                <p>No hay misiones ${esSemanal ? 'semanales' : 'diarias'} disponibles.</p>
+                <p>No hay misiones ${EVENTO ? 'en este evento' : (tabActiva === 'semanales' ? 'semanales' : 'diarias')} disponibles.</p>
             </div>
         `;
         return;
@@ -298,18 +315,34 @@ function formatMs(ms) {
 
 function tickTimer() {
     const ahora    = Date.now();
-    const limite   = resetDate.getTime();
+    let limite;
+    let total = 0;
+
+    if (EVENTO && RESET_DATES.evento) {
+        limite = new Date(RESET_DATES.evento).getTime();
+    } else {
+        limite = resetDate.getTime();
+        total = tabActiva === 'semanales'
+            ? 7 * 24 * 60 * 60 * 1000
+            : 24 * 60 * 60 * 1000;   // 7 d o 24 h en ms
+    }
+
     const restante = limite - ahora;
-    const total    = tabActiva === 'semanales'
-        ? 7 * 24 * 60 * 60 * 1000
-        : 24 * 60 * 60 * 1000;   // 7 d o 24 h en ms
-    const pct      = Math.max(0, Math.min(100, ((total - restante) / total) * 100));
+    const pct      = total > 0 ? Math.max(0, Math.min(100, ((total - restante) / total) * 100)) : 0;
 
     elCountdown.textContent = formatMs(restante);
     elBarFill.style.width   = pct + '%';
 
     if (restante <= 0) {
-        elCountdown.textContent = '¡Renovando!';
+        if (EVENTO) {
+            elCountdown.textContent = '¡Evento finalizado!';
+        } else if (tabActiva === 'semanales') {
+            elCountdown.textContent = '¡Renovando!';
+            // Recargar la página para reiniciar el ciclo semanal
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            elCountdown.textContent = '¡Renovando!';
+        }
     }
 }
 
@@ -348,6 +381,64 @@ function verificarMetasRecorrido(distancia) {
         });
 }
 
+/**
+ * Comprueba si el usuario está a ≤ 50 m de las coordenadas de cada misión.
+ * Para misiones con ejeX/ejeY pero sin metros_requeridos (o además de ellos).
+ */
+const RADIO_PROXIMIDAD_M = 50;
+const misionesProximidadCompletadas = new Set();
+
+function verificarProximidadMisiones(userLat, userLng) {
+    MISIONES
+        .filter(m => !m.completada && m.ejeX != null && m.ejeY != null)
+        .forEach(m => {
+            if (misionesProximidadCompletadas.has(m.id)) return;
+            const distancia = calcularDistanciaMetros(
+                [userLat, userLng],
+                [parseFloat(m.ejeX), parseFloat(m.ejeY)]
+            );
+            if (distancia <= RADIO_PROXIMIDAD_M) {
+                misionesProximidadCompletadas.add(m.id);
+                console.log(`Proximidad alcanzada a ${distancia.toFixed(1)} m — misión: '${m.nombre}'`);
+
+                completarMisionEnServidor(m)
+                    .then(data => {
+                        m.completada = true;
+                        renderMisiones();
+                        if (mapa && userCoords) {
+                            renderMapaMisiones(userCoords[0], userCoords[1]);
+                        }
+                        mostrarToastMision(m.nombre, data.puntos_ganados ?? m.puntos);
+                        console.log(`Misión '${m.nombre}' completada. Puntos totales: ${data.puntos}`);
+                    })
+                    .catch(err => console.error('Error completando misión por proximidad:', err));
+            }
+        });
+}
+
+/**
+ * Muestra una notificación flotante cuando se completa una misión por proximidad.
+ */
+function mostrarToastMision(nombre, puntos) {
+    const toast = document.createElement('div');
+    toast.className = 'mission-toast';
+    toast.innerHTML = `
+        <div class="mission-toast__icon">✓</div>
+        <div class="mission-toast__text">
+            <span class="mission-toast__title">¡Misión completada!</span>
+            <span class="mission-toast__name">${nombre}</span>
+        </div>
+        <div class="mission-toast__pts">+${puntos} ptos</div>
+    `;
+    document.body.appendChild(toast);
+    // Animar entrada
+    requestAnimationFrame(() => toast.classList.add('visible'));
+    setTimeout(() => {
+        toast.classList.remove('visible');
+        setTimeout(() => toast.remove(), 400);
+    }, 3500);
+}
+
 /* ════════════════════════════════════════════════════════════════
    GEOLOCALIZACIÓN
    ════════════════════════════════════════════════════════ */
@@ -370,6 +461,9 @@ function iniciarGeolocalizacion() {
                 lastPosition = coords;
                 verificarMetasRecorrido(recorridoTotal);
             }
+
+            // Comprobar proximidad a misiones con coordenadas
+            verificarProximidadMisiones(coords[0], coords[1]);
 
             userCoords = coords;
 
@@ -475,6 +569,11 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
  */
 if (elChangBtn) {
     elChangBtn.addEventListener('click', () => {
+        if (EVENTO) {
+            alert('Estas misiones pertenecen al evento activo y no pueden cambiarse desde esta pantalla.');
+            return;
+        }
+
         /* En producción: lanzar modal de pago o redirigir */
         const confirmado = confirm('¿Cambiar misiones por 2,99 €?');
         if (confirmado) {
@@ -518,6 +617,9 @@ document.addEventListener('DOMContentLoaded', () => {
     renderMisiones();
 
     /* 2. Timer */
+    if (EVENTO && RESET_DATES.evento) {
+        resetDate = new Date(RESET_DATES.evento);
+    }
     tickTimer();
     setInterval(tickTimer, 1000);
 
