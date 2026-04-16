@@ -23,7 +23,7 @@
                 <div class="label-section-divider"></div>
                 <div class="label-section paid-label">
                     <span>DE PAGO</span>
-                    <button class="subscribe-btn">Suscribirse</button>
+                    <a href="{{ route('suscripcion') }}" class="subscribe-btn">Suscribirse</a>
                 </div>
             </div>
 

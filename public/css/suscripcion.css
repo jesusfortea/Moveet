@@ -1,0 +1,313 @@
+/* ═══════════════════════════════════════════════════════════════════
+   suscripcion.css — Moveet · Premium Subscription
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+    --subs-bg: #F3F5F4;
+    --subs-green-header: #8FA8A6;
+    --subs-green-btn: #8FA8A6;
+    --subs-border: #000;
+}
+
+.subs-wrapper {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+    font-family: var(--font-main, 'Inter', sans-serif);
+}
+
+.subs-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+    position: relative;
+}
+
+.subs-header h1 {
+    flex: 1;
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin: 0;
+}
+
+.back-link {
+    position: absolute;
+    left: 0;
+    text-decoration: none;
+    color: #000;
+    font-weight: 500;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.back-link:hover {
+    opacity: 0.7;
+}
+
+/* ── Contenedor principal ── */
+.subs-container {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 40px;
+}
+
+/* ── Columna Izquierda: Tarjetas ── */
+.card-section {
+    margin-bottom: 20px;
+    background: var(--subs-bg);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.section-header {
+    background: var(--subs-green-header);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #000;
+}
+
+.header-main {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-main h2 {
+    font-size: 1.2rem;
+    margin: 0;
+    font-weight: 600;
+}
+
+.icon-card { font-size: 1.5rem; }
+.chevron { font-size: 0.8rem; }
+
+.section-content {
+    padding: 25px;
+}
+
+/* Formulario */
+.card-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.form-group input {
+    padding: 12px;
+    border: 1px solid #000;
+    border-radius: 2px;
+    font-size: 1.1rem;
+    background: #fff;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-group.half { flex: 1; }
+
+.form-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+/* Tarjetas Guardadas y Selección */
+.cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.card-selection-item {
+    cursor: pointer;
+    display: block;
+}
+
+.card-selection-item input[type="radio"] {
+    display: none;
+}
+
+.saved-card {
+    background: #fff;
+    border: 1px solid #000;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+    position: relative;
+    border-radius: 4px;
+}
+
+.card-selection-item input[type="radio"]:checked + .saved-card {
+    border-width: 2.5px;
+    background: #fdfdfd;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.selection-indicator {
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid #ccc;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-selection-item input[type="radio"]:checked + .saved-card .selection-indicator {
+    background: var(--subs-green-btn);
+    border-color: #000;
+}
+
+.card-selection-item input[type="radio"]:checked + .saved-card .selection-indicator::after {
+    content: "";
+    width: 8px;
+    height: 8px;
+    background: #fff;
+    border-radius: 50%;
+}
+
+.card-info {
+    display: flex;
+    gap: 40px;
+    width: 100%;
+}
+
+.card-holder { font-weight: 600; width: 120px; }
+.card-number { letter-spacing: 0.05em; }
+
+/* ── Columna Derecha: Ventajas y Pago ── */
+.benefits-box {
+    background: var(--subs-bg);
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+.benefits-box h3 {
+    font-size: 1.6rem;
+    margin-bottom: 25px;
+    font-weight: 500;
+}
+
+.benefits-list {
+    list-style: none;
+    padding: 0;
+}
+
+.benefits-list li {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    position: relative;
+    padding-left: 15px;
+}
+
+.benefits-list li::before {
+    content: "·";
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+.payment-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.price-tag {
+    font-size: 2rem;
+    font-weight: 500;
+}
+
+/* ── Botones ── */
+.btn-primary {
+    background: var(--subs-green-btn);
+    color: #fff;
+    border: 1.5px solid #000;
+    padding: 10px 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: opacity 0.2s;
+}
+
+.btn-primary:hover {
+    opacity: 0.85;
+}
+
+.btn-primary:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    border-color: #999;
+}
+
+.btn-subs {
+    width: 100%;
+    padding: 12px;
+}
+
+.empty-msg { opacity: 0.6; font-style: italic; }
+.hint-msg { font-size: 0.8rem; color: #888; text-align: center; }
+
+/* ── Mensajes de Estado ── */
+.status-msg {
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.success-msg {
+    background: #e7f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+.error-msg {
+    background: #fdecea;
+    color: #d32f2f;
+    border: 1px solid #ffcdd2;
+}
+
+.error-list {
+    background: #fdeded;
+    color: #5f2120;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    border-left: 5px solid #d32f2f;
+}
+
+.error-item {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+    .subs-container { grid-template-columns: 1fr; }
+    .subs-right { order: -1; }
+}

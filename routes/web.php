@@ -37,4 +37,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/tienda-puntos', fn() => view('tienda_puntos'))->name('tienda.puntos');
     Route::get('/pase-paseo', [\App\Http\Controllers\PaseDePaseoController::class, 'index'])->name('pase.paseo');
     Route::post('/pase-paseo/reclamar/{recompensa}', [\App\Http\Controllers\PaseDePaseoController::class, 'reclamar'])->name('pase.reclamar');
+
+    // Suscripción
+    Route::get('/suscripcion', [\App\Http\Controllers\SuscripcionController::class, 'index'])->name('suscripcion');
+    Route::post('/suscripcion/tarjeta', [\App\Http\Controllers\SuscripcionController::class, 'storeCard'])->name('suscripcion.tarjeta.store');
+    Route::post('/suscripcion/comprar', [\App\Http\Controllers\SuscripcionController::class, 'subscribe'])->name('suscripcion.comprar');
 });

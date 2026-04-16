@@ -93,9 +93,9 @@ class User extends Authenticatable
     }
 
     // ── Tarjeta bancaria ────────────────────────────────────────
-    public function tarjetaBancaria()
+    public function tarjetasBancarias()
     {
-        return $this->hasOne(TarjetaBancaria::class);
+        return $this->hasMany(TarjetaBancaria::class);
     }
 
     // ── Tienda ──────────────────────────────────────────────────

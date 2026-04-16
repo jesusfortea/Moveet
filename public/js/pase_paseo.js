@@ -1,13 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log('Pase de Paseo inicializado');
 
-    // Manejo de suscripción
-    const subscribeBtn = document.querySelector('.subscribe-btn');
-    if (subscribeBtn) {
-        subscribeBtn.addEventListener('click', () => {
-            alert('¡Gracias por interesarte en el Pase Premium! Esta funcionalidad estará disponible pronto.');
-        });
-    }
 
     // Lógica para reclamar recompensas
     const rewardCards = document.querySelectorAll('.js-reclamar');
