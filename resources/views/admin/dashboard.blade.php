@@ -257,7 +257,7 @@
             <aside class="admin-sidebar">
                 <a href="{{ route('admin.dashboard') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.dashboard') active @endif">Dashboard</a>
                 <a href="{{ route('admin.usuarios') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.usuarios' || strpos(Route::currentRouteName(), 'admin.usuarios.') === 0) active @endif">Usuarios</a>
-                <a href="#" class="admin-sidebar-item">Misiones</a>
+                <a href="{{ route('admin.misiones') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.misiones' || strpos(Route::currentRouteName(), 'admin.misiones.') === 0) active @endif">Misiones</a>
                 <a href="#" class="admin-sidebar-item">Eventos</a>
                 <a href="#" class="admin-sidebar-item">Pase de paseo</a>
                 <a href="#" class="admin-sidebar-item">Lugares</a>
