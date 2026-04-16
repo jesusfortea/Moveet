@@ -6,7 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Contacto extends Model
 {
-    protected $fillable = ['user_id', 'contacto_id'];
+    protected $fillable = ['user_id', 'contacto_id', 'bloqueado'];
+
+    protected $casts = [
+        'bloqueado' => 'boolean',
+    ];
 
     public function usuario()
     {
