@@ -1,0 +1,228 @@
+/* ═══════════════════════════════════════════════════════════════════
+   pase_paseo.css — Moveet · Pase de Paseo (CLÀIMS)
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+    --bp-paid-bg: #C19A6B;
+    --bp-paid-text: #B8860B;
+    --bp-free-bg: #CFD8D7;
+    --bp-free-text: #7A9190;
+    --bp-track-black: #111111;
+    --bp-success: #56C470;
+}
+
+.battlepass-wrapper {
+    width: 100%;
+    height: calc(100vh - var(--nav-h));
+    background: #fff;
+    overflow: hidden;
+}
+
+.battlepass-track-container {
+    width: 100%;
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.battlepass-track {
+    display: flex;
+    height: 100%;
+    min-width: max-content;
+}
+
+/* ── Sidebar STICKY ── */
+.battlepass-sidebar {
+    position: sticky;
+    left: 0;
+    width: 160px;
+    display: grid;
+    grid-template-rows: 1fr 60px 1fr;
+    flex-shrink: 0;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+    z-index: 100;
+    background: #fff;
+}
+
+.label-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 10px 30px 10px; /* Mas padding abajo por el scrollbar */
+    text-align: center;
+}
+
+.label-section span {
+    font-size: 1.8rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.1;
+}
+
+.free-label {
+    background-color: var(--bp-free-bg);
+    color: #4A5554;
+}
+
+.paid-label {
+    background-color: var(--bp-paid-bg);
+    color: #43321E;
+}
+
+.label-section-divider {
+    background-color: var(--bp-track-black);
+}
+
+.subscribe-btn {
+    margin-top: 15px;
+    background: #fff;
+    border: 2px solid #000;
+    color: #000;
+    padding: 6px 16px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    border-radius: 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+    letter-spacing: 0.02em;
+}
+
+.subscribe-btn:hover {
+    background: #000;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* ── Columnas de niveles ── */
+.level-column {
+    display: grid;
+    grid-template-rows: 1fr 60px 1fr;
+    width: 240px;
+    border-right: 1px solid #efefef;
+    background: #fff;
+}
+
+.level-column.current-level {
+    background: rgba(143, 168, 166, 0.04);
+}
+
+.reward-slot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* Estado bloqueado */
+.reward-slot.locked {
+    background-color: #fafafa;
+}
+
+.reward-slot.locked .reward-card {
+    opacity: 0.4;
+    filter: grayscale(1);
+    cursor: not-allowed;
+}
+
+/* Estado reclamado */
+.reward-slot.claimed .reward-card {
+    opacity: 0.8;
+}
+
+.reward-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    padding: 15px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+/* Interactividad reclamable */
+.reward-card[data-reclamable="true"] {
+    cursor: pointer;
+    background: rgba(86, 196, 112, 0.05);
+    border: 2px dashed var(--bp-success);
+}
+
+.reward-card[data-reclamable="true"]:hover {
+    transform: scale(1.05);
+    background: rgba(86, 196, 112, 0.1);
+    box-shadow: 0 5px 15px rgba(86, 196, 112, 0.2);
+}
+
+.reward-card img {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+}
+
+.reward-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #7A9190;
+}
+
+.free-slot .reward-name { color: var(--bp-free-text); }
+.paid-slot .reward-name { color: var(--bp-paid-bg); }
+
+/* Badge de reclamado */
+.claimed-badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-10deg);
+    background: var(--bp-success);
+    color: #fff;
+    padding: 4px 12px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    border-radius: var(--radius-pill);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+/* ── Línea central ── */
+.level-indicator {
+    background-color: var(--bp-track-black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.level-circle {
+    width: 36px;
+    height: 36px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 1.1rem;
+    color: #000;
+}
+
+.level-circle.completed {
+    box-shadow: 0 0 10px rgba(255,255,255,0.8);
+}
+
+.current-level .level-circle {
+    border: 3px solid #F4A62A;
+    box-shadow: 0 0 15px rgba(244, 166, 42, 0.6);
+    transform: scale(1.15);
+}
+
+/* Responsive */
+@media (max-height: 650px) {
+    .reward-card img { width: 70px; height: 70px; }
+    .label-section span { font-size: 1.4rem; }
+    .battlepass-sidebar, .level-column { grid-template-rows: 1fr 50px 1fr; }
+}

@@ -46,7 +46,7 @@
             <a href="{{ route('home') }}">Inicio</a>
             <a href="{{ route('eventos') }}">Evento</a>
             <a>Chat</a>
-            <a>Pase de paseo</a>
+            <a href="{{ route('pase.paseo') }}">Pase de paseo</a>
             <a>Tienda</a>
 
         </div>
