@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro</title>
-    @vite(['resources/css/register.css', 'resources/js/register.js'])
+    <link rel="stylesheet" href="{{ asset('css/register.css') }}">
 </head>
 <body>
     <div class="register-container">
@@ -139,5 +139,6 @@
             ¿Ya tienes cuenta? <a href="{{ route('login') }}">Inicia sesión aquí</a>
         </div>
     </div>
+    <script src="{{ asset('js/register.js') }}"></script>
 </body>
 </html>
