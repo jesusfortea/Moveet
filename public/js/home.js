@@ -372,9 +372,9 @@ function verificarMetasRecorrido(distancia) {
                         if (mapa && userCoords) {
                             renderMapaMisiones(userCoords[0], userCoords[1]);
                         }
-                // Registro interno para confirmar la asignación del pago y estado
-                console.log(`Misión completada vía recorrido manual: ${m.nombre}. Puntos acumulados reportados: ${data.puntos}`);
-            })
+                        // Registro interno para confirmar la asignación del pago y estado
+                        console.log(`Misión completada vía recorrido manual: ${m.nombre}. Puntos acumulados reportados: ${data.puntos}`);
+                    })
                     .catch(err => {
                         console.error('Error completando misión:', err);
                     });
@@ -557,7 +557,7 @@ if (elChangBtn) {
 
         /* Lógica para procesar un pago real si el usuario decide cambiar las misiones antes de tiempo.
            TODO: Reemplazar con redirección al controlador de la pasarela de pagos. */
-        const confirmado = confirm('¿Cambiar misiones por 2,99 €?');
+        const confirmado = confirm('¿Cambiar misiones por 0,99 €?');
         if (confirmado) {
             alert('En desarrollo: Redirigiendo al proceso de pago…');
         }
