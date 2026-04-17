@@ -71,10 +71,10 @@
             </div>
 
             {{-- Botón cambiar misiones --}}
-            <button class="change-missions-btn" id="change-missions-btn" title="Cambiar misiones por 2,99€">
+            <button class="change-missions-btn" id="change-missions-btn" title="Cambiar misiones por 0,99€">
                 <span class="btn-icon">↻</span>
                 <span>Cambiar misiones</span>
-                <span class="btn-price">2,99 €</span>
+                <span class="btn-price">0,99 €</span>
             </button>
 
         </div>
