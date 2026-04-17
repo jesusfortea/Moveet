@@ -20,7 +20,10 @@
                 <div class="min-w-0 leading-tight text-[#1E2A28]">
                     @if ($navUser)
                         <a href="{{ route('usuario.index') }}" class="block font-bold truncate">{{ $navUser->name }}</a>
-                        <p class="text-[12px] truncate">{{ $navUser->puntos }} puntos</p>
+                        <div class="flex items-center gap-1.5">
+                            <p class="text-[12px] truncate">{{ $navUser->puntos }} puntos</p>
+                            <a href="{{ route('tienda.puntos') }}" class="flex items-center justify-center w-4 h-4 bg-[#1E2A28] text-white rounded-full text-[10px] font-bold hover:bg-[#324542] transition-colors" title="Ir a la tienda">+</a>
+                        </div>
                         <p class="text-[12px] truncate">Nvl {{ $navUser->nivel }}</p>
                     @else
                         <a href="{{ route('login') }}" class="block font-bold">Iniciar sesión</a>
@@ -55,9 +58,9 @@
 
         <div class="flex-1 h-full hidden md:flex items-center justify-center gap-7 lg:gap-9 text-[#1E2A28] font-semibold">
             <a href="{{ route('home') }}" class="whitespace-nowrap hover:opacity-80">Inicio</a>
-            <a class="whitespace-nowrap hover:opacity-80">Evento</a>
+            <a href="{{ route('eventos') }}" class="whitespace-nowrap hover:opacity-80">Evento</a>
             <a href="{{ route('chat.index') }}" class="whitespace-nowrap hover:opacity-80">Chat</a>
-            <a class="whitespace-nowrap hover:opacity-80">Pase de paseo</a>
+            <a href="{{ route('pase.paseo') }}" class="whitespace-nowrap hover:opacity-80">Pase de paseo</a>
             <a class="whitespace-nowrap hover:opacity-80">Tienda</a>
         </div>
 
@@ -75,11 +78,21 @@
 
 <aside id="mobile-nav-panel" class="md:hidden fixed top-[15vh] left-0 w-[220px] max-w-[75vw] h-[calc(100vh-15vh)] bg-[#9bb0ae] z-50 shadow-xl -translate-x-full transition-transform duration-200 ease-out">
     <div class="h-full flex flex-col justify-between p-4 text-[#1E2A28]">
-        <div class="space-y-5 text-center font-medium">
+        <div>
+            @if ($navUser)
+                <div class="flex flex-col items-center mb-6 pb-4 border-b border-black/10">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="font-bold text-lg">{{ $navUser->puntos }} puntos</span>
+                        <a href="{{ route('tienda.puntos') }}" class="flex items-center justify-center w-5 h-5 bg-[#1E2A28] text-white rounded-full text-[12px] font-bold">+</a>
+                    </div>
+                    <span class="text-xs opacity-70">Nvl {{ $navUser->nivel }}</span>
+                </div>
+            @endif
+            <div class="space-y-5 text-center font-medium">
             <a href="{{ route('home') }}" class="block">Inicio</a>
-            <a class="block">Evento</a>
+            <a href="{{ route('eventos') }}" class="block">Evento</a>
             <a href="{{ route('chat.index') }}" class="block">Chat</a>
-            <a class="block">Pase de paseo</a>
+            <a href="{{ route('pase.paseo') }}" class="block">Pase de paseo</a>
             <a class="block">Tienda</a>
         </div>
 
