@@ -1,5 +1,5 @@
 // Validaciones del formulario de registro
-document.addEventListener('DOMContentLoaded', function() {
+window.onload = function() {
     const form = document.getElementById('registerForm');
     const usernameInput = document.getElementById('username');
     const emailInput = document.getElementById('email');
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    usernameInput.addEventListener('blur', function() {
+    usernameInput.onblur = function() {
         if (this.value === '') {
             showError(this, 'El nombre de usuario es requerido');
         } else if (!validateUsername(this.value)) {
@@ -57,13 +57,13 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             clearError(this);
         }
-    });
+    };
 
-    usernameInput.addEventListener('focus', function() {
+    usernameInput.onfocus = function() {
         clearError(this);
-    });
+    };
 
-    emailInput.addEventListener('blur', function() {
+    emailInput.onblur = function() {
         if (this.value === '') {
             showError(this, 'El correo es requerido');
         } else if (!validateEmail(this.value)) {
@@ -71,13 +71,13 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             clearError(this);
         }
-    });
+    };
 
-    emailInput.addEventListener('focus', function() {
+    emailInput.onfocus = function() {
         clearError(this);
-    });
+    };
 
-    dniInput.addEventListener('blur', function() {
+    dniInput.onblur = function() {
         if (this.value === '') {
             showError(this, 'El DNI es requerido');
         } else if (!validateDNI(this.value)) {
@@ -85,13 +85,13 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             clearError(this);
         }
-    });
+    };
 
-    dniInput.addEventListener('focus', function() {
+    dniInput.onfocus = function() {
         clearError(this);
-    });
+    };
 
-    phoneInput.addEventListener('blur', function() {
+    phoneInput.onblur = function() {
         if (this.value === '') {
             showError(this, 'El teléfono es requerido');
         } else if (!validatePhone(this.value)) {
@@ -99,13 +99,13 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             clearError(this);
         }
-    });
+    };
 
-    phoneInput.addEventListener('focus', function() {
+    phoneInput.onfocus = function() {
         clearError(this);
-    });
+    };
 
-    passwordInput.addEventListener('blur', function() {
+    passwordInput.onblur = function() {
         if (this.value === '') {
             showError(this, 'La contraseña es requerida');
         } else if (!validatePassword(this.value)) {
@@ -120,13 +120,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         }
-    });
+    };
 
-    passwordInput.addEventListener('focus', function() {
+    passwordInput.onfocus = function() {
         clearError(this);
-    });
+    };
 
-    confirmPasswordInput.addEventListener('blur', function() {
+    confirmPasswordInput.onblur = function() {
         if (this.value === '') {
             showError(this, 'Confirma la contraseña');
         } else if (this.value !== passwordInput.value) {
@@ -134,25 +134,25 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             clearError(this);
         }
-    });
+    };
 
-    confirmPasswordInput.addEventListener('focus', function() {
+    confirmPasswordInput.onfocus = function() {
         clearError(this);
-    });
+    };
 
-    birthDateInput.addEventListener('blur', function() {
+    birthDateInput.onblur = function() {
         if (this.value === '') {
             showError(this, 'La fecha de nacimiento es requerida');
         } else {
             clearError(this);
         }
-    });
+    };
 
-    birthDateInput.addEventListener('focus', function() {
+    birthDateInput.onfocus = function() {
         clearError(this);
-    });
+    };
 
-    form.addEventListener('submit', function(e) {
+    form.onsubmit = function(e) {
         let isValid = true;
 
         if (usernameInput.value === '') {
@@ -225,5 +225,5 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!isValid) {
             e.preventDefault();
         }
-    });
-});
+    };
+};

@@ -71,9 +71,9 @@ const RESET_DATES = window.misionesReset || {
 };
 
 /* ── Estado de la UI ────────────────────────────────────────────── */
-let tabActiva  = 'diarias';   // 'diarias' | 'semanales'
+let tabActiva = 'diarias';   // 'diarias' | 'semanales'
 let resetDate = new Date(RESET_DATES[tabActiva]);
-let mapa       = null;
+let mapa = null;
 let marcadorUsuario = null;
 let capasRutas = [];
 let marcadoresMisiones = [];
@@ -83,11 +83,11 @@ let recorridoTotal = 0;
 const misionesConMeta = new Set();
 
 /* ── DOM refs ───────────────────────────────────────────────────── */
-const elLoading   = document.getElementById('map-loading');
-const elMissions  = document.getElementById('missions-list');
+const elLoading = document.getElementById('map-loading');
+const elMissions = document.getElementById('missions-list');
 const elCountdown = document.getElementById('timer-countdown');
-const elBarFill   = document.getElementById('timer-bar-fill');
-const elChangBtn  = document.getElementById('change-missions-btn');
+const elBarFill = document.getElementById('timer-bar-fill');
+const elChangBtn = document.getElementById('change-missions-btn');
 
 function getCsrfToken() {
     const el = document.querySelector('meta[name="csrf-token"]');
@@ -234,9 +234,9 @@ function renderMapaMisiones(userLat, userLng) {
  * Genera el HTML de una tarjeta de misión.
  */
 function tarjetaMision(m) {
-    const completada   = m.completada ? 'completed' : '';
-    const checkIcon    = m.completada ? '✓' : '';
-    const puntosLabel  = m.completada ? `+${m.puntos} ptos` : `${m.puntos} ptos`;
+    const completada = m.completada ? 'completed' : '';
+    const checkIcon = m.completada ? '✓' : '';
+    const puntosLabel = m.completada ? `+${m.puntos} ptos` : `${m.puntos} ptos`;
     const premiumBadge = m.premium
         ? `<span class="mission-card__premium">⭐ Premium</span>`
         : '';
@@ -248,8 +248,8 @@ function tarjetaMision(m) {
                 <div class="mission-card__name">${m.nombre}</div>
                 ${premiumBadge}
                 ${m.direccion && !m.completada
-                    ? `<div class="mission-card__sub">📍 ${m.direccion}</div>`
-                    : ''}
+            ? `<div class="mission-card__sub">📍 ${m.direccion}</div>`
+            : ''}
             </div>
             <div class="mission-card__points">${puntosLabel}</div>
         </div>
@@ -263,7 +263,7 @@ function renderMisiones() {
     let lista;
 
     if (EVENTO) {
-        // Mostrar todas las misiones del evento
+        // En caso de que se esté ejecutando un evento, mostraremos todas sus misiones y omitiremos filtro semanal/diario
         lista = MISIONES;
     } else {
         // Filtrar por tab activo
@@ -284,7 +284,7 @@ function renderMisiones() {
     /* Completadas al final */
     const ordenadas = [
         ...lista.filter(m => !m.completada),
-        ...lista.filter(m =>  m.completada),
+        ...lista.filter(m => m.completada),
     ];
 
     elMissions.innerHTML = ordenadas.map(tarjetaMision).join('');
@@ -314,7 +314,7 @@ function formatMs(ms) {
 }
 
 function tickTimer() {
-    const ahora    = Date.now();
+    const ahora = Date.now();
     let limite;
     let total = 0;
 
@@ -328,10 +328,10 @@ function tickTimer() {
     }
 
     const restante = limite - ahora;
-    const pct      = total > 0 ? Math.max(0, Math.min(100, ((total - restante) / total) * 100)) : 0;
+    const pct = total > 0 ? Math.max(0, Math.min(100, ((total - restante) / total) * 100)) : 0;
 
     elCountdown.textContent = formatMs(restante);
-    elBarFill.style.width   = pct + '%';
+    elBarFill.style.width = pct + '%';
 
     if (restante <= 0) {
         if (EVENTO) {
@@ -351,10 +351,10 @@ function calcularDistanciaMetros([lat1, lng1], [lat2, lng2]) {
     const R = 6371000; // metros
     const dLat = toRad(lat2 - lat1);
     const dLng = toRad(lng2 - lng1);
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2)
-            + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2))
-            * Math.sin(dLng/2) * Math.sin(dLng/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+        + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2))
+        * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
 }
 
@@ -372,8 +372,9 @@ function verificarMetasRecorrido(distancia) {
                         if (mapa && userCoords) {
                             renderMapaMisiones(userCoords[0], userCoords[1]);
                         }
-                        console.log(`Misión completada: ${m.nombre}. Puntos totales: ${data.puntos}`);
-                    })
+                // Registro interno para confirmar la asignación del pago y estado
+                console.log(`Misión completada vía recorrido manual: ${m.nombre}. Puntos acumulados reportados: ${data.puntos}`);
+            })
                     .catch(err => {
                         console.error('Error completando misión:', err);
                     });
@@ -409,7 +410,8 @@ function verificarProximidadMisiones(userLat, userLng) {
                             renderMapaMisiones(userCoords[0], userCoords[1]);
                         }
                         mostrarToastMision(m.nombre, data.puntos_ganados ?? m.puntos);
-                        console.log(`Misión '${m.nombre}' completada. Puntos totales: ${data.puntos}`);
+                        // Registro de obtención de puntos al acercarse físicamente al destino
+                        console.log(`Misión por geofence '${m.nombre}' completada exitosamente. Nuevo balance de puntos: ${data.puntos}`);
                     })
                     .catch(err => console.error('Error completando misión por proximidad:', err));
             }
@@ -500,28 +502,7 @@ function centrarEnUbicacion() {
     mapa.setView(userCoords, 15, { animate: true, duration: 0.8 });
 }
 
-/**
- * Asigna coords de demo a misiones con ejeX/ejeY nulos
- * (para visualizar rutas de ejemplo en el mapa).
- */
-function asignarCoordsDemoSiNecesario(lat, lng) {
-    const offsetsDemo = [
-        [  0.003,  0.004 ],
-        [ -0.004,  0.002 ],
-        [  0.001, -0.005 ],
-        [ -0.003, -0.003 ],
-        [  0.005,  0.001 ],
-    ];
-    let idx = 0;
-    MISIONES.forEach(m => {
-        if (m.ejeX == null || m.ejeY == null) {
-            const [dLat, dLng] = offsetsDemo[idx % offsetsDemo.length];
-            m.ejeX = lat + dLat;
-            m.ejeY = lng + dLng;
-            idx++;
-        }
-    });
-}
+
 
 /**
  * Fallback: Barcelona como coordenadas por defecto.
@@ -545,7 +526,7 @@ function ocultarLoading() {
  * Tabs: Diarias / Semanales
  */
 document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.onclick = () => {
         document.querySelectorAll('.tab-btn').forEach(b => {
             b.classList.remove('active');
             b.setAttribute('aria-selected', 'false');
@@ -561,37 +542,37 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         if (mapa && userCoords) {
             renderMapaMisiones(userCoords[0], userCoords[1]);
         }
-    });
+    };
 });
 
 /**
  * Botón "Cambiar misiones"
  */
 if (elChangBtn) {
-    elChangBtn.addEventListener('click', () => {
+    elChangBtn.onclick = () => {
         if (EVENTO) {
             alert('Estas misiones pertenecen al evento activo y no pueden cambiarse desde esta pantalla.');
             return;
         }
 
-        /* En producción: lanzar modal de pago o redirigir */
+        /* Lógica para procesar un pago real si el usuario decide cambiar las misiones antes de tiempo.
+           TODO: Reemplazar con redirección al controlador de la pasarela de pagos. */
         const confirmado = confirm('¿Cambiar misiones por 2,99 €?');
         if (confirmado) {
-            /* TODO: llamar a la ruta de pago */
-            alert('Redirigiendo al proceso de pago…');
+            alert('En desarrollo: Redirigiendo al proceso de pago…');
         }
-    });
+    };
 }
 
 /**
  * Click en tarjeta de misión → centrar mapa en esa misión.
  */
-elMissions.addEventListener('click', e => {
+elMissions.onclick = e => {
     const card = e.target.closest('.mission-card');
     if (!card || !mapa) return;
 
     const id = parseInt(card.dataset.id, 10);
-    const m  = MISIONES.find(x => x.id === id);
+    const m = MISIONES.find(x => x.id === id);
     if (!m || m.ejeX == null) return;
 
     mapa.setView([parseFloat(m.ejeX), parseFloat(m.ejeY)], 16, { animate: true });
@@ -606,13 +587,13 @@ elMissions.addEventListener('click', e => {
             mk.openPopup();
         }
     });
-});
+};
 
 /* ════════════════════════════════════════════════════════════════
    ARRANQUE
    ════════════════════════════════════════════════════════════════ */
 
-document.addEventListener('DOMContentLoaded', () => {
+window.onload = () => {
     /* 1. Renderizar lista de misiones */
     renderMisiones();
 
@@ -629,6 +610,6 @@ document.addEventListener('DOMContentLoaded', () => {
     /* 4. Botón de ubicación */
     const locationBtn = document.getElementById('location-btn');
     if (locationBtn) {
-        locationBtn.addEventListener('click', centrarEnUbicacion);
+        locationBtn.onclick = centrarEnUbicacion;
     }
-});
+};

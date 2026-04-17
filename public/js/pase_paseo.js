@@ -1,19 +1,19 @@
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('Pase de Paseo inicializado');
-
+window.onload = () => {
+    // Inicialización de la vista del Pase de Paseo
 
     // Lógica para reclamar recompensas
     const rewardCards = document.querySelectorAll('.js-reclamar');
 
     rewardCards.forEach(card => {
-        card.addEventListener('click', async () => {
+        card.onclick = async () => {
             const isReclamable = card.getAttribute('data-reclamable') === 'true';
             const rewardId = card.getAttribute('data-id');
             const rewardNombre = card.getAttribute('data-nombre');
 
             if (!isReclamable) return;
 
-            // if (!confirm(`¿Quieres reclamar la recompensa: ${rewardNombre}?`)) return;
+            // Omitimos la confirmación explícita para agilizar la experiencia de usuario
+
 
             try {
                 const response = await fetch(window.battlepassRoutes.reclamar.replace(':id', rewardId), {
@@ -38,7 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     badge.innerText = '✅ Reclamado';
                     card.appendChild(badge);
 
-                    // alert(data.message);
+                    // El feedback visual (badge) es suficiente por ahora sin usar alertas invasivas
+
                 } else {
                     alert('Error: ' + data.message);
                 }
@@ -60,4 +61,4 @@ document.addEventListener('DOMContentLoaded', () => {
             behavior: 'smooth'
         });
     }
-});
+};

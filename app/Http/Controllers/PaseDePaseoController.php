@@ -94,7 +94,7 @@ class PaseDePaseoController extends Controller
         ]);
 
         return response()->json([
-            // 'message' => '¡Recompensa reclamada con éxito!',
+            // Devolvemos solo el ID de la recompensa para no lanzar alertas innecesarias en la UI
             'recompensa_id' => $recompensa->id
         ]);
     }

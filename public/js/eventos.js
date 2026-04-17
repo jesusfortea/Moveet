@@ -1,19 +1,19 @@
 'use strict';
 
-const EVENTO     = window.eventoData ?? null;
-const MISIONES   = window.misionesData ?? [];
+const EVENTO = window.eventoData ?? null;
+const MISIONES = window.misionesData ?? [];
 const EVENTO_FIN = window.fechaFinEvento ? new Date(window.fechaFinEvento) : null;
 
-const elLoading     = document.getElementById('map-loading');
-const elMissions    = document.getElementById('missions-list');
-const elCountdown   = document.getElementById('timer-countdown');
+const elLoading = document.getElementById('map-loading');
+const elMissions = document.getElementById('missions-list');
+const elCountdown = document.getElementById('timer-countdown');
 const elLocationBtn = document.getElementById('location-btn');
 
-let mapa               = null;
-let marcadorUsuario    = null;
+let mapa = null;
+let marcadorUsuario = null;
 let marcadoresMisiones = [];   // markers + círculos
-let rutasCapas         = {};   // { [misionId]: [L.Layer, ...] }
-let userCoords         = null;
+let rutasCapas = {};   // { [misionId]: [L.Layer, ...] }
+let userCoords = null;
 
 /* ── Control de completado ──────────────────────────────────────── */
 const misionesProximidadCompletadas = new Set();
@@ -48,7 +48,7 @@ function calcularDistanciaMetros([lat1, lng1], [lat2, lng2]) {
     const dLat = toRad(lat2 - lat1);
     const dLng = toRad(lng2 - lng1);
     const a = Math.sin(dLat / 2) ** 2
-            + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+        + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
@@ -62,9 +62,9 @@ function calcularDistanciaMetros([lat1, lng1], [lat2, lng2]) {
  */
 async function obtenerRutaOSRM(userLat, userLng, misionLat, misionLng) {
     const url = `https://router.project-osrm.org/route/v1/foot/`
-              + `${userLng},${userLat};${misionLng},${misionLat}`
-              + `?geometries=geojson&overview=full`;
-    const res  = await fetch(url);
+        + `${userLng},${userLat};${misionLng},${misionLat}`
+        + `?geometries=geojson&overview=full`;
+    const res = await fetch(url);
     const data = await res.json();
     if (!data.routes || !data.routes[0]) return null;
 
@@ -310,8 +310,8 @@ function renderMapaMisiones(userLat, userLng) {
                 <div class="mission-popup__title">${m.nombre}</div>
                 <div class="mission-popup__pts">+${m.puntos} ptos</div>
                 ${m.completada
-                    ? '<div class="mission-popup__completed">✓ Completada</div>'
-                    : `<div style="font-size:.72rem;color:#7A9190;margin-top:4px">🗺️ Ruta activa · acércate a ${RADIO_PROXIMIDAD_M} m</div>`}
+                ? '<div class="mission-popup__completed">✓ Completada</div>'
+                : `<div style="font-size:.72rem;color:#7A9190;margin-top:4px">🗺️ Ruta activa · acércate a ${RADIO_PROXIMIDAD_M} m</div>`}
                 ${m.direccion ? `<div style="font-size:.75rem;color:#64748b;margin-top:6px">${m.direccion}</div>` : ''}
             </div>
         `.trim());
@@ -411,8 +411,8 @@ function inicializarEvento() {
     tickTimer();
     setInterval(tickTimer, 1000);
     iniciarGeolocalizacion();
-    if (elLocationBtn) elLocationBtn.addEventListener('click', centrarEnUbicacion);
-    document.addEventListener('click', abrirTarjetaEnMapa);
+    if (elLocationBtn) elLocationBtn.onclick = centrarEnUbicacion;
+    document.onclick = abrirTarjetaEnMapa;
 }
 
-window.addEventListener('DOMContentLoaded', inicializarEvento);
+window.onload = inicializarEvento;

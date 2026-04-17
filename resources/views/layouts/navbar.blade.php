@@ -107,7 +107,7 @@
 </aside>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    window.onload = function () {
         const toggle = document.getElementById('mobile-nav-toggle');
         const panel = document.getElementById('mobile-nav-panel');
         const backdrop = document.getElementById('mobile-nav-backdrop');
@@ -126,7 +126,7 @@
             backdrop.classList.remove('hidden');
         };
 
-        toggle.addEventListener('click', function () {
+        toggle.onclick = function () {
             if (panel.classList.contains('-translate-x-full')) {
                 openMenu();
                 return;
@@ -135,9 +135,9 @@
             closeMenu();
         });
 
-        backdrop.addEventListener('click', closeMenu);
+        backdrop.onclick = closeMenu;
         panel.querySelectorAll('a').forEach(function (link) {
-            link.addEventListener('click', closeMenu);
+            link.onclick = closeMenu;
         });
     });
 </script>
