@@ -1,6 +1,6 @@
 'use strict';
 
-document.addEventListener('DOMContentLoaded', () => {
+window.onload = () => {
     const chatConfig = window.chatConfig || {};
     const messagesContainer = document.getElementById('chat-messages');
     const composer = document.getElementById('chat-composer');
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    composer.addEventListener('submit', async (event) => {
+    composer.onsubmit = async (event) => {
         event.preventDefault();
 
         const contenido = input.value.trim();
@@ -128,4 +128,4 @@ document.addEventListener('DOMContentLoaded', () => {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
     refreshMessages({ forceScroll: true });
     window.setInterval(refreshMessages, 1500);
-});
+};

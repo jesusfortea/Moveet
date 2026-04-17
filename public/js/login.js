@@ -1,5 +1,5 @@
 // Validaciones del formulario de login
-document.addEventListener('DOMContentLoaded', function() {
+window.onload = function() {
     const form = document.getElementById('loginForm');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    emailInput.addEventListener('blur', function() {
+    emailInput.onblur = function() {
         if (this.value === '') {
             showError(this, 'El correo es requerido');
         } else if (!validateEmail(this.value)) {
@@ -41,11 +41,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    emailInput.addEventListener('focus', function() {
+    emailInput.onfocus = function() {
         clearError(this);
     });
 
-    passwordInput.addEventListener('blur', function() {
+    passwordInput.onblur = function() {
         if (this.value === '') {
             showError(this, 'La contraseña es requerida');
         } else if (!validatePassword(this.value)) {
@@ -55,11 +55,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    passwordInput.addEventListener('focus', function() {
+    passwordInput.onfocus = function() {
         clearError(this);
     });
 
-    form.addEventListener('submit', function(e) {
+    form.onsubmit = function(e) {
         let isValid = true;
 
         if (emailInput.value === '') {
@@ -85,5 +85,5 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!isValid) {
             e.preventDefault();
         }
-    });
-});
+    };
+};
