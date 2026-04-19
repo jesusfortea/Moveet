@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -55,6 +56,11 @@ class ChatController extends Controller
     private function contactPayload(Contacto $contacto): array
     {
         $chat = $this->resolveSharedChat($contacto);
+        $bloqueadoPorOtro = Contacto::query()
+            ->where('user_id', $contacto->contacto_id)
+            ->where('contacto_id', Auth::id())
+            ->where('bloqueado', true)
+            ->exists();
 
         return [
             'id' => $contacto->id,
@@ -63,6 +69,9 @@ class ChatController extends Controller
             'chat_id' => $chat?->id,
             'ultimo_mensaje' => $chat?->ultimoMensaje?->contenido,
             'ultimo_mensaje_at' => $chat?->ultimoMensaje?->created_at?->toISOString(),
+            'bloqueado' => (bool) $contacto->bloqueado || $bloqueadoPorOtro,
+            'bloqueado_por_mi' => (bool) $contacto->bloqueado,
+            'bloqueado_por_otro' => $bloqueadoPorOtro,
         ];
     }
 
@@ -93,8 +102,13 @@ class ChatController extends Controller
             ->get();
 
         $contactos = $contactosModels
-            ->map(function (Contacto $contacto) {
+            ->map(function (Contacto $contacto) use ($user) {
                 $chat = $this->resolveSharedChat($contacto);
+                $bloqueadoPorOtro = Contacto::query()
+                    ->where('user_id', $contacto->contacto_id)
+                    ->where('contacto_id', $user->id)
+                    ->where('bloqueado', true)
+                    ->exists();
 
                 return [
                     'id' => $contacto->id,
@@ -103,7 +117,9 @@ class ChatController extends Controller
                     'chat_id' => $chat?->id,
                     'ultimo_mensaje' => $chat?->ultimoMensaje?->contenido,
                     'ultimo_mensaje_at' => $chat?->ultimoMensaje?->created_at?->toISOString(),
-                    'bloqueado' => $contacto->bloqueado,
+                    'bloqueado' => (bool) $contacto->bloqueado || $bloqueadoPorOtro,
+                    'bloqueado_por_mi' => (bool) $contacto->bloqueado,
+                    'bloqueado_por_otro' => $bloqueadoPorOtro,
                     'contacto_id' => $contacto->contacto_id,
                     'model' => $contacto,
                 ];
@@ -190,6 +206,20 @@ class ChatController extends Controller
             return response()->json(['message' => 'Contacto no permitido'], 403);
         }
 
+        if ($contacto->bloqueado) {
+            return response()->json(['message' => 'Has bloqueado a este contacto. Desbloquéalo para poder enviar mensajes.'], 403);
+        }
+
+        $bloqueadoPorDestino = Contacto::query()
+            ->where('user_id', $contacto->contacto_id)
+            ->where('contacto_id', $user->id)
+            ->where('bloqueado', true)
+            ->exists();
+
+        if ($bloqueadoPorDestino) {
+            return response()->json(['message' => 'Este usuario te ha bloqueado y no puedes enviarle mensajes.'], 403);
+        }
+
         $validated = $request->validate([
             'contenido' => ['required', 'string', 'max:2000'],
         ]);
@@ -257,13 +287,32 @@ class ChatController extends Controller
         $solicitudRecibida = SolicitudAmistad::query()
             ->where('emisor_id', $contactoUsuario->id)
             ->where('receptor_id', $user->id)
-            ->where('estado', 'pendiente')
             ->first();
 
-        if ($solicitudRecibida) {
+        if ($solicitudRecibida && $solicitudRecibida->estado === 'pendiente') {
             return redirect()
                 ->route('chat.index')
                 ->with('status', 'Ese usuario ya te ha enviado solicitud. Acéptala para empezar a chatear.');
+        }
+
+        if ($solicitudRecibida && $solicitudRecibida->estado === 'aceptada') {
+            $contactoPrincipal = Contacto::firstOrCreate([
+                'user_id' => $user->id,
+                'contacto_id' => $contactoUsuario->id,
+            ]);
+
+            Contacto::firstOrCreate([
+                'user_id' => $contactoUsuario->id,
+                'contacto_id' => $user->id,
+            ]);
+
+            Chat::firstOrCreate([
+                'contacto_id' => $contactoPrincipal->id,
+            ]);
+
+            return redirect()
+                ->route('chat.index')
+                ->with('status', 'Ese usuario ya era tu contacto.');
         }
 
         $solicitudEnviada = SolicitudAmistad::query()
@@ -271,27 +320,60 @@ class ChatController extends Controller
             ->where('receptor_id', $contactoUsuario->id)
             ->first();
 
-        if ($solicitudEnviada && $solicitudEnviada->estado === 'pendiente') {
-            return redirect()
-                ->route('chat.index')
-                ->with('status', 'Ya enviaste una solicitud a este usuario.');
+        if ($solicitudEnviada) {
+            if ($solicitudEnviada->estado === 'pendiente') {
+                return redirect()
+                    ->route('chat.index')
+                    ->with('status', 'Ya enviaste una solicitud a este usuario.');
+            }
+
+            if ($solicitudEnviada->estado === 'rechazada') {
+                $solicitudEnviada->update([
+                    'estado' => 'pendiente',
+                ]);
+
+                return redirect()
+                    ->route('chat.index')
+                    ->with('status', 'Solicitud reenviada correctamente.');
+            }
+
+            if ($solicitudEnviada->estado === 'aceptada') {
+                $contactoPrincipal = Contacto::firstOrCreate([
+                    'user_id' => $user->id,
+                    'contacto_id' => $contactoUsuario->id,
+                ]);
+
+                Contacto::firstOrCreate([
+                    'user_id' => $contactoUsuario->id,
+                    'contacto_id' => $user->id,
+                ]);
+
+                Chat::firstOrCreate([
+                    'contacto_id' => $contactoPrincipal->id,
+                ]);
+
+                return redirect()
+                    ->route('chat.index')
+                    ->with('status', 'Ese usuario ya es tu contacto.');
+            }
         }
 
-        if ($solicitudEnviada && $solicitudEnviada->estado === 'rechazada') {
-            $solicitudEnviada->update([
+        try {
+            SolicitudAmistad::create([
+                'emisor_id' => $user->id,
+                'receptor_id' => $contactoUsuario->id,
                 'estado' => 'pendiente',
             ]);
+        } catch (QueryException $exception) {
+            // Handles rare double-submit/race cases guarded by unique(emisor_id, receptor_id)
+            if ((int) $exception->getCode() === 23000) {
+                return redirect()
+                    ->route('chat.index')
+                    ->with('status', 'Ya existe una solicitud con ese usuario.');
+            }
 
-            return redirect()
-                ->route('chat.index')
-                ->with('status', 'Solicitud reenviada correctamente.');
+            throw $exception;
         }
-
-        SolicitudAmistad::create([
-            'emisor_id' => $user->id,
-            'receptor_id' => $contactoUsuario->id,
-            'estado' => 'pendiente',
-        ]);
 
         return redirect()
             ->route('chat.index')
@@ -367,7 +449,26 @@ class ChatController extends Controller
         }
 
         $nombreAmigo = $contacto->amigo?->name ?? 'Contacto';
-        $contacto->delete();
+
+        DB::transaction(function () use ($contacto, $user) {
+            Contacto::query()
+                ->where('user_id', $contacto->contacto_id)
+                ->where('contacto_id', $user->id)
+                ->delete();
+
+            $contacto->delete();
+
+            SolicitudAmistad::query()
+                ->where(function ($query) use ($user, $contacto) {
+                    $query->where('emisor_id', $user->id)
+                        ->where('receptor_id', $contacto->contacto_id);
+                })
+                ->orWhere(function ($query) use ($user, $contacto) {
+                    $query->where('emisor_id', $contacto->contacto_id)
+                        ->where('receptor_id', $user->id);
+                })
+                ->delete();
+        });
 
         return redirect()->route('chat.index')->with('status', "Contacto {$nombreAmigo} eliminado.");
     }
@@ -385,6 +486,7 @@ class ChatController extends Controller
         }
 
         $nombreAmigo = $contacto->amigo?->name ?? 'Contacto';
+
         $contacto->update(['bloqueado' => true]);
 
         return redirect()->route('chat.index')->with('status', "Usuario {$nombreAmigo} bloqueado. No recibirá tus mensajes.");
@@ -403,6 +505,7 @@ class ChatController extends Controller
         }
 
         $nombreAmigo = $contacto->amigo?->name ?? 'Contacto';
+
         $contacto->update(['bloqueado' => false]);
 
         return redirect()->route('chat.index')->with('status', "Usuario {$nombreAmigo} desbloqueado.");

@@ -54,5 +54,7 @@ class DatabaseSeeder extends Seeder
         $this->call(EventoSeeder::class);
         $this->call(MisionSeeder::class);
         $this->call(PaseDePaseoSeeder::class);
+        $this->call(TiendaSeeder::class);
+        $this->call(PackPuntosSeeder::class);
     }
 }

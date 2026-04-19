@@ -1,0 +1,228 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+:root {
+    --store-bg: #e8efee;
+    --store-panel: #d4e3e1;
+    --store-card: #f7fbfa;
+    --store-ink: #1f2f2d;
+    --store-accent: #6d8f8c;
+    --store-accent-dark: #4c6d69;
+}
+
+.store-page {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 16px;
+    font-family: 'Nunito', sans-serif;
+    color: var(--store-ink);
+}
+
+.store-title {
+    margin: 0 0 14px;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #9aa8a6;
+}
+
+.store-back {
+    display: inline-flex;
+    text-decoration: none;
+    color: #3f5552;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+.store-status {
+    background: #eef7f4;
+    border: 1px solid #a7d0be;
+    color: #24513f;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    font-weight: 700;
+}
+
+.store-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.store-card {
+    position: relative;
+    background: var(--store-card);
+    border: 1px solid #d0dedc;
+    border-radius: 10px;
+    padding: 14px;
+    box-shadow: 0 2px 10px rgba(31, 47, 45, 0.08);
+}
+
+.store-card-premium {
+    outline: 2px dashed #f2c45c;
+}
+
+.store-price {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #fff;
+    border: 1px solid #cfd9d7;
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+.store-img-box {
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.store-img-box img {
+    max-height: 88px;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.store-name {
+    margin: 0 0 6px;
+    font-size: 1rem;
+    font-weight: 800;
+    min-height: 44px;
+}
+
+.store-desc {
+    margin: 0 0 10px;
+    color: #516866;
+    font-size: 0.9rem;
+    min-height: 42px;
+}
+
+.store-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.store-btn,
+.store-btn-secondary {
+    border: none;
+    border-radius: 8px;
+    height: 34px;
+    padding: 0 12px;
+    cursor: pointer;
+    font-weight: 800;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.store-btn {
+    background: var(--store-accent);
+    color: #fff;
+}
+
+.store-btn:hover {
+    background: var(--store-accent-dark);
+}
+
+.store-btn-secondary {
+    background: #fff;
+    border: 1px solid #c5d4d2;
+    color: #2f4542;
+}
+
+.store-card-confirm,
+.store-card-buy {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--store-card);
+    border: 1px solid #d0dedc;
+    border-radius: 10px;
+    padding: 18px;
+}
+
+.store-confirm-grid {
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: 16px;
+    align-items: start;
+}
+
+.store-confirm-title {
+    margin: 0 0 12px;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.store-buy-title {
+    margin: 0;
+    font-size: 2.1rem;
+    font-weight: 900;
+}
+
+.store-help {
+    margin: 10px 0 0;
+    padding-left: 18px;
+}
+
+.store-help li {
+    margin-bottom: 4px;
+    color: #516866;
+}
+
+.points-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.points-card {
+    position: relative;
+    background: #dbe7e5;
+    border-radius: 10px;
+    border: 1px solid #cad9d7;
+    padding: 14px;
+    text-align: center;
+}
+
+.points-card.featured {
+    background: #f2d4cc;
+}
+
+.points-card .store-price {
+    top: 10px;
+    right: 10px;
+}
+
+.points-coin {
+    width: 86px;
+    height: 86px;
+    object-fit: contain;
+}
+
+.points-amount {
+    margin: 8px 0;
+    font-size: 1.4rem;
+    font-weight: 900;
+}
+
+@media (max-width: 900px) {
+    .store-grid,
+    .points-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .store-confirm-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .store-title,
+    .store-confirm-title,
+    .store-buy-title {
+        font-size: 1.45rem;
+    }
+}
