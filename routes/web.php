@@ -1,28 +1,35 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AdminMisionController;
 use App\Http\Controllers\AdminEventoController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AdminMisionController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\EventoController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PaseDePaseoController;
+use App\Http\Controllers\SuscripcionController;
+use App\Http\Controllers\TiendaController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
-// ── Autenticación (guests) ────────────────────────────────────────
+// Root: si hay sesión, home; si no, login.
+Route::get('/', function () {
+    return auth()->check()
+        ? redirect()->route('home')
+        : redirect()->route('login');
+});
+
 Route::middleware('guest')->group(function () {
-    Route::get('/login',    [AuthController::class, 'login'])->name('login');
-    Route::post('/login',   [AuthController::class, 'store'])->name('login.store');
+    Route::get('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/login', [AuthController::class, 'store'])->name('login.store');
     Route::get('/register', [AuthController::class, 'register'])->name('register');
-    Route::post('/register',[AuthController::class, 'storeRegister'])->name('register.store');
+    Route::post('/register', [AuthController::class, 'storeRegister'])->name('register.store');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// ── Rutas protegidas (requieren sesión iniciada) ───────────────────
 Route::middleware('auth')->group(function () {
-    Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::post('/misiones/{mision}/completar', [HomeController::class, 'completarMision']);
 
@@ -36,6 +43,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/usuario/inventario', [UserController::class, 'inventario'])->name('usuario.inventario');
 
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/contactos', function () {
+        return redirect()->route('chat.index');
+    })->name('chat.contactos.fallback');
     Route::post('/chat/contactos', [ChatController::class, 'storeContact'])->name('chat.contactos.store');
     Route::delete('/chat/contactos/{contacto}', [ChatController::class, 'deleteContact'])->name('chat.contactos.destroy');
     Route::post('/chat/contactos/{contacto}/bloquear', [ChatController::class, 'blockContact'])->name('chat.contactos.block');
@@ -45,21 +55,27 @@ Route::middleware('auth')->group(function () {
     Route::get('/chat/contactos/{contacto}/mensajes', [ChatController::class, 'messages'])->name('chat.messages.index');
     Route::post('/chat/contactos/{contacto}/mensajes', [ChatController::class, 'sendMessage'])->name('chat.messages.store');
 
-    Route::get('/tienda-puntos', fn() => view('tienda_puntos'))->name('tienda.puntos');
-    Route::get('/pase-paseo', [\App\Http\Controllers\PaseDePaseoController::class, 'index'])->name('pase.paseo');
-    Route::post('/pase-paseo/reclamar/{recompensa}', [\App\Http\Controllers\PaseDePaseoController::class, 'reclamar'])->name('pase.reclamar');
+    Route::get('/tienda', [TiendaController::class, 'index'])->name('tienda.index');
+    Route::get('/tienda/articulos/{recompensa}', [TiendaController::class, 'articulo'])->name('tienda.articulo');
+    Route::get('/tienda/confirmacion/{recompensa}', [TiendaController::class, 'confirmacion'])->name('tienda.confirmacion');
+    Route::post('/tienda/comprar/{recompensa}', [TiendaController::class, 'comprar'])->name('tienda.comprar');
+    Route::get('/tienda/compra/{recompensa}', [TiendaController::class, 'compra'])->name('tienda.compra');
+    Route::get('/tienda/puntos', [TiendaController::class, 'puntos'])->name('tienda.puntos');
+    Route::get('/tienda/puntos/confirmacion/{packPuntos}', [TiendaController::class, 'confirmacionPuntos'])->name('tienda.puntos.confirmacion');
+    Route::post('/tienda/puntos/comprar/{packPuntos}', [TiendaController::class, 'comprarPuntos'])->name('tienda.puntos.comprar');
+    Route::get('/tienda/puntos/compra/{packPuntos}', [TiendaController::class, 'compraPuntos'])->name('tienda.puntos.compra');
 
-    // Suscripción
-    Route::get('/suscripcion', [\App\Http\Controllers\SuscripcionController::class, 'index'])->name('suscripcion');
-    Route::post('/suscripcion/tarjeta', [\App\Http\Controllers\SuscripcionController::class, 'storeCard'])->name('suscripcion.tarjeta.store');
-    Route::post('/suscripcion/comprar', [\App\Http\Controllers\SuscripcionController::class, 'subscribe'])->name('suscripcion.comprar');
+    Route::get('/pase-paseo', [PaseDePaseoController::class, 'index'])->name('pase.paseo');
+    Route::post('/pase-paseo/reclamar/{recompensa}', [PaseDePaseoController::class, 'reclamar'])->name('pase.reclamar');
+
+    Route::get('/suscripcion', [SuscripcionController::class, 'index'])->name('suscripcion');
+    Route::post('/suscripcion/tarjeta', [SuscripcionController::class, 'storeCard'])->name('suscripcion.tarjeta.store');
+    Route::post('/suscripcion/comprar', [SuscripcionController::class, 'subscribe'])->name('suscripcion.comprar');
 });
 
-// ── Rutas de Admin (protegidas) ────────────────────────────────────
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-    
-    // Rutas de usuarios
+
     Route::get('/usuarios', [AdminController::class, 'usuarios'])->name('admin.usuarios');
     Route::get('/usuarios/crear', [AdminController::class, 'crearUsuario'])->name('admin.usuarios.crear');
     Route::post('/usuarios', [AdminController::class, 'guardarUsuario'])->name('admin.usuarios.guardar');
@@ -67,8 +83,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('/usuarios/{user}', [AdminController::class, 'actualizarUsuario'])->name('admin.usuarios.actualizar');
     Route::get('/usuarios/{user}/eliminar', [AdminController::class, 'eliminarUsuario'])->name('admin.usuarios.eliminar');
     Route::delete('/usuarios/{user}', [AdminController::class, 'confirmarEliminar'])->name('admin.usuarios.confirmar-eliminar');
-    
-    // Rutas de misiones
+
     Route::get('/misiones', [AdminMisionController::class, 'index'])->name('admin.misiones');
     Route::get('/misiones/crear', [AdminMisionController::class, 'crear'])->name('admin.misiones.crear');
     Route::post('/misiones', [AdminMisionController::class, 'guardar'])->name('admin.misiones.guardar');
@@ -76,8 +91,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('/misiones/{mision}', [AdminMisionController::class, 'actualizar'])->name('admin.misiones.actualizar');
     Route::get('/misiones/{mision}/eliminar', [AdminMisionController::class, 'eliminar'])->name('admin.misiones.eliminar');
     Route::delete('/misiones/{mision}', [AdminMisionController::class, 'confirmarEliminar'])->name('admin.misiones.confirmar-eliminar');
-    
-    // Rutas de eventos
+
     Route::get('/eventos', [AdminEventoController::class, 'index'])->name('admin.eventos');
     Route::get('/eventos/crear', [AdminEventoController::class, 'crear'])->name('admin.eventos.crear');
     Route::post('/eventos', [AdminEventoController::class, 'guardar'])->name('admin.eventos.guardar');

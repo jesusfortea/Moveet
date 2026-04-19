@@ -507,6 +507,12 @@ body {
     border-color: #e6c4c4;
 }
 
+.contact-action-btn--blocked {
+    background: #eef2f1;
+    border-color: #d8dfde;
+    cursor: default;
+}
+
 @media (max-width: 900px) {
     .chat-page {
         padding: 8px;

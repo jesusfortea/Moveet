@@ -61,7 +61,7 @@
             <a href="{{ route('eventos') }}" class="whitespace-nowrap hover:opacity-80">Evento</a>
             <a href="{{ route('chat.index') }}" class="whitespace-nowrap hover:opacity-80">Chat</a>
             <a href="{{ route('pase.paseo') }}" class="whitespace-nowrap hover:opacity-80">Pase de paseo</a>
-            <a class="whitespace-nowrap hover:opacity-80">Tienda</a>
+            <a href="{{ route('tienda.index') }}" class="whitespace-nowrap hover:opacity-80">Tienda</a>
         </div>
 
         <form method="POST" action="{{ route('logout') }}" class="shrink-0 hidden md:block">
@@ -93,7 +93,7 @@
             <a href="{{ route('eventos') }}" class="block">Evento</a>
             <a href="{{ route('chat.index') }}" class="block">Chat</a>
             <a href="{{ route('pase.paseo') }}" class="block">Pase de paseo</a>
-            <a class="block">Tienda</a>
+            <a href="{{ route('tienda.index') }}" class="block">Tienda</a>
         </div>
 
         <div class="flex items-center gap-2 text-[11px] text-[#4f5f5d]">

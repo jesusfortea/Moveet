@@ -47,10 +47,28 @@
                 @endforelse
             </div>
 
+            @php
+                $esContactoBloqueado = (bool) ($contactoSeleccionado['bloqueado'] ?? false);
+                $bloqueadoPorMi = (bool) ($contactoSeleccionado['bloqueado_por_mi'] ?? false);
+                $bloqueadoPorOtro = (bool) ($contactoSeleccionado['bloqueado_por_otro'] ?? false);
+
+                if ($bloqueadoPorMi) {
+                    $placeholderComposer = 'Has bloqueado a este contacto. Desbloquéalo para chatear.';
+                } elseif ($bloqueadoPorOtro) {
+                    $placeholderComposer = 'Este usuario te ha bloqueado. No puedes escribirle.';
+                } elseif ($esContactoBloqueado) {
+                    $placeholderComposer = 'Contacto bloqueado.';
+                } else {
+                    $placeholderComposer = 'Escribe algo...';
+                }
+
+                $composerHabilitado = isset($contactoSeleccionadoId) && ! $esContactoBloqueado;
+            @endphp
+
             <form class="chat-composer" id="chat-composer" method="POST" action="{{ isset($contactoSeleccionadoId) ? route('chat.messages.store', ['contacto' => $contactoSeleccionadoId]) : '#' }}">
                 @csrf
-                <input type="text" name="contenido" placeholder="Escribe algo..." {{ isset($contactoSeleccionadoId) ? '' : 'disabled' }}>
-                <button type="submit" class="chat-send-btn" {{ isset($contactoSeleccionadoId) ? '' : 'disabled' }}>➤</button>
+                <input type="text" name="contenido" placeholder="{{ $placeholderComposer }}" {{ $composerHabilitado ? '' : 'disabled' }}>
+                <button type="submit" class="chat-send-btn" {{ $composerHabilitado ? '' : 'disabled' }}>➤</button>
             </form>
         </section>
 
@@ -112,21 +130,29 @@
                                         <span class="contact-blocked-badge">🚫</span>
                                     @endif
                                 </strong>
-                                <small>{{ $contacto['bloqueado'] ? 'Bloqueado' : ($contacto['ultimo_mensaje'] ?? 'Sin mensajes todavía') }}</small>
+                                <small>
+                                    @if ($contacto['bloqueado'])
+                                        {{ ($contacto['bloqueado_por_mi'] ?? false) ? 'Bloqueado por ti' : 'Bloqueado por el otro usuario' }}
+                                    @else
+                                        {{ $contacto['ultimo_mensaje'] ?? 'Sin mensajes todavía' }}
+                                    @endif
+                                </small>
                             </div>
                         </a>
                         
                         <div class="contact-actions">
-                            @if ($contacto['bloqueado'])
+                            @if ($contacto['bloqueado_por_mi'] ?? false)
                                 <form method="POST" action="{{ route('chat.contactos.unblock', $contacto['model']) }}" style="margin: 0;">
                                     @csrf
                                     <button type="submit" class="contact-action-btn contact-action-btn--unblock" title="Desbloquear">🔓</button>
                                 </form>
-                            @else
+                            @elseif (!($contacto['bloqueado_por_otro'] ?? false))
                                 <form method="POST" action="{{ route('chat.contactos.block', $contacto['model']) }}" style="margin: 0;">
                                     @csrf
                                     <button type="submit" class="contact-action-btn contact-action-btn--block" title="Bloquear">🚫</button>
                                 </form>
+                            @else
+                                <span class="contact-action-btn contact-action-btn--blocked" title="Bloqueado por el otro usuario">🔒</span>
                             @endif
                             
                             <form method="POST" action="{{ route('chat.contactos.destroy', $contacto['model']) }}" style="margin: 0;" onsubmit="return confirm('¿Seguro que quieres eliminar este contacto?');">
