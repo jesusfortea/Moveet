@@ -6,13 +6,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
 
 /* ── Tipografía base ─────────────────────────────────────────── */
-html, body {
+html,
+body {
     font-family: 'Nunito', sans-serif;
     color: #1E2A28;
 }
 
 /* ── Layout full-height ──────────────────────────────────────── */
-html, body { height: 100%; }
+html,
+body {
+    height: 100%;
+}
 
 .page-content {
     padding-top: 15vh;
@@ -29,7 +33,7 @@ html, body { height: 100%; }
     align-items: center;
     justify-content: center;
     flex: 1;
-    padding: 2.5rem 1.5rem;
+    /* padding: 2.5rem 1.5rem; */
     background: #EEF2F1;
     width: 100%;
 }
@@ -39,7 +43,7 @@ html, body { height: 100%; }
     font-size: 1.75rem;
     font-weight: 700;
     color: #1E2A28;
-    margin-bottom: 2.5rem;
+    /* margin-bottom: 2.5rem; */
     letter-spacing: -.01em;
 }
 
@@ -50,7 +54,8 @@ html, body { height: 100%; }
     gap: 1.25rem;
     width: 100%;
     max-width: 680px;
-    align-items: end; /* la card destacada sube al tener el badge */
+    align-items: end;
+    /* la card destacada sube al tener el badge */
 }
 
 /* ── Card base ───────────────────────────────────────────────── */
@@ -65,13 +70,14 @@ html, body { height: 100%; }
     align-items: center;
     gap: .75rem;
     text-align: center;
-    box-shadow: 0 2px 8px rgba(30,42,40,.07);
+    box-shadow: 0 2px 8px rgba(30, 42, 40, .07);
 }
 
 /* ── Card destacada ──────────────────────────────────────────── */
 .shop-card--featured {
     border: 2.5px solid #e07070;
-    padding-top: 2.25rem; /* espacio para el badge */
+    padding-top: 2.25rem;
+    /* espacio para el badge */
 }
 
 /* ── Badge "Destacado" ───────────────────────────────────────── */
@@ -124,10 +130,12 @@ html, body { height: 100%; }
     transform: translate(-62%, -54%) scale(.88) rotate(-10deg);
     z-index: 0;
 }
+
 .shop-coin--back2 {
     transform: translate(-80%, -58%) scale(.82) rotate(-20deg);
     z-index: 0;
 }
+
 .shop-coin--front {
     transform: translate(-40%, -48%) scale(1);
     z-index: 1;
@@ -154,10 +162,12 @@ html, body { height: 100%; }
     transition: background .2s, transform .15s;
     letter-spacing: .01em;
 }
+
 .shop-btn:hover {
     background: #6B8F8D;
     transform: translateY(-1px);
 }
+
 .shop-btn:active {
     transform: translateY(0);
 }
@@ -168,4 +178,5 @@ html, body { height: 100%; }
         grid-template-columns: 1fr;
         align-items: center;
     }
+}
 }
