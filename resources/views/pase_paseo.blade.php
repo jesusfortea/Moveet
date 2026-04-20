@@ -63,10 +63,11 @@
                     {{ $data['premium'] && in_array($data['premium']->id, $reclamadas) ? 'claimed' : '' }}">
                     
                     @if($data['premium'])
-                        <div class="reward-card {{ $esPremium ? 'js-reclamar' : '' }}"
+                        <div class="reward-card js-reclamar"
                              data-id="{{ $data['premium']->id }}"
                              data-nombre="{{ $data['premium']->nombre }}"
-                             data-reclamable="{{ $esPremium && $nivelUsuario >= $nivel && !in_array($data['premium']->id, $reclamadas) ? 'true' : 'false' }}">
+                             data-reclamable="{{ $esPremium && $nivelUsuario >= $nivel && !in_array($data['premium']->id, $reclamadas) ? 'true' : 'false' }}"
+                             data-is-premium="true">
                             
                             <img src="{{ asset($data['premium']->ruta_imagen) }}" alt="{{ $data['premium']->nombre }}" onerror="this.src='https://placehold.co/100x100?text=Premium'">
                             <span class="reward-name">{{ $data['premium']->nombre }}</span>
