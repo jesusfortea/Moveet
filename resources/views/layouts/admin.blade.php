@@ -249,7 +249,7 @@
                 <a href="{{ route('admin.eventos') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.eventos' || strpos(Route::currentRouteName(), 'admin.eventos.') === 0) active @endif">Eventos</a>
                 <a href="{{ route('admin.pase_paseo') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.pase_paseo' || strpos(Route::currentRouteName(), 'admin.pase_paseo.') === 0) active @endif">Pase de paseo</a>
                 <a href="{{ route('admin.lugares') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.lugares' || strpos(Route::currentRouteName(), 'admin.lugares.') === 0) active @endif">Lugares</a>
-                <a href="#" class="admin-sidebar-item">Recompensas</a>
+                <a href="{{ route('admin.recompensas') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.recompensas' || strpos(Route::currentRouteName(), 'admin.recompensas.') === 0) active @endif">Recompensas</a>
             </aside>
             
             <!-- Content -->

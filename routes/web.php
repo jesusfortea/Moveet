@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminMisionController;
 use App\Http\Controllers\AdminEventoController;
 use App\Http\Controllers\AdminPaseDePaseoController;
 use App\Http\Controllers\AdminLugarController;
+use App\Http\Controllers\AdminRecompensaController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\UserController;
@@ -100,4 +101,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('/lugares/{lugar}', [AdminLugarController::class, 'actualizar'])->name('admin.lugares.actualizar');
     Route::get('/lugares/{lugar}/eliminar', [AdminLugarController::class, 'eliminar'])->name('admin.lugares.eliminar');
     Route::delete('/lugares/{lugar}', [AdminLugarController::class, 'confirmarEliminar'])->name('admin.lugares.confirmar-eliminar');
+    
+    // Rutas de recompensas
+    Route::get('/recompensas', [AdminRecompensaController::class, 'index'])->name('admin.recompensas');
+    Route::get('/recompensas/crear', [AdminRecompensaController::class, 'crear'])->name('admin.recompensas.crear');
+    Route::post('/recompensas', [AdminRecompensaController::class, 'guardar'])->name('admin.recompensas.guardar');
+    Route::get('/recompensas/{recompensa}/editar', [AdminRecompensaController::class, 'editar'])->name('admin.recompensas.editar');
+    Route::put('/recompensas/{recompensa}', [AdminRecompensaController::class, 'actualizar'])->name('admin.recompensas.actualizar');
+    Route::get('/recompensas/{recompensa}/eliminar', [AdminRecompensaController::class, 'eliminar'])->name('admin.recompensas.eliminar');
+    Route::delete('/recompensas/{recompensa}', [AdminRecompensaController::class, 'confirmarEliminar'])->name('admin.recompensas.confirmar-eliminar');
 });
