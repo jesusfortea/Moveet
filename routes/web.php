@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminMisionController;
 use App\Http\Controllers\AdminEventoController;
+use App\Http\Controllers\AdminPaseDePaseoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\UserController;
@@ -80,4 +81,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('/eventos/{evento}', [AdminEventoController::class, 'actualizar'])->name('admin.eventos.actualizar');
     Route::get('/eventos/{evento}/eliminar', [AdminEventoController::class, 'eliminar'])->name('admin.eventos.eliminar');
     Route::delete('/eventos/{evento}', [AdminEventoController::class, 'confirmarEliminar'])->name('admin.eventos.confirmar-eliminar');
+    
+    // Rutas de pase de paseo
+    Route::get('/pase-paseo', [AdminPaseDePaseoController::class, 'index'])->name('admin.pase_paseo');
+    Route::get('/pase-paseo/crear', [AdminPaseDePaseoController::class, 'crear'])->name('admin.pase_paseo.crear');
+    Route::post('/pase-paseo', [AdminPaseDePaseoController::class, 'guardar'])->name('admin.pase_paseo.guardar');
+    Route::get('/pase-paseo/{pasedepaseo}/editar', [AdminPaseDePaseoController::class, 'editar'])->name('admin.pase_paseo.editar');
+    Route::put('/pase-paseo/{pasedepaseo}', [AdminPaseDePaseoController::class, 'actualizar'])->name('admin.pase_paseo.actualizar');
+    Route::get('/pase-paseo/{pasedepaseo}/eliminar', [AdminPaseDePaseoController::class, 'eliminar'])->name('admin.pase_paseo.eliminar');
+    Route::delete('/pase-paseo/{pasedepaseo}', [AdminPaseDePaseoController::class, 'confirmarEliminar'])->name('admin.pase_paseo.confirmar-eliminar');
 });
