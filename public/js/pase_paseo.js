@@ -1,4 +1,4 @@
-(function() {
+(function () {
     // Inicialización de la vista del Pase de Paseo
     const initBus = () => {
         // Lógica para reclamar recompensas
@@ -17,17 +17,17 @@
                     const isClaimed = card.closest('.reward-slot').classList.contains('claimed');
                     const isLocked = card.closest('.reward-slot').classList.contains('locked');
                     const isPremiumLevel = card.getAttribute('data-is-premium') === 'true';
-                    
+
                     if (isClaimed) {
                         alert('Ya has reclamado esta recompensa.');
                     } else if (isLocked) {
                         alert('Aún no tienes el nivel necesario para esta recompensa.');
-                    } else if (isPremiumLevel && !document.querySelector('.subscribe-btn')) { 
+                    } else if (isPremiumLevel && !document.querySelector('.subscribe-btn')) {
                         // if subscribe-btn is hidden it might mean they are premium, but another check can be used.
                         // Actually, safer to just say it's premium if it fails the other checks.
                         alert('Debes ser Premium para reclamar esta recompensa.');
                     } else {
-                        alert('No puedes reclamar esta recompensa todavía.');
+                        // alert('No puedes reclamar esta recompensa todavía.');
                     }
                     return;
                 }
@@ -54,7 +54,7 @@
                         badge.className = 'claimed-badge';
                         badge.innerText = '✅ Reclamado';
                         card.appendChild(badge);
-                        
+
                     } else {
                         alert('Error: ' + data.message);
                     }

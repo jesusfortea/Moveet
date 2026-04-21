@@ -26,13 +26,13 @@ class AdminMisionController extends Controller
     {
         $validated = $request->validate([
             'evento_id' => ['required', 'exists:eventos,id'],
-            'nombre' => ['required', 'string', 'min:3', 'max:255'],
+            'nombre' => ['required', 'string', 'regex:/^[\pL\d\s\-]+$/u', 'min:3', 'max:255'],
             'descripcion' => ['required', 'string', 'min:10', 'max:1000'],
-            'metros_requeridos' => ['required', 'integer', 'min:1', 'max:99999'],
-            'ejeX' => ['required', 'numeric', 'between:-180,180'],
-            'ejeY' => ['required', 'numeric', 'between:-90,90'],
+            'metros_requeridos' => ['required', 'integer', 'min:10', 'max:50000'],
+            'ejeX' => ['required', 'numeric', 'regex:/^-?\d+(\.\d+)?$/', 'between:-180,180'],
+            'ejeY' => ['required', 'numeric', 'regex:/^-?\d+(\.\d+)?$/', 'between:-90,90'],
             'direccion' => ['required', 'string', 'min:5', 'max:500'],
-            'puntos' => ['required', 'integer', 'min:1', 'max:9999'],
+            'puntos' => ['required', 'integer', 'min:1', 'max:2000'],
             'premium' => ['nullable', 'boolean'],
             'semanal' => ['nullable', 'boolean'],
         ], [
@@ -60,7 +60,12 @@ class AdminMisionController extends Controller
             'puntos.required' => 'Los puntos son obligatorios',
             'puntos.integer' => 'Los puntos deben ser un número entero',
             'puntos.min' => 'Los puntos deben ser al menos 1',
-            'puntos.max' => 'Los puntos no pueden exceder 9.999',
+            'puntos.max' => 'Los puntos no pueden exceder 2.000',
+            'metros_requeridos.min' => 'Los metros deben ser al menos 10',
+            'metros_requeridos.max' => 'Los metros no pueden exceder 50.000',
+            'nombre.regex' => 'El nombre solo puede contener letras, números, espacios y guiones',
+            'ejeX.regex' => 'La coordenada X debe ser un número decimal válido',
+            'ejeY.regex' => 'La coordenada Y debe ser un número decimal válido',
         ]);
 
         Mision::create($validated);
@@ -77,13 +82,13 @@ class AdminMisionController extends Controller
     {
         $validated = $request->validate([
             'evento_id' => ['required', 'exists:eventos,id'],
-            'nombre' => ['required', 'string', 'min:3', 'max:255'],
+            'nombre' => ['required', 'string', 'regex:/^[\pL\d\s\-]+$/u', 'min:3', 'max:255'],
             'descripcion' => ['required', 'string', 'min:10', 'max:1000'],
-            'metros_requeridos' => ['required', 'integer', 'min:1', 'max:99999'],
-            'ejeX' => ['required', 'numeric', 'between:-180,180'],
-            'ejeY' => ['required', 'numeric', 'between:-90,90'],
+            'metros_requeridos' => ['required', 'integer', 'min:10', 'max:50000'],
+            'ejeX' => ['required', 'numeric', 'regex:/^-?\d+(\.\d+)?$/', 'between:-180,180'],
+            'ejeY' => ['required', 'numeric', 'regex:/^-?\d+(\.\d+)?$/', 'between:-90,90'],
             'direccion' => ['required', 'string', 'min:5', 'max:500'],
-            'puntos' => ['required', 'integer', 'min:1', 'max:9999'],
+            'puntos' => ['required', 'integer', 'min:1', 'max:2000'],
             'premium' => ['nullable', 'boolean'],
             'semanal' => ['nullable', 'boolean'],
         ], [
@@ -111,7 +116,12 @@ class AdminMisionController extends Controller
             'puntos.required' => 'Los puntos son obligatorios',
             'puntos.integer' => 'Los puntos deben ser un número entero',
             'puntos.min' => 'Los puntos deben ser al menos 1',
-            'puntos.max' => 'Los puntos no pueden exceder 9.999',
+            'puntos.max' => 'Los puntos no pueden exceder 2.000',
+            'metros_requeridos.min' => 'Los metros deben ser al menos 10',
+            'metros_requeridos.max' => 'Los metros no pueden exceder 50.000',
+            'nombre.regex' => 'El nombre solo puede contener letras, números, espacios y guiones',
+            'ejeX.regex' => 'La coordenada X debe ser un número decimal válido',
+            'ejeY.regex' => 'La coordenada Y debe ser un número decimal válido',
         ]);
 
         $mision->update($validated);

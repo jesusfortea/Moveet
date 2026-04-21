@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use App\Rules\SpanishIdentityCard;
 
 class AdminController extends Controller
 {
@@ -44,10 +45,10 @@ class AdminController extends Controller
     public function guardarUsuario(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'min:3', 'max:255'],
+            'name' => ['required', 'string', 'regex:/^[\pL\s\-]+$/u', 'min:3', 'max:255'],
             'email' => ['required', 'email:rfc,dns', 'unique:users'],
-            'dni' => ['required', 'regex:/^[0-9]{8}[A-Z]{1}$/', 'unique:users'],
-            'telefono' => ['required', 'regex:/^\+?[0-9]{9,15}$/', 'max:20'],
+            'dni' => ['required', 'string', new SpanishIdentityCard, 'unique:users'],
+            'telefono' => ['required', 'regex:/^[6789]\d{8}$/'],
             'password' => ['required', 'string', 'min:8', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/', 'confirmed'],
             'nacimiento' => ['required', 'date', 'before:today', 'after:1900-01-01'],
             'username' => ['required', 'string', 'min:3', 'max:255', 'regex:/^[a-zA-Z0-9_-]+$/', 'unique:users'],
@@ -59,10 +60,9 @@ class AdminController extends Controller
             'email.email' => 'El correo debe ser una dirección de correo válida.',
             'email.unique' => 'Este correo ya está registrado en el sistema.',
             'dni.required' => 'El DNI es obligatorio.',
-            'dni.regex' => 'El DNI debe tener 8 números seguidos de una letra (ej: 12345678A).',
             'dni.unique' => 'Este DNI ya está registrado.',
             'telefono.required' => 'El teléfono es obligatorio.',
-            'telefono.regex' => 'El teléfono debe tener entre 9 y 15 dígitos.',
+            'telefono.regex' => 'El teléfono debe ser un número válido de España (9 dígitos empezando por 6, 7, 8 o 9).',
             'password.required' => 'La contraseña es obligatoria.',
             'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
             'password.regex' => 'La contraseña debe contener mayúsculas, minúsculas y números.',
@@ -92,10 +92,10 @@ class AdminController extends Controller
     public function actualizarUsuario(Request $request, User $user): RedirectResponse
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'min:3', 'max:255'],
+            'name' => ['required', 'string', 'regex:/^[\pL\s\-]+$/u', 'min:3', 'max:255'],
             'email' => ['required', 'email:rfc,dns', 'unique:users,email,' . $user->id],
-            'dni' => ['required', 'regex:/^[0-9]{8}[A-Z]{1}$/', 'unique:users,dni,' . $user->id],
-            'telefono' => ['required', 'regex:/^\+?[0-9]{9,15}$/', 'max:20'],
+            'dni' => ['required', 'string', new SpanishIdentityCard, 'unique:users,dni,' . $user->id],
+            'telefono' => ['required', 'regex:/^[6789]\d{8}$/'],
             'nacimiento' => ['required', 'date', 'before:today', 'after:1900-01-01'],
             'username' => ['required', 'string', 'min:3', 'max:255', 'regex:/^[a-zA-Z0-9_-]+$/', 'unique:users,username,' . $user->id],
             'password' => ['nullable', 'string', 'min:8', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/', 'confirmed'],
@@ -107,10 +107,9 @@ class AdminController extends Controller
             'email.email' => 'El correo debe ser una dirección de correo válida.',
             'email.unique' => 'Este correo ya está registrado en el sistema.',
             'dni.required' => 'El DNI es obligatorio.',
-            'dni.regex' => 'El DNI debe tener 8 números seguidos de una letra (ej: 12345678A).',
             'dni.unique' => 'Este DNI ya está registrado.',
             'telefono.required' => 'El teléfono es obligatorio.',
-            'telefono.regex' => 'El teléfono debe tener entre 9 y 15 dígitos.',
+            'telefono.regex' => 'El teléfono debe ser un número válido de España (9 dígitos empezando por 6, 7, 8 o 9).',
             'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
             'password.regex' => 'La contraseña debe contener mayúsculas, minúsculas y números.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
