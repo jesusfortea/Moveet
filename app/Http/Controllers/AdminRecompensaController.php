@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Recompensa;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class AdminRecompensaController extends Controller
@@ -32,8 +33,13 @@ class AdminRecompensaController extends Controller
             'tipo' => ['required', 'in:tienda,pase_de_paseo'],
             'puntos_necesarios' => ['required', 'integer', 'min:0'],
             'nivel_necesario' => ['required', 'integer', 'min:1'],
-            'ruta_imagen' => ['required', 'string', 'max:255'],
+            'ruta_imagen' => ['required', 'image', 'max:4096'],
         ]);
+
+        $rutaImagen = null;
+        if ($request->hasFile('ruta_imagen')) {
+            $rutaImagen = 'storage/' . $request->file('ruta_imagen')->store('recompensas', 'public');
+        }
 
         Recompensa::create([
             'nombre' => $validated['nombre'],
@@ -41,7 +47,7 @@ class AdminRecompensaController extends Controller
             'tipo' => $validated['tipo'],
             'puntos_necesarios' => $validated['puntos_necesarios'],
             'nivel_necesario' => $validated['nivel_necesario'],
-            'ruta_imagen' => $validated['ruta_imagen'],
+            'ruta_imagen' => $rutaImagen,
             'premium' => $request->boolean('premium'),
             'visible_en_tienda' => $request->boolean('visible_en_tienda'),
         ]);
@@ -62,8 +68,20 @@ class AdminRecompensaController extends Controller
             'tipo' => ['required', 'in:tienda,pase_de_paseo'],
             'puntos_necesarios' => ['required', 'integer', 'min:0'],
             'nivel_necesario' => ['required', 'integer', 'min:1'],
-            'ruta_imagen' => ['required', 'string', 'max:255'],
+            'ruta_imagen' => ['nullable', 'image', 'max:4096'],
         ]);
+
+        $rutaImagen = $recompensa->ruta_imagen;
+        if ($request->hasFile('ruta_imagen')) {
+            if ($recompensa->ruta_imagen && str_starts_with($recompensa->ruta_imagen, 'storage/')) {
+                $rutaActual = substr($recompensa->ruta_imagen, strlen('storage/'));
+                if (Storage::disk('public')->exists($rutaActual)) {
+                    Storage::disk('public')->delete($rutaActual);
+                }
+            }
+
+            $rutaImagen = 'storage/' . $request->file('ruta_imagen')->store('recompensas', 'public');
+        }
 
         $recompensa->update([
             'nombre' => $validated['nombre'],
@@ -71,7 +89,7 @@ class AdminRecompensaController extends Controller
             'tipo' => $validated['tipo'],
             'puntos_necesarios' => $validated['puntos_necesarios'],
             'nivel_necesario' => $validated['nivel_necesario'],
-            'ruta_imagen' => $validated['ruta_imagen'],
+            'ruta_imagen' => $rutaImagen,
             'premium' => $request->boolean('premium'),
             'visible_en_tienda' => $request->boolean('visible_en_tienda'),
         ]);

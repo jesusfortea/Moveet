@@ -26,7 +26,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('admin.recompensas.actualizar', $recompensa) }}" method="POST" style="background: #d0dbd9; padding: 25px; border-radius: 8px;">
+            <form action="{{ route('admin.recompensas.actualizar', $recompensa) }}" method="POST" enctype="multipart/form-data" style="background: #d0dbd9; padding: 25px; border-radius: 8px;">
                 @csrf
                 @method('PUT')
 
@@ -49,8 +49,14 @@
                         </select>
                     </div>
                     <div>
-                        <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333; font-size: 13px;">Ruta de imagen <span style="color: #c00;">*</span></label>
-                        <input type="text" name="ruta_imagen" value="{{ old('ruta_imagen', $recompensa->ruta_imagen) }}" required maxlength="255" style="width: 100%; padding: 10px 12px; border: 2px solid {{ $errors->has('ruta_imagen') ? '#c00' : '#999' }}; border-radius: 4px; font-size: 13px; box-sizing: border-box; background: {{ $errors->has('ruta_imagen') ? '#fff5f5' : '#fff' }};">
+                        <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333; font-size: 13px;">Imagen de recompensa (opcional)</label>
+                        <input type="file" name="ruta_imagen" accept="image/*" style="width: 100%; padding: 9px 12px; border: 2px solid {{ $errors->has('ruta_imagen') ? '#c00' : '#999' }}; border-radius: 4px; font-size: 13px; box-sizing: border-box; background: {{ $errors->has('ruta_imagen') ? '#fff5f5' : '#fff' }};">
+                        @if($recompensa->ruta_imagen)
+                            <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px;">
+                                <img src="{{ asset($recompensa->ruta_imagen) }}" alt="Imagen actual" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px; border: 1px solid #ccd5d3;">
+                                <span style="font-size: 12px; color: #667;">Imagen actual</span>
+                            </div>
+                        @endif
                     </div>
                 </div>
 
