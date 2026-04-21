@@ -33,7 +33,7 @@
                 @method('PUT')
 
                 <div style="margin-bottom: 15px;">
-                    <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333; font-size: 13px;">Nombre de usuario <span style="color: #c00;">*</span></label>
+                    <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333; font-size: 13px;">Nombre <span style="color: #c00;">*</span></label>
                     <input type="text" name="name" value="{{ old('name', $user->name) }}" required minlength="3" maxlength="255" placeholder="Mínimo 3 caracteres" style="width: 100%; padding: 10px 12px; border: 2px solid {{ $errors->has('name') ? '#c00' : '#999' }}; border-radius: 4px; font-size: 13px; box-sizing: border-box; background: {{ $errors->has('name') ? '#fff5f5' : '#fff' }};">
                     @if ($errors->has('name'))
                         <span style="color: #c00; font-size: 11px; margin-top: 3px; display: block;">❌ {{ $errors->first('name') }}</span>
