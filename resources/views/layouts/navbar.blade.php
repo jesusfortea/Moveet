@@ -62,6 +62,7 @@
             <a href="{{ route('chat.index') }}" class="whitespace-nowrap hover:opacity-80">Chat</a>
             <a href="{{ route('pase.paseo') }}" class="whitespace-nowrap hover:opacity-80">Pase de paseo</a>
             <a href="{{ route('tienda.index') }}" class="whitespace-nowrap hover:opacity-80">Tienda</a>
+            <a href="{{ route('usuario.inventario') }}" class="whitespace-nowrap hover:opacity-80">Recompensas</a>
         </div>
 
         <form method="POST" action="{{ route('logout') }}" class="shrink-0 hidden md:block">
@@ -89,12 +90,13 @@
                 </div>
             @endif
             <div class="space-y-5 text-center font-medium">
-            <a href="{{ route('home') }}" class="block">Inicio</a>
-            <a href="{{ route('eventos') }}" class="block">Evento</a>
-            <a href="{{ route('chat.index') }}" class="block">Chat</a>
-            <a href="{{ route('pase.paseo') }}" class="block">Pase de paseo</a>
-            <a href="{{ route('tienda.index') }}" class="block">Tienda</a>
-        </div>
+                <a href="{{ route('home') }}" class="block">Inicio</a>
+                <a href="{{ route('eventos') }}" class="block">Evento</a>
+                <a href="{{ route('chat.index') }}" class="block">Chat</a>
+                <a href="{{ route('pase.paseo') }}" class="block">Pase de paseo</a>
+                <a href="{{ route('tienda.index') }}" class="block">Tienda</a>
+                <a href="{{ route('usuario.inventario') }}" class="block">Recompensas</a>
+            </div>
 
         <div class="flex items-center gap-2 text-[11px] text-[#4f5f5d]">
             <img class="w-10 h-10 object-contain" src="{{ asset('img/LogoUsarDiaDia.png') }}" alt="Logo Moveet">
@@ -133,7 +135,7 @@
             }
 
             closeMenu();
-        });
+        };
 
         backdrop.onclick = closeMenu;
         panel.querySelectorAll('a').forEach(function (link) {

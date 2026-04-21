@@ -249,7 +249,8 @@
                 <a href="{{ route('admin.eventos') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.eventos' || strpos(Route::currentRouteName(), 'admin.eventos.') === 0) active @endif">Eventos</a>
                 <a href="#" class="admin-sidebar-item">Pase de paseo</a>
                 <a href="#" class="admin-sidebar-item">Lugares</a>
-                <a href="#" class="admin-sidebar-item">Recompensas</a>
+                <a href="{{ route('admin.recompensas') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.recompensas') active @endif">Recompensas</a>
+                <a href="{{ route('admin.tienda') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.tienda' || strpos(Route::currentRouteName(), 'admin.tienda.') === 0) active @endif">Tienda</a>
             </aside>
             
             <!-- Content -->
@@ -264,6 +265,8 @@
             @2025<br>
             www.moveet.es
         </footer>
+
+        @stack('scripts')
     </div>
 </body>
 </html>

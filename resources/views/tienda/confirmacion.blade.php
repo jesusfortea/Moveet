@@ -8,6 +8,10 @@
 
 @section('content')
 <div class="store-page">
+    @php
+        $bloqueadoPremium = $articulo->premium && !$esPremium;
+    @endphp
+
     <a class="store-back" href="{{ route('tienda.articulo', ['recompensa' => $articulo->id]) }}">&lt; Volver</a>
 
     @if (session('status'))
@@ -26,12 +30,21 @@
                 <p><strong>{{ $articulo->nombre }}</strong></p>
                 <p class="store-desc">{{ $articulo->descripcion }}</p>
                 <p><strong>Coste:</strong> {{ number_format((int) $articulo->puntos_necesarios, 0, ',', '.') }} puntos</p>
+                @if ($articulo->premium)
+                    <p class="store-premium-note">
+                        Este articulo solo se puede comprar con pase de paseo premium.
+                    </p>
+                @endif
 
                 <div class="store-actions">
-                    <form method="POST" action="{{ route('tienda.comprar', ['recompensa' => $articulo->id]) }}">
-                        @csrf
-                        <button type="submit" class="store-btn">Si</button>
-                    </form>
+                    @if ($bloqueadoPremium)
+                        <span class="store-btn store-btn-disabled" aria-disabled="true">Requiere premium</span>
+                    @else
+                        <form method="POST" action="{{ route('tienda.comprar', ['recompensa' => $articulo->id]) }}">
+                            @csrf
+                            <button type="submit" class="store-btn">Si</button>
+                        </form>
+                    @endif
                     <a href="{{ route('tienda.index') }}" class="store-btn-secondary">No</a>
                 </div>
 

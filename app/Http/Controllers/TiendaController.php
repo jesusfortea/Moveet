@@ -15,38 +15,46 @@ class TiendaController extends Controller
 {
     private function assertProductoTienda(Recompensa $recompensa): Recompensa
     {
-        abort_unless($recompensa->tipo === 'tienda', 404);
+        abort_unless($recompensa->tipo === 'tienda' && $recompensa->visible_en_tienda, 404);
 
         return $recompensa;
     }
 
     public function index(): View
     {
+        $user = Auth::user();
+
         $articulos = Recompensa::query()
             ->where('tipo', 'tienda')
+            ->where('visible_en_tienda', true)
             ->orderBy('puntos_necesarios')
             ->get();
 
         return view('tienda.index', [
             'articulos' => $articulos,
+            'esPremium' => (bool) ($user?->premium),
         ]);
     }
 
     public function articulo(Recompensa $recompensa): View
     {
         $articulo = $this->assertProductoTienda($recompensa);
+        $user = Auth::user();
 
         return view('tienda.articulo', [
             'articulo' => $articulo,
+            'esPremium' => (bool) ($user?->premium),
         ]);
     }
 
     public function confirmacion(Recompensa $recompensa): View
     {
         $articulo = $this->assertProductoTienda($recompensa);
+        $user = Auth::user();
 
         return view('tienda.confirmacion', [
             'articulo' => $articulo,
+            'esPremium' => (bool) ($user?->premium),
         ]);
     }
 
@@ -60,6 +68,11 @@ class TiendaController extends Controller
         }
 
         $coste = (int) $articulo->puntos_necesarios;
+
+        if ($articulo->premium && !(bool) $user->premium) {
+            return redirect()->route('tienda.confirmacion', ['recompensa' => $articulo->id])
+                ->with('status', 'Este articulo es premium. Necesitas pase de pago para comprarlo.');
+        }
 
         if ((int) $user->puntos < $coste) {
             return redirect()->route('tienda.confirmacion', ['recompensa' => $articulo->id])

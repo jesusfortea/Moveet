@@ -14,7 +14,8 @@ class TiendaSeeder extends Seeder
                 'nombre' => 'Entrada gratis a PortAventura',
                 'descripcion' => 'Canjea tus puntos por una entrada de un dia para PortAventura.',
                 'premium' => true,
-                'puntos_necesarios' => 500,
+                'visible_en_tienda' => true,
+                'puntos_necesarios' => 229999,
                 'nivel_necesario' => 1,
                 'ruta_imagen' => 'img/Moneda.png',
                 'tipo' => 'tienda',
@@ -23,6 +24,7 @@ class TiendaSeeder extends Seeder
                 'nombre' => 'Potenciador de energia',
                 'descripcion' => 'Duplica la ganancia de energia durante 24 horas.',
                 'premium' => false,
+                'visible_en_tienda' => true,
                 'puntos_necesarios' => 500,
                 'nivel_necesario' => 1,
                 'ruta_imagen' => 'img/Moneda.png',
@@ -32,6 +34,7 @@ class TiendaSeeder extends Seeder
                 'nombre' => 'Consumicion gratis en Downtown',
                 'descripcion' => 'Canjea una consumicion gratis en tu local colaborador.',
                 'premium' => false,
+                'visible_en_tienda' => true,
                 'puntos_necesarios' => 600,
                 'nivel_necesario' => 1,
                 'ruta_imagen' => 'img/Moneda.png',
@@ -41,6 +44,7 @@ class TiendaSeeder extends Seeder
                 'nombre' => 'Potenciador de puntos x2',
                 'descripcion' => 'Duplica los puntos obtenidos en misiones durante 7 dias.',
                 'premium' => false,
+                'visible_en_tienda' => true,
                 'puntos_necesarios' => 1200,
                 'nivel_necesario' => 1,
                 'ruta_imagen' => 'img/Moneda.png',
@@ -50,6 +54,7 @@ class TiendaSeeder extends Seeder
                 'nombre' => '10EUR en Google Play',
                 'descripcion' => 'Recibe un codigo de Google Play para canjear en tu cuenta.',
                 'premium' => false,
+                'visible_en_tienda' => true,
                 'puntos_necesarios' => 7599,
                 'nivel_necesario' => 1,
                 'ruta_imagen' => 'img/LogoUsarDiaDia.png',
@@ -58,7 +63,7 @@ class TiendaSeeder extends Seeder
         ];
 
         foreach ($productos as $producto) {
-            Recompensa::firstOrCreate(
+            Recompensa::updateOrCreate(
                 [
                     'nombre' => $producto['nombre'],
                     'tipo' => 'tienda',
