@@ -29,6 +29,7 @@
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">Fecha de nacimiento</th>
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">DNI</th>
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">Teléfono</th>
+                            <th style="border: 1px solid #ddd; padding: 12px; text-align: center; font-weight: 600;">Premium</th>
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: center; font-weight: 600;">Acciones</th>
                         </tr>
                     </thead>
@@ -42,6 +43,13 @@
                                 </td>
                                 <td style="border: 1px solid #ddd; padding: 12px;">{{ $usuario->dni }}</td>
                                 <td style="border: 1px solid #ddd; padding: 12px;">{{ $usuario->telefono }}</td>
+                                <td style="border: 1px solid #ddd; padding: 12px; text-align: center;">
+                                    @if($usuario->premium)
+                                        <span style="background: #d4edda; color: #155724; padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;">Sí</span>
+                                    @else
+                                        <span style="background: #f3f3f3; color: #666; padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;">No</span>
+                                    @endif
+                                </td>
                                 <td style="border: 1px solid #ddd; padding: 12px; text-align: center;">
                                     <a href="{{ route('admin.usuarios.editar', $usuario) }}" style="color: #0066cc; text-decoration: none; margin-right: 12px;">
                                         <i class="fas fa-edit"></i>

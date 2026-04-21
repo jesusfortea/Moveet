@@ -109,6 +109,14 @@
                     @endif
                 </div>
 
+                <div style="margin-bottom: 18px; display: flex; align-items: center; gap: 10px; background: #eef4f3; padding: 12px 14px; border-radius: 6px;">
+                    <input type="checkbox" name="premium" value="1" {{ old('premium', $user->premium) ? 'checked' : '' }} style="width: 18px; height: 18px;">
+                    <div>
+                        <label style="display: block; font-weight: 600; color: #333; font-size: 13px; margin-bottom: 2px;">Usuario premium</label>
+                        <span style="color: #666; font-size: 11px;">Permite acceder a contenido y productos premium.</span>
+                    </div>
+                </div>
+
                 <button type="submit" style="width: 100%; background: #9db3b0; color: white; padding: 11px 20px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; transition: all 0.2s; box-sizing: border-box;" onmouseover="this.style.background='#8a9b98'" onmouseout="this.style.background='#9db3b0'">
                     Actualizar Usuario
                 </button>

@@ -30,6 +30,16 @@ class AdminController extends Controller
         return view('admin.dashboard', $stats);
     }
 
+    public function recompensas(): View
+    {
+        $recompensas = Recompensa::query()
+            ->orderBy('tipo')
+            ->orderBy('puntos_necesarios')
+            ->get();
+
+        return view('admin.recompensas.index', compact('recompensas'));
+    }
+
     // CRUD de Usuarios
     public function usuarios(): View
     {
@@ -52,6 +62,7 @@ class AdminController extends Controller
             'password' => ['required', 'string', 'min:8', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/', 'confirmed'],
             'nacimiento' => ['required', 'date', 'before:today', 'after:1900-01-01'],
             'username' => ['required', 'string', 'min:3', 'max:255', 'regex:/^[a-zA-Z0-9_-]+$/', 'unique:users'],
+            'premium' => ['nullable', 'boolean'],
         ], [
             'name.required' => 'El nombre es obligatorio.',
             'name.min' => 'El nombre debe tener al menos 3 caracteres.',
@@ -78,6 +89,7 @@ class AdminController extends Controller
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
+        $validated['premium'] = $request->boolean('premium');
 
         User::create($validated);
 
@@ -99,6 +111,7 @@ class AdminController extends Controller
             'nacimiento' => ['required', 'date', 'before:today', 'after:1900-01-01'],
             'username' => ['required', 'string', 'min:3', 'max:255', 'regex:/^[a-zA-Z0-9_-]+$/', 'unique:users,username,' . $user->id],
             'password' => ['nullable', 'string', 'min:8', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/', 'confirmed'],
+            'premium' => ['nullable', 'boolean'],
         ], [
             'name.required' => 'El nombre es obligatorio.',
             'name.min' => 'El nombre debe tener al menos 3 caracteres.',
@@ -126,6 +139,8 @@ class AdminController extends Controller
         if ($request->filled('password')) {
             $validated['password'] = Hash::make($request->password);
         }
+
+        $validated['premium'] = $request->boolean('premium');
 
         $user->update($validated);
 

@@ -16,8 +16,14 @@
 
     <div class="store-grid">
         @foreach ($articulos as $articulo)
+            @php
+                $bloqueadoPremium = $articulo->premium && !$esPremium;
+            @endphp
             <article class="store-card {{ $articulo->premium ? 'store-card-premium' : '' }}">
                 <span class="store-price">{{ number_format((int) $articulo->puntos_necesarios, 0, ',', '.') }} ptos</span>
+                @if ($articulo->premium)
+                    <span class="store-premium-badge">Requiere premium</span>
+                @endif
                 <div class="store-img-box">
                     <img src="{{ asset($articulo->ruta_imagen) }}" alt="{{ $articulo->nombre }}">
                 </div>
@@ -25,7 +31,11 @@
                 <p class="store-desc">{{ $articulo->descripcion }}</p>
                 <div class="store-actions">
                     <a href="{{ route('tienda.articulo', ['recompensa' => $articulo->id]) }}" class="store-btn">Ver articulo</a>
-                    <a href="{{ route('tienda.confirmacion', ['recompensa' => $articulo->id]) }}" class="store-btn-secondary">Comprar</a>
+                    @if ($bloqueadoPremium)
+                        <span class="store-btn-secondary store-btn-disabled" aria-disabled="true">Bloqueado</span>
+                    @else
+                        <a href="{{ route('tienda.confirmacion', ['recompensa' => $articulo->id]) }}" class="store-btn-secondary">Comprar</a>
+                    @endif
                 </div>
             </article>
         @endforeach

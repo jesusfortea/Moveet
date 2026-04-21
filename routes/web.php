@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminEventoController;
+use App\Http\Controllers\AdminRecompensaController;
 use App\Http\Controllers\AdminMisionController;
+use App\Http\Controllers\AdminTiendaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\EventoController;
@@ -99,4 +101,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('/eventos/{evento}', [AdminEventoController::class, 'actualizar'])->name('admin.eventos.actualizar');
     Route::get('/eventos/{evento}/eliminar', [AdminEventoController::class, 'eliminar'])->name('admin.eventos.eliminar');
     Route::delete('/eventos/{evento}', [AdminEventoController::class, 'confirmarEliminar'])->name('admin.eventos.confirmar-eliminar');
+
+    Route::get('/recompensas', [AdminRecompensaController::class, 'index'])->name('admin.recompensas');
+    Route::get('/recompensas/crear', [AdminRecompensaController::class, 'crear'])->name('admin.recompensas.crear');
+    Route::post('/recompensas', [AdminRecompensaController::class, 'guardar'])->name('admin.recompensas.guardar');
+    Route::get('/recompensas/{recompensa}/editar', [AdminRecompensaController::class, 'editar'])->name('admin.recompensas.editar');
+    Route::put('/recompensas/{recompensa}', [AdminRecompensaController::class, 'actualizar'])->name('admin.recompensas.actualizar');
+    Route::get('/recompensas/{recompensa}/eliminar', [AdminRecompensaController::class, 'eliminar'])->name('admin.recompensas.eliminar');
+    Route::delete('/recompensas/{recompensa}', [AdminRecompensaController::class, 'confirmarEliminar'])->name('admin.recompensas.confirmar-eliminar');
+
+    Route::get('/tienda', [AdminTiendaController::class, 'index'])->name('admin.tienda');
+    Route::patch('/tienda', [AdminTiendaController::class, 'actualizar'])->name('admin.tienda.actualizar');
 });

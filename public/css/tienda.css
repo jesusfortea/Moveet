@@ -73,6 +73,18 @@
     font-weight: 800;
 }
 
+.store-premium-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: #f2c45c;
+    color: #3f2a00;
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: 0.7rem;
+    font-weight: 800;
+}
+
 .store-img-box {
     height: 90px;
     display: flex;
@@ -133,6 +145,18 @@
     background: #fff;
     border: 1px solid #c5d4d2;
     color: #2f4542;
+}
+
+.store-btn-disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.store-premium-note {
+    margin: 8px 0 10px;
+    font-weight: 700;
+    color: #7f5b08;
 }
 
 .store-card-confirm,

@@ -9,11 +9,12 @@ class Recompensa extends Model
     protected $fillable = [
         'pase_de_paseo_id', 'nombre', 'descripcion',
         'premium', 'puntos_necesarios', 'nivel_necesario',
-        'ruta_imagen', 'tipo',
+        'ruta_imagen', 'tipo', 'visible_en_tienda',
     ];
 
     protected $casts = [
         'premium' => 'boolean',
+        'visible_en_tienda' => 'boolean',
     ];
 
     public function paseDePaseo()
