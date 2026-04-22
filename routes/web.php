@@ -17,11 +17,11 @@ use App\Http\Controllers\TiendaController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-// Root: si hay sesión, home; si no, login.
+// Root: si hay sesión, home; si no, landing page.
 Route::get('/', function () {
     return auth()->check()
         ? redirect()->route('home')
-        : redirect()->route('login');
+        : view('landing');
 });
 
 Route::middleware('guest')->group(function () {
