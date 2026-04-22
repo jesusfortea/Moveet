@@ -293,7 +293,7 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>🗺️ Descubre Moveet</h1>
+            <h1>Descubre Moveet</h1>
             <p>Gamificación basada en ubicación. Completa misiones, participa en eventos, gana puntos y canjéalos por recompensas increíbles.</p>
             <div class="hero-buttons">
                 <a href="{{ route('register') }}" class="btn-primary">Registrarse Gratis</a>

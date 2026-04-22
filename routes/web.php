@@ -123,7 +123,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('/pase-paseo/{pasedepaseo}', [AdminPaseDePaseoController::class, 'actualizar'])->name('admin.pase_paseo.actualizar');
     Route::get('/pase-paseo/{pasedepaseo}/eliminar', [AdminPaseDePaseoController::class, 'eliminar'])->name('admin.pase_paseo.eliminar');
     Route::delete('/pase-paseo/{pasedepaseo}', [AdminPaseDePaseoController::class, 'confirmarEliminar'])->name('admin.pase_paseo.confirmar-eliminar');
-    
+
     // Rutas de lugares
     Route::get('/lugares', [AdminLugarController::class, 'index'])->name('admin.lugares');
     Route::get('/lugares/crear', [AdminLugarController::class, 'crear'])->name('admin.lugares.crear');
