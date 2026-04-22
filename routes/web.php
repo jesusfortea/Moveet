@@ -10,7 +10,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EventoController;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PaseDePaseoController;
 use App\Http\Controllers\SuscripcionController;
 use App\Http\Controllers\TiendaController;
