@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminRecompensaController;
 use App\Http\Controllers\AdminMisionController;
 use App\Http\Controllers\AdminTiendaController;
 use App\Http\Controllers\AdminPaseDePaseoController;
+use App\Http\Controllers\AdminLugarController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\HomeController;
@@ -122,4 +123,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('/pase-paseo/{pasedepaseo}', [AdminPaseDePaseoController::class, 'actualizar'])->name('admin.pase_paseo.actualizar');
     Route::get('/pase-paseo/{pasedepaseo}/eliminar', [AdminPaseDePaseoController::class, 'eliminar'])->name('admin.pase_paseo.eliminar');
     Route::delete('/pase-paseo/{pasedepaseo}', [AdminPaseDePaseoController::class, 'confirmarEliminar'])->name('admin.pase_paseo.confirmar-eliminar');
+    
+    // Rutas de lugares
+    Route::get('/lugares', [AdminLugarController::class, 'index'])->name('admin.lugares');
+    Route::get('/lugares/crear', [AdminLugarController::class, 'crear'])->name('admin.lugares.crear');
+    Route::post('/lugares', [AdminLugarController::class, 'guardar'])->name('admin.lugares.guardar');
+    Route::get('/lugares/{lugar}/editar', [AdminLugarController::class, 'editar'])->name('admin.lugares.editar');
+    Route::put('/lugares/{lugar}', [AdminLugarController::class, 'actualizar'])->name('admin.lugares.actualizar');
+    Route::get('/lugares/{lugar}/eliminar', [AdminLugarController::class, 'eliminar'])->name('admin.lugares.eliminar');
+    Route::delete('/lugares/{lugar}', [AdminLugarController::class, 'confirmarEliminar'])->name('admin.lugares.confirmar-eliminar');
 });
