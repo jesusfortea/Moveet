@@ -15,6 +15,7 @@ use App\Http\Controllers\PaseDePaseoController;
 use App\Http\Controllers\SuscripcionController;
 use App\Http\Controllers\TiendaController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PagoController;
 use Illuminate\Support\Facades\Route;
 
 // Root: si hay sesión, home; si no, login.
@@ -36,6 +37,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::post('/misiones/{mision}/completar', [HomeController::class, 'completarMision']);
+
+    // Pasarela de pago (Sandbox)
+    Route::get('/pago/cambiar-misiones', [PagoController::class, 'mostrarPasarela'])->name('pago.pasarela');
+    Route::post('/pago/procesar', [PagoController::class, 'procesarPago'])->name('pago.procesar');
+    Route::get('/pago/exito/{factura}', [PagoController::class, 'exito'])->name('pago.exito');
+    Route::get('/facturas/{factura}/descargar', [PagoController::class, 'descargarFactura'])->name('pago.descargar');
 
     Route::get('/eventos', [EventoController::class, 'index'])->name('eventos');
 
