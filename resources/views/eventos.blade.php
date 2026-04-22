@@ -47,7 +47,36 @@
 
                 <div class="panel-divider"></div>
 
-                <div class="missions-list" id="missions-list" role="list"></div>
+                <div class="missions-list" id="missions-list" role="list">
+                    @php
+                        $ordenadas = collect($misiones)->sortBy('completada');
+                    @endphp
+                    @if($ordenadas->isEmpty())
+                        <div class="missions-empty">
+                            <div class="missions-empty__icon">🎯</div>
+                            <p>El evento no tiene misiones disponibles.</p>
+                        </div>
+                    @else
+                        @foreach($ordenadas as $m)
+                            <div class="mission-card {{ $m['completada'] ? 'completed' : '' }}" data-id="{{ $m['id'] }}" role="listitem">
+                                <div class="mission-card__check">{{ $m['completada'] ? '✓' : '' }}</div>
+                                <div class="mission-card__body">
+                                    <div class="mission-card__name">{{ $m['nombre'] }}</div>
+                                    @if($m['premium'])
+                                        <span class="mission-card__premium">⭐ Premium</span>
+                                    @endif
+                                    @if($m['direccion'])
+                                        <div class="mission-card__sub direccion-sub">📍 {{ $m['direccion'] }}</div>
+                                    @endif
+                                    @if($m['ejeX'] != null && !$m['completada'])
+                                        <div class="mission-card__sub route-hint">🗺️ Ruta activa · acércate a 50 m</div>
+                                    @endif
+                                </div>
+                                <div class="mission-card__points points-label">+{{ $m['puntos'] }} ptos</div>
+                            </div>
+                        @endforeach
+                    @endif
+                </div>
 
                 <div class="missions-footer">
                     <div class="timer-row">
