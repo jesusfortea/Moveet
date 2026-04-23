@@ -7,10 +7,14 @@ use App\Models\Contacto;
 use App\Models\Mensaje;
 use App\Models\SolicitudAmistad;
 use App\Models\User;
+use chillerlan\QRCode\Common\EccLevel;
+use chillerlan\QRCode\Output\QRMarkupSVG;
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -20,6 +24,259 @@ class ChatController extends Controller
     private function resolveUser(): ?User
     {
         return Auth::user();
+    }
+
+    private function generateUniqueFriendCode(): string
+    {
+        do {
+            $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        } while (User::query()->where('friend_code', $code)->exists());
+
+        return $code;
+    }
+
+    private function ensureFriendCode(User $user): string
+    {
+        if (preg_match('/^\d{6}$/', (string) $user->friend_code) === 1) {
+            return $user->friend_code;
+        }
+
+        $user->forceFill([
+            'friend_code' => $this->generateUniqueFriendCode(),
+        ])->save();
+
+        return $user->friend_code;
+    }
+
+    private function resolveUserFromQrValue(string $value): ?User
+    {
+        $value = trim($value);
+
+        if ($value === '') {
+            return null;
+        }
+
+        if (filter_var($value, FILTER_VALIDATE_URL)) {
+            $path = parse_url($value, PHP_URL_PATH);
+
+            if (!$path) {
+                return null;
+            }
+
+            $segments = array_values(array_filter(explode('/', trim($path, '/'))));
+            $value = end($segments) ?: '';
+        }
+
+        if (preg_match('/^\d{6}$/', $value) === 1) {
+            return User::query()->where('friend_code', $value)->first();
+        }
+
+        return null;
+    }
+
+    private function resolveLegacyInvitationUser(string $value, User $currentUser): ?User
+    {
+        $value = trim($value);
+
+        if ($value === '') {
+            return null;
+        }
+
+        if (filter_var($value, FILTER_VALIDATE_URL)) {
+            $path = parse_url($value, PHP_URL_PATH);
+
+            if (!$path) {
+                return null;
+            }
+
+            $segments = array_values(array_filter(explode('/', trim($path, '/'))));
+            $value = end($segments) ?: '';
+        }
+
+        $padding = strlen($value) % 4;
+
+        if ($padding > 0) {
+            $value .= str_repeat('=', 4 - $padding);
+        }
+
+        $decoded = base64_decode(strtr($value, '-_', '+/'), true);
+
+        if (!$decoded) {
+            return null;
+        }
+
+        $parts = explode('|', $decoded);
+
+        if (count($parts) !== 2 || !ctype_digit($parts[0]) || !ctype_digit($parts[1])) {
+            return null;
+        }
+
+        [$emisorId, $receptorId] = array_map('intval', $parts);
+
+        if ($receptorId !== $currentUser->id) {
+            return null;
+        }
+
+        return User::find($emisorId);
+    }
+
+    private function generatePersonalQrData(User $user): array
+    {
+        $code = $this->ensureFriendCode($user);
+        $url = route('chat.qr.accept', ['code' => $code]);
+        $renderer = new QRCode(new QROptions([
+            'outputInterface' => QRMarkupSVG::class,
+            'eccLevel' => EccLevel::L,
+        ]));
+
+        return [
+            'code' => $code,
+            'url' => $url,
+            'svg' => $renderer->render($url),
+        ];
+    }
+
+    private function ensureAcceptedContactPair(int $firstUserId, int $secondUserId): Contacto
+    {
+        $contactoPrincipal = Contacto::firstOrCreate([
+            'user_id' => $firstUserId,
+            'contacto_id' => $secondUserId,
+        ]);
+
+        Contacto::firstOrCreate([
+            'user_id' => $secondUserId,
+            'contacto_id' => $firstUserId,
+        ]);
+
+        Chat::firstOrCreate([
+            'contacto_id' => $contactoPrincipal->id,
+        ]);
+
+        return $contactoPrincipal;
+    }
+
+    private function resolveFriendshipAction(User $user, User $target): array
+    {
+        if ($user->id === $target->id) {
+            return [
+                'ok' => false,
+                'message' => 'No puedes agregarte a ti mismo.',
+                'contact_id' => null,
+            ];
+        }
+
+        $contactoActual = Contacto::query()
+            ->where('user_id', $user->id)
+            ->where('contacto_id', $target->id)
+            ->first();
+
+        if ($contactoActual) {
+            return [
+                'ok' => true,
+                'message' => 'Ese usuario ya es tu contacto.',
+                'contact_id' => $contactoActual->id,
+            ];
+        }
+
+        $solicitudRecibida = SolicitudAmistad::query()
+            ->where('emisor_id', $target->id)
+            ->where('receptor_id', $user->id)
+            ->first();
+
+        if ($solicitudRecibida && $solicitudRecibida->estado === 'pendiente') {
+            DB::transaction(function () use ($solicitudRecibida, $target, $user) {
+                $solicitudRecibida->update(['estado' => 'aceptada']);
+                $this->ensureAcceptedContactPair($target->id, $user->id);
+            });
+
+            $contactoActual = Contacto::query()
+                ->where('user_id', $user->id)
+                ->where('contacto_id', $target->id)
+                ->first();
+
+            return [
+                'ok' => true,
+                'message' => "Solicitud aceptada. Ya puedes chatear con {$target->name}.",
+                'contact_id' => $contactoActual?->id,
+            ];
+        }
+
+        if ($solicitudRecibida && $solicitudRecibida->estado === 'aceptada') {
+            $this->ensureAcceptedContactPair($target->id, $user->id);
+
+            $contactoActual = Contacto::query()
+                ->where('user_id', $user->id)
+                ->where('contacto_id', $target->id)
+                ->first();
+
+            return [
+                'ok' => true,
+                'message' => 'Ese usuario ya es tu contacto.',
+                'contact_id' => $contactoActual?->id,
+            ];
+        }
+
+        $solicitudEnviada = SolicitudAmistad::query()
+            ->where('emisor_id', $user->id)
+            ->where('receptor_id', $target->id)
+            ->first();
+
+        if ($solicitudEnviada) {
+            if ($solicitudEnviada->estado === 'pendiente') {
+                return [
+                    'ok' => true,
+                    'message' => 'Ya enviaste una solicitud a este usuario.',
+                    'contact_id' => null,
+                ];
+            }
+
+            if ($solicitudEnviada->estado === 'aceptada') {
+                $this->ensureAcceptedContactPair($user->id, $target->id);
+
+                $contactoActual = Contacto::query()
+                    ->where('user_id', $user->id)
+                    ->where('contacto_id', $target->id)
+                    ->first();
+
+                return [
+                    'ok' => true,
+                    'message' => 'Ese usuario ya es tu contacto.',
+                    'contact_id' => $contactoActual?->id,
+                ];
+            }
+
+            $solicitudEnviada->update(['estado' => 'pendiente']);
+
+            return [
+                'ok' => true,
+                'message' => "Solicitud reenviada a {$target->name}.",
+                'contact_id' => null,
+            ];
+        }
+
+        try {
+            SolicitudAmistad::create([
+                'emisor_id' => $user->id,
+                'receptor_id' => $target->id,
+                'estado' => 'pendiente',
+            ]);
+        } catch (QueryException $exception) {
+            if ((int) $exception->getCode() === 23000) {
+                return [
+                    'ok' => true,
+                    'message' => 'Ya existe una solicitud con ese usuario.',
+                    'contact_id' => null,
+                ];
+            }
+
+            throw $exception;
+        }
+
+        return [
+            'ok' => true,
+            'message' => "Solicitud enviada a {$target->name}.",
+            'contact_id' => null,
+        ];
     }
 
     private function ensureChat(Contacto $contacto): Chat
@@ -163,6 +420,7 @@ class ChatController extends Controller
             'mensajes' => $mensajes,
             'usersDisponibles' => $usersDisponibles,
             'solicitudesRecibidas' => $solicitudesRecibidas,
+            'personalQr' => $this->generatePersonalQrData($user),
         ]);
     }
 
@@ -189,7 +447,7 @@ class ChatController extends Controller
 
         return response()->json([
             'contacto' => $this->contactPayload($contacto),
-            'messages' => $mensajes->map(fn (Mensaje $mensaje) => $this->messagePayload($mensaje))->values(),
+            'messages' => $mensajes->map(fn(Mensaje $mensaje) => $this->messagePayload($mensaje))->values(),
             'last_message_id' => $mensajes->last()?->id,
         ]);
     }
@@ -245,9 +503,9 @@ class ChatController extends Controller
         ]);
     }
 
-    public function storeContact(Request $request): RedirectResponse
+    public function storeContact(Request $request): RedirectResponse|JsonResponse
     {
-        $user = Auth::user();
+        $user = $this->resolveUser();
 
         if (!$user) {
             return redirect()->route('login');
@@ -268,116 +526,90 @@ class ChatController extends Controller
             ->first();
 
         if (!$contactoUsuario) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'ok' => false,
+                    'message' => 'No se ha encontrado ningún usuario con ese nombre o email.',
+                ], 404);
+            }
+
             return back()
-                ->withErrors(['contacto' => 'No se ha encontrado ningún usuario con ese nombre.'])
+                ->withErrors(['contacto' => 'No se ha encontrado ningún usuario con ese nombre o email.'])
                 ->withInput();
         }
 
-        $yaEsContacto = Contacto::query()
-            ->where('user_id', $user->id)
-            ->where('contacto_id', $contactoUsuario->id)
-            ->exists();
+        $result = $this->resolveFriendshipAction($user, $contactoUsuario);
+        $redirectUrl = $result['contact_id']
+            ? route('chat.index', ['contacto' => $result['contact_id']])
+            : route('chat.index');
 
-        if ($yaEsContacto) {
-            return redirect()
-                ->route('chat.index')
-                ->with('status', 'Ese usuario ya es tu contacto.');
+        if ($request->expectsJson()) {
+            return response()->json([
+                'ok' => $result['ok'],
+                'message' => $result['message'],
+                'contact_id' => $result['contact_id'],
+                'redirect_url' => $redirectUrl,
+            ], $result['ok'] ? 200 : 422);
         }
 
-        $solicitudRecibida = SolicitudAmistad::query()
-            ->where('emisor_id', $contactoUsuario->id)
-            ->where('receptor_id', $user->id)
-            ->first();
+        return redirect()->to($redirectUrl)->with($result['ok'] ? 'status' : 'error', $result['message']);
+    }
 
-        if ($solicitudRecibida && $solicitudRecibida->estado === 'pendiente') {
-            return redirect()
-                ->route('chat.index')
-                ->with('status', 'Ese usuario ya te ha enviado solicitud. Acéptala para empezar a chatear.');
+    public function acceptInvitation(Request $request, string $code): RedirectResponse
+    {
+        $user = $this->resolveUser();
+
+        if (!$user) {
+            return redirect()->route('login');
         }
 
-        if ($solicitudRecibida && $solicitudRecibida->estado === 'aceptada') {
-            $contactoPrincipal = Contacto::firstOrCreate([
-                'user_id' => $user->id,
-                'contacto_id' => $contactoUsuario->id,
-            ]);
+        $friend = $this->resolveUserFromQrValue($code)
+            ?? $this->resolveLegacyInvitationUser($code, $user);
 
-            Contacto::firstOrCreate([
-                'user_id' => $contactoUsuario->id,
-                'contacto_id' => $user->id,
-            ]);
-
-            Chat::firstOrCreate([
-                'contacto_id' => $contactoPrincipal->id,
-            ]);
-
-            return redirect()
-                ->route('chat.index')
-                ->with('status', 'Ese usuario ya era tu contacto.');
+        if (!$friend) {
+            return redirect()->route('chat.index')->with('error', 'Código QR inválido.');
         }
 
-        $solicitudEnviada = SolicitudAmistad::query()
-            ->where('emisor_id', $user->id)
-            ->where('receptor_id', $contactoUsuario->id)
-            ->first();
+        $result = $this->resolveFriendshipAction($user, $friend);
+        $redirectUrl = $result['contact_id']
+            ? route('chat.index', ['contacto' => $result['contact_id']])
+            : route('chat.index');
 
-        if ($solicitudEnviada) {
-            if ($solicitudEnviada->estado === 'pendiente') {
-                return redirect()
-                    ->route('chat.index')
-                    ->with('status', 'Ya enviaste una solicitud a este usuario.');
-            }
+        return redirect()->to($redirectUrl)->with($result['ok'] ? 'status' : 'error', $result['message']);
+    }
 
-            if ($solicitudEnviada->estado === 'rechazada') {
-                $solicitudEnviada->update([
-                    'estado' => 'pendiente',
-                ]);
+    public function scanQr(Request $request): JsonResponse
+    {
+        $user = $this->resolveUser();
 
-                return redirect()
-                    ->route('chat.index')
-                    ->with('status', 'Solicitud reenviada correctamente.');
-            }
-
-            if ($solicitudEnviada->estado === 'aceptada') {
-                $contactoPrincipal = Contacto::firstOrCreate([
-                    'user_id' => $user->id,
-                    'contacto_id' => $contactoUsuario->id,
-                ]);
-
-                Contacto::firstOrCreate([
-                    'user_id' => $contactoUsuario->id,
-                    'contacto_id' => $user->id,
-                ]);
-
-                Chat::firstOrCreate([
-                    'contacto_id' => $contactoPrincipal->id,
-                ]);
-
-                return redirect()
-                    ->route('chat.index')
-                    ->with('status', 'Ese usuario ya es tu contacto.');
-            }
+        if (!$user) {
+            return response()->json(['ok' => false, 'message' => 'No autenticado'], 401);
         }
 
-        try {
-            SolicitudAmistad::create([
-                'emisor_id' => $user->id,
-                'receptor_id' => $contactoUsuario->id,
-                'estado' => 'pendiente',
-            ]);
-        } catch (QueryException $exception) {
-            // Handles rare double-submit/race cases guarded by unique(emisor_id, receptor_id)
-            if ((int) $exception->getCode() === 23000) {
-                return redirect()
-                    ->route('chat.index')
-                    ->with('status', 'Ya existe una solicitud con ese usuario.');
-            }
+        $validated = $request->validate([
+            'qr_value' => ['required', 'string', 'max:4000'],
+        ]);
 
-            throw $exception;
+        $friend = $this->resolveUserFromQrValue($validated['qr_value'])
+            ?? $this->resolveLegacyInvitationUser($validated['qr_value'], $user);
+
+        if (!$friend) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'No se ha podido leer un QR válido de Moveet.',
+            ], 422);
         }
 
-        return redirect()
-            ->route('chat.index')
-            ->with('status', 'Solicitud enviada correctamente.');
+        $result = $this->resolveFriendshipAction($user, $friend);
+
+        return response()->json([
+            'ok' => $result['ok'],
+            'message' => $result['message'],
+            'contact_id' => $result['contact_id'],
+            'redirect_url' => $result['contact_id']
+                ? route('chat.index', ['contacto' => $result['contact_id']])
+                : route('chat.index'),
+        ], $result['ok'] ? 200 : 422);
     }
 
     public function acceptRequest(SolicitudAmistad $solicitud): RedirectResponse
@@ -398,20 +630,7 @@ class ChatController extends Controller
 
         DB::transaction(function () use ($solicitud) {
             $solicitud->update(['estado' => 'aceptada']);
-
-            $contactoPrincipal = Contacto::firstOrCreate([
-                'user_id' => $solicitud->emisor_id,
-                'contacto_id' => $solicitud->receptor_id,
-            ]);
-
-            Contacto::firstOrCreate([
-                'user_id' => $solicitud->receptor_id,
-                'contacto_id' => $solicitud->emisor_id,
-            ]);
-
-            Chat::firstOrCreate([
-                'contacto_id' => $contactoPrincipal->id,
-            ]);
+            $this->ensureAcceptedContactPair($solicitud->emisor_id, $solicitud->receptor_id);
         });
 
         return redirect()->route('chat.index')->with('status', 'Solicitud aceptada. Ya podéis chatear.');

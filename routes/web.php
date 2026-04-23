@@ -51,6 +51,9 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('chat.index');
     })->name('chat.contactos.fallback');
     Route::post('/chat/contactos', [ChatController::class, 'storeContact'])->name('chat.contactos.store');
+    Route::post('/chat/contactos/qr/scan', [ChatController::class, 'scanQr'])->name('chat.qr.scan');
+    Route::get('/chat/accept-invitation/{code}', [ChatController::class, 'acceptInvitation'])->name('chat.accept-invitation');
+    Route::get('/chat/qr/{code}', [ChatController::class, 'acceptInvitation'])->name('chat.qr.accept');
     Route::delete('/chat/contactos/{contacto}', [ChatController::class, 'deleteContact'])->name('chat.contactos.destroy');
     Route::post('/chat/contactos/{contacto}/bloquear', [ChatController::class, 'blockContact'])->name('chat.contactos.block');
     Route::post('/chat/contactos/{contacto}/desbloquear', [ChatController::class, 'unblockContact'])->name('chat.contactos.unblock');
