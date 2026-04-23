@@ -34,7 +34,7 @@ class FacturaPagoMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Factura de Pago - Moveet',
+            subject: 'Tu factura de Moveet',
         );
     }
 
