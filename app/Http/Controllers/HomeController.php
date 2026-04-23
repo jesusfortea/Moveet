@@ -178,4 +178,37 @@ class HomeController extends Controller
         // Asignar misiones semanales si es necesario
         $this->assignWeeklyMissions($user);
     }
+
+    /**
+     * Elimina las misiones activas no completadas y asigna nuevas.
+     */
+    public function renovarMisiones(User $user, $tipo = 'todas'): void
+    {
+        $now = Carbon::now();
+
+        if ($tipo === 'todas' || $tipo === 'diarias') {
+            $uncompletedDaily = $user->misiones()
+                ->where('misiones.semanal', false)
+                ->where('misiones.evento_id', null)
+                ->wherePivot('completada', false)
+                ->wherePivot('fecha_limite', '>', $now)
+                ->pluck('misiones.id');
+
+            $user->misiones()->detach($uncompletedDaily);
+        }
+
+        if ($tipo === 'todas' || $tipo === 'semanales') {
+            $uncompletedWeekly = $user->misiones()
+                ->where('misiones.semanal', true)
+                ->where('misiones.evento_id', null)
+                ->wherePivot('completada', false)
+                ->wherePivot('fecha_limite', '>', $now)
+                ->pluck('misiones.id');
+
+            $user->misiones()->detach($uncompletedWeekly);
+        }
+
+        // Re-asignar para cubrir los huecos dejados
+        $this->assignDailyAndWeeklyMissions($user);
+    }
 }
