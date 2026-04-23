@@ -15,12 +15,16 @@ class User extends Authenticatable
     protected $fillable = [
         'name', 'username', 'email', 'password', 'dni', 'nacimiento',
         'telefono', 'phone', 'premium', 'nivel', 'puntos', 'ruta_imagen', 'birth_date', 'is_admin',
+        'current_streak', 'longest_streak', 'streak_last_activity_date', 'streak_freezes', 'streak_premium_month',
     ];
 
     protected $attributes = [
         'puntos' => 0,
         'nivel' => 1,
         'premium' => false,
+        'current_streak' => 0,
+        'longest_streak' => 0,
+        'streak_freezes' => 0,
     ];
 
     protected $hidden = ['password', 'remember_token'];
@@ -33,6 +37,7 @@ class User extends Authenticatable
         'password'               => 'hashed',
         'daily_mission_cycle_end'   => 'datetime',
         'weekly_mission_cycle_end'  => 'datetime',
+        'streak_last_activity_date' => 'date',
     ];
 
     // ── Misiones ────────────────────────────────────────────────
@@ -105,6 +110,21 @@ class User extends Authenticatable
     public function comprasTienda()
     {
         return $this->hasMany(CompraTienda::class);
+    }
+
+    public function rutasCreadas()
+    {
+        return $this->hasMany(RutaUsuario::class, 'creator_user_id');
+    }
+
+    public function rutasCompletadas()
+    {
+        return $this->hasMany(RutaUsuarioCompletion::class, 'user_id');
+    }
+
+    public function rutasValoradas()
+    {
+        return $this->hasMany(RutaUsuarioRating::class, 'user_id');
     }
 
     public function getRutaImagenUrlAttribute(): ?string

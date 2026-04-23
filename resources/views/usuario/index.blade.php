@@ -52,6 +52,34 @@
         <section class="usuario-main">
             <article class="panel-card">
                 <div class="panel-header">
+                    <h2>Racha diaria</h2>
+                </div>
+
+                <div class="tarjeta-row">
+                    <span>Racha actual</span>
+                    <strong>{{ $usuario->current_streak }} dias</strong>
+                </div>
+                <div class="tarjeta-row">
+                    <span>Mejor racha</span>
+                    <strong>{{ $usuario->longest_streak }} dias</strong>
+                </div>
+                <div class="tarjeta-row" style="margin-bottom: 12px;">
+                    <span>Congeladores</span>
+                    <strong>{{ $usuario->streak_freezes }}</strong>
+                </div>
+
+                <form method="POST" action="{{ route('usuario.streak.freeze.buy') }}" class="tarjeta-actions">
+                    @csrf
+                    <button type="submit" class="btn-main">Comprar congelador ({{ number_format($streakFreezeCost, 0, ',', '.') }} ptos)</button>
+                </form>
+
+                @if($usuario->premium)
+                    <p class="panel-empty" style="margin-top: 10px;">Premium incluye congeladores mensuales gratis.</p>
+                @endif
+            </article>
+
+            <article class="panel-card">
+                <div class="panel-header">
                     <h2>Tarjetas</h2>
                     <a class="btn-link" href="{{ route('usuario.tarjeta.create') }}">+ Añadir tarjeta</a>
                 </div>

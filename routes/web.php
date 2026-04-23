@@ -16,6 +16,7 @@ use App\Http\Controllers\SuscripcionController;
 use App\Http\Controllers\TiendaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PagoController;
+use App\Http\Controllers\RutaUsuarioController;
 use Illuminate\Support\Facades\Route;
 
 // Root: si hay sesión, home; si no, login.
@@ -52,6 +53,18 @@ Route::middleware('auth')->group(function () {
     Route::post('/usuario/tarjeta', [UserController::class, 'storeCard'])->name('usuario.tarjeta.store');
     Route::delete('/usuario/tarjeta', [UserController::class, 'destroyCard'])->name('usuario.tarjeta.destroy');
     Route::get('/usuario/inventario', [UserController::class, 'inventario'])->name('usuario.inventario');
+    Route::post('/usuario/racha/congelador/comprar', [UserController::class, 'buyStreakFreeze'])->name('usuario.streak.freeze.buy');
+
+    Route::get('/rutas', [RutaUsuarioController::class, 'index'])->name('rutas.index');
+    Route::get('/rutas/crear', [RutaUsuarioController::class, 'crear'])->name('rutas.crear');
+    Route::post('/rutas', [RutaUsuarioController::class, 'guardar'])->name('rutas.guardar');
+    Route::get('/rutas/{ruta}/iniciar', [RutaUsuarioController::class, 'iniciar'])->name('rutas.iniciar');
+    Route::get('/rutas/{ruta}/editar', [RutaUsuarioController::class, 'editar'])->name('rutas.editar');
+    Route::put('/rutas/{ruta}', [RutaUsuarioController::class, 'actualizar'])->name('rutas.actualizar');
+    Route::get('/rutas/{ruta}/confirmar', [RutaUsuarioController::class, 'confirmarCompletar'])->name('rutas.confirmar');
+    Route::post('/rutas/{ruta}/verificar', [RutaUsuarioController::class, 'verificarCheckpoint'])->name('rutas.verificar');
+    Route::post('/rutas/{ruta}/completar', [RutaUsuarioController::class, 'completar'])->name('rutas.completar');
+    Route::post('/rutas/{ruta}/valorar', [RutaUsuarioController::class, 'valorar'])->name('rutas.valorar');
 
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::get('/chat/contactos', function () {

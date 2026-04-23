@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\TarjetaBancaria;
 use App\Models\User;
+use App\Services\StreakService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,6 +14,10 @@ use Illuminate\View\View;
 
 class UserController extends Controller
 {
+    public function __construct(private StreakService $streakService)
+    {
+    }
+
     private function resolveUser(): ?User
     {
         return Auth::user();
@@ -26,6 +31,8 @@ class UserController extends Controller
             return redirect()->route('login');
         }
 
+        $this->streakService->syncStreakState($user);
+        $user = $user->fresh();
 
         $inventario = $user->inventario
             ->sortByDesc('obtenida_at')
@@ -36,7 +43,29 @@ class UserController extends Controller
             'tarjeta' => $user->tarjetaBancaria,
             'tarjetaCaducada' => $user->tarjetaBancaria?->esta_caducada ?? false,
             'inventario' => $inventario,
+            'streakFreezeCost' => $this->streakService->freezeCost(),
         ]);
+    }
+
+    public function buyStreakFreeze(): RedirectResponse
+    {
+        $user = $this->resolveUser();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $this->streakService->syncStreakState($user);
+
+        if (!$this->streakService->buyFreeze($user->fresh())) {
+            return redirect()
+                ->route('usuario.index')
+                ->with('status', 'No tienes puntos suficientes para comprar un congelador de racha.');
+        }
+
+        return redirect()
+            ->route('usuario.index')
+            ->with('status', 'Has comprado un congelador de racha.');
     }
 
     public function updateProfile(Request $request): RedirectResponse

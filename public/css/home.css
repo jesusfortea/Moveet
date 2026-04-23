@@ -50,7 +50,7 @@ html, body {
 }
 
 nav {
-    position: fixed;
+    position: sticky;
     top: 0;
     left: 0;
     width: 100%;
@@ -59,7 +59,6 @@ nav {
 
 /* ── Layout raíz ────────────────────────────────────────────────────── */
 .page-content {
-    padding-top: var(--nav-h);
     min-height: 100vh;
     display: flex;
     flex-direction: column;  /* FIX: columna para que home-layout use el espacio restante */

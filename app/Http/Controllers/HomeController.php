@@ -7,10 +7,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Mision;
 use App\Models\User;
+use App\Services\StreakService;
 use Carbon\Carbon;
 
 class HomeController extends Controller
 {
+    public function __construct(private StreakService $streakService)
+    {
+    }
+
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -18,6 +23,8 @@ class HomeController extends Controller
         if (!$user) {
             return redirect()->route('login');
         }
+
+        $this->streakService->syncStreakState($user);
 
         // Gestionar ciclo semanal basado en fecha de registro
         if (!$user->weekly_mission_cycle_end) {
@@ -107,10 +114,15 @@ class HomeController extends Controller
             ]);
         });
 
+        $this->streakService->registerWalkActivity($user->fresh());
+
+        $user = $user->fresh();
+
         return response()->json([
             'message' => 'Misión completada',
             'mision_id' => $mision->id,
-            'puntos' => $user->fresh()->puntos,
+            'puntos' => $user->puntos,
+            'streak' => $user->current_streak,
         ]);
     }
 

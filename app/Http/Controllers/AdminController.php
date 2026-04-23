@@ -138,6 +138,8 @@ class AdminController extends Controller
 
         if ($request->filled('password')) {
             $validated['password'] = Hash::make($request->password);
+        } else {
+            unset($validated['password']);
         }
 
         $validated['premium'] = $request->boolean('premium');

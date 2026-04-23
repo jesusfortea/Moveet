@@ -2,7 +2,7 @@
     $navUser = \Illuminate\Support\Facades\Auth::user();
 @endphp
 
-<nav class="bg-[#8FA8A6] w-full h-[15vh] min-h-[92px] fixed top-0 left-0 z-50">
+<nav class="bg-[#8FA8A6] w-full h-[15vh] min-h-[92px] sticky top-0 left-0 z-[3000]">
     <div class="h-full px-3 md:px-5 flex items-center justify-between gap-4">
 
         <div class="hidden md:flex items-center gap-3 min-w-0 w-[36%]">
@@ -61,6 +61,10 @@
             <a href="{{ route('eventos') }}" class="whitespace-nowrap hover:opacity-80">Evento</a>
             <a href="{{ route('chat.index') }}" class="whitespace-nowrap hover:opacity-80">Chat</a>
             <a href="{{ route('pase.paseo') }}" class="whitespace-nowrap hover:opacity-80">Pase de paseo</a>
+            @if($navUser?->premium)
+                <a href="{{ route('rutas.crear') }}" class="whitespace-nowrap hover:opacity-80">Crear ruta</a>
+            @endif
+            <a href="{{ route('rutas.index') }}" class="whitespace-nowrap hover:opacity-80">Rutas</a>
             <a href="{{ route('tienda.index') }}" class="whitespace-nowrap hover:opacity-80">Tienda</a>
             <a href="{{ route('usuario.inventario') }}" class="whitespace-nowrap hover:opacity-80">Recompensas</a>
         </div>
@@ -94,6 +98,10 @@
                 <a href="{{ route('eventos') }}" class="block">Evento</a>
                 <a href="{{ route('chat.index') }}" class="block">Chat</a>
                 <a href="{{ route('pase.paseo') }}" class="block">Pase de paseo</a>
+                @if($navUser?->premium)
+                    <a href="{{ route('rutas.crear') }}" class="block">Crear ruta</a>
+                @endif
+                <a href="{{ route('rutas.index') }}" class="block">Rutas</a>
                 <a href="{{ route('tienda.index') }}" class="block">Tienda</a>
                 <a href="{{ route('usuario.inventario') }}" class="block">Recompensas</a>
             </div>
