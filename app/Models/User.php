@@ -95,12 +95,6 @@ class User extends Authenticatable
                     ->withTimestamps();
     }
 
-    // ── Tarjeta bancaria ────────────────────────────────────────
-    public function tarjetasBancarias()
-    {
-        return $this->hasMany(TarjetaBancaria::class);
-    }
-
     // ── Tienda ──────────────────────────────────────────────────
     public function comprasTienda()
     {

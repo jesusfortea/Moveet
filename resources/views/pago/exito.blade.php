@@ -136,6 +136,10 @@
             <span>📄</span> Descargar Factura PDF
         </a>
 
+        <a href="{{ route('pago.correo.preview', $factura->id) }}" target="_blank" class="btn-download" style="border-color: #4A5568; color: #4A5568;">
+            <span>📧</span> Ver Email Enviado (Previsualizar)
+        </a>
+
         <a href="{{ route('home') }}" class="btn-home">
             Volver a mis misiones
         </a>
