@@ -38,19 +38,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::post('/misiones/{mision}/completar', [HomeController::class, 'completarMision']);
 
-    // Pasarela de pago (Sandbox)
+    // Pasarela de pago (PayPal Sandbox)
     Route::get('/pago/cambiar-misiones', [PagoController::class, 'mostrarPasarela'])->name('pago.pasarela');
-    Route::post('/pago/procesar', [PagoController::class, 'procesarPago'])->name('pago.procesar');
+    Route::post('/pago/paypal/capturar-misiones', [PagoController::class, 'capturarPayPalMisiones'])->name('pago.paypal.capturar.misiones');
     Route::get('/pago/exito/{factura}', [PagoController::class, 'exito'])->name('pago.exito');
     Route::get('/facturas/{factura}/descargar', [PagoController::class, 'descargarFactura'])->name('pago.descargar');
+    Route::get('/facturas/{factura}/previsualizar-correo', [PagoController::class, 'previsualizarCorreo'])->name('pago.correo.preview');
 
     Route::get('/eventos', [EventoController::class, 'index'])->name('eventos');
 
     Route::get('/usuario', [UserController::class, 'index'])->name('usuario.index');
     Route::post('/usuario', [UserController::class, 'updateProfile'])->name('usuario.update');
-    Route::get('/usuario/tarjeta/nueva', [UserController::class, 'createCard'])->name('usuario.tarjeta.create');
-    Route::post('/usuario/tarjeta', [UserController::class, 'storeCard'])->name('usuario.tarjeta.store');
-    Route::delete('/usuario/tarjeta', [UserController::class, 'destroyCard'])->name('usuario.tarjeta.destroy');
     Route::get('/usuario/inventario', [UserController::class, 'inventario'])->name('usuario.inventario');
 
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
@@ -80,8 +78,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/pase-paseo/reclamar/{recompensa}', [PaseDePaseoController::class, 'reclamar'])->name('pase.reclamar');
 
     Route::get('/suscripcion', [SuscripcionController::class, 'index'])->name('suscripcion');
-    Route::post('/suscripcion/tarjeta', [SuscripcionController::class, 'storeCard'])->name('suscripcion.tarjeta.store');
-    Route::post('/suscripcion/comprar', [SuscripcionController::class, 'subscribe'])->name('suscripcion.comprar');
+    Route::post('/suscripcion/paypal/capturar-premium', [SuscripcionController::class, 'capturarPayPalPremium'])->name('suscripcion.paypal.capturar.premium');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {

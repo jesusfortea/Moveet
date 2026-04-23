@@ -15,48 +15,31 @@ class PagoController extends Controller
 {
     public function mostrarPasarela(Request $request)
     {
-        // En un futuro podríamos recibir el tipo de producto. Por ahora asumimos "Cambiar misiones" a 0.99
         $producto = [
             'nombre' => 'Cambiar misiones',
             'precio' => 0.99,
         ];
 
-        $tarjetas = Auth::user()->tarjetasBancarias ?? collect();
-
-        return view('pago.pasarela', compact('producto', 'tarjetas'));
+        return view('pago.pasarela', compact('producto'));
     }
 
-    public function procesarPago(Request $request)
+    public function capturarPayPalMisiones(Request $request)
     {
-        $request->validate([
-            'tarjeta_id' => 'required|exists:tarjetas_bancarias,id',
-        ], [
-            'tarjeta_id.required' => 'Debes seleccionar una tarjeta para realizar el pago.',
-        ]);
-
         $user = Auth::user();
-        
-        $tarjeta = \App\Models\TarjetaBancaria::where('id', $request->tarjeta_id)
-            ->where('user_id', $user->id)
-            ->first();
 
-        if (!$tarjeta) {
-            return back()->withErrors(['tarjeta_id' => 'La tarjeta seleccionada no es válida.'])->withInput();
+        if (!$user) {
+            return response()->json(['status' => 'error', 'message' => 'No autorizado'], 401);
         }
 
-        // Extraer últimos 4 dígitos
-        $ultimosDigitos = substr($tarjeta->numero_enmascarado, -4);
-
-        // SIMULACIÓN: Procesamos el cobro de 0.99€ exitosamente (Sandbox)
-        
-        // 1. Crear factura
+        // 1. Crear factura (Simulando datos de tarjeta desde PayPal si fuera necesario, 
+        // pero aquí usamos datos genéricos de PayPal)
         $factura = Factura::create([
             'user_id'         => $user->id,
             'importe'         => 0.99,
-            'concepto'        => 'Renovación de misiones (Sandbox)',
-            'nombre_titular'  => $tarjeta->titular,
+            'concepto'        => 'Renovación de misiones (PayPal)',
+            'nombre_titular'  => $user->name,
             'email_titular'   => $user->email,
-            'ultimos_digitos' => $ultimosDigitos,
+            'ultimos_digitos' => 'PAYP', // Identificador de método
         ]);
 
         // 2. Renovar misiones llamando al HomeController
@@ -73,12 +56,14 @@ class PagoController extends Controller
         try {
             Mail::to($user->email)->send(new FacturaPagoMail($factura, $pdf->output()));
         } catch (\Exception $e) {
-            // Logear el error de correo, pero no bloquear el proceso de éxito para el usuario
             \Log::error('Error enviando email de factura: ' . $e->getMessage());
         }
 
-        // 5. Redirigir a éxito
-        return redirect()->route('pago.exito', ['factura' => $factura->id]);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Pago realizado con éxito',
+            'redirect' => route('pago.exito', ['factura' => $factura->id])
+        ]);
     }
 
     public function exito(Factura $factura)
@@ -103,5 +88,19 @@ class PagoController extends Controller
         ]);
 
         return $pdf->download('factura_' . str_pad($factura->id, 6, '0', STR_PAD_LEFT) . '.pdf');
+    }
+
+    public function previsualizarCorreo(Factura $factura)
+    {
+        if ($factura->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $pdf = Pdf::loadView('pdf.factura', [
+            'factura' => $factura,
+            'user'    => $factura->user,
+        ]);
+
+        return new \App\Mail\FacturaPagoMail($factura, $pdf->output());
     }
 }
