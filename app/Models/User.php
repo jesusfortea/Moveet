@@ -14,7 +14,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name', 'username', 'email', 'password', 'dni', 'nacimiento',
-        'telefono', 'phone', 'premium', 'nivel', 'puntos', 'ruta_imagen', 'birth_date', 'is_admin',
+        'telefono', 'phone', 'premium', 'premium_until', 'nivel', 'puntos', 'ruta_imagen', 'birth_date', 'is_admin',
     ];
 
     protected $attributes = [
@@ -33,7 +33,16 @@ class User extends Authenticatable
         'password'               => 'hashed',
         'daily_mission_cycle_end'   => 'datetime',
         'weekly_mission_cycle_end'  => 'datetime',
+        'premium_until'          => 'datetime',
     ];
+
+    public function getPremiumAttribute($value)
+    {
+        if ($value && $this->premium_until) {
+            return now()->lessThanOrEqualTo($this->premium_until);
+        }
+        return (bool)$value;
+    }
 
     // ── Misiones ────────────────────────────────────────────────
     public function misiones()
