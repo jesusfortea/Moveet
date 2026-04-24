@@ -43,7 +43,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/pago/paypal/capturar-misiones', [PagoController::class, 'capturarPayPalMisiones'])->name('pago.paypal.capturar.misiones');
     Route::get('/pago/exito/{factura}', [PagoController::class, 'exito'])->name('pago.exito');
     Route::get('/facturas/{factura}/descargar', [PagoController::class, 'descargarFactura'])->name('pago.descargar');
-    Route::get('/facturas/{factura}/previsualizar-correo', [PagoController::class, 'previsualizarCorreo'])->name('pago.correo.preview');
+
+    Route::post('/tienda/puntos/paypal/capturar', [TiendaController::class, 'capturarPayPalPuntos'])->name('tienda.puntos.paypal.capturar');
+    Route::post('/tienda/articulo/paypal/capturar/{recompensa}', [TiendaController::class, 'capturarPayPalArticulo'])->name('tienda.articulo.paypal.capturar');
+    Route::post('/suscripcion/paypal/capturar', [SuscripcionController::class, 'capturarPayPalPremium'])->name('suscripcion.paypal.capturar');
 
     Route::get('/eventos', [EventoController::class, 'index'])->name('eventos');
 
@@ -78,7 +81,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/pase-paseo/reclamar/{recompensa}', [PaseDePaseoController::class, 'reclamar'])->name('pase.reclamar');
 
     Route::get('/suscripcion', [SuscripcionController::class, 'index'])->name('suscripcion');
-    Route::post('/suscripcion/paypal/capturar-premium', [SuscripcionController::class, 'capturarPayPalPremium'])->name('suscripcion.paypal.capturar.premium');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {

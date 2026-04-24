@@ -7,9 +7,15 @@ use App\Models\Inventario;
 use App\Models\PackPuntos;
 use App\Models\Recompensa;
 use Illuminate\Http\RedirectResponse;
+use App\Models\Factura;
+use App\Models\User;
+use App\Mail\FacturaPagoMail;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class TiendaController extends Controller
 {
@@ -154,6 +160,104 @@ class TiendaController extends Controller
 
         return view('tienda.compra_puntos', [
             'pack' => $packPuntos,
+        ]);
+    }
+
+    public function capturarPayPalPuntos(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['status' => 'error', 'message' => 'No autorizado'], 401);
+        }
+
+        $packId = $request->input('pack_id');
+        $pack = PackPuntos::findOrFail($packId);
+
+        // 1. Crear factura
+        $factura = Factura::create([
+            'user_id'         => $user->id,
+            'importe'         => $pack->precio_euros,
+            'concepto'        => "Compra de puntos: {$pack->nombre}",
+            'nombre_titular'  => $user->name,
+            'email_titular'   => $user->email,
+            'ultimos_digitos' => 'PAYP',
+        ]);
+
+        // 2. Añadir puntos
+        $user->puntos = (int) $user->puntos + (int) $pack->puntos;
+        $user->save();
+
+        // 3. Generar PDF y enviar correo
+        $pdf = Pdf::loadView('pdf.factura', [
+            'factura' => $factura,
+            'user'    => $user,
+        ]);
+
+        try {
+            Mail::to($user->email)->send(new FacturaPagoMail($factura, $pdf->output()));
+        } catch (\Exception $e) {
+            \Log::error('Error enviando email de factura (puntos): ' . $e->getMessage());
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Puntos comprados con éxito',
+            'redirect' => route('pago.exito', ['factura' => $factura->id])
+        ]);
+    }
+
+    public function capturarPayPalArticulo(Request $request, Recompensa $recompensa)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['status' => 'error', 'message' => 'No autorizado'], 401);
+        }
+
+        $articulo = $this->assertProductoTienda($recompensa);
+        $precio = (float) ($articulo->puntos_necesarios / 100);
+
+        // 1. Crear factura
+        $factura = Factura::create([
+            'user_id'         => $user->id,
+            'importe'         => $precio,
+            'concepto'        => "Compra de artículo: {$articulo->nombre}",
+            'nombre_titular'  => $user->name,
+            'email_titular'   => $user->email,
+            'ultimos_digitos' => 'PAYP',
+        ]);
+
+        // 2. Dar artículo
+        DB::transaction(function () use ($user, $articulo) {
+            CompraTienda::create([
+                'user_id' => $user->id,
+                'recompensa_id' => $articulo->id,
+                'puntos_gastados' => 0, // Pagado con PayPal
+            ]);
+
+            Inventario::create([
+                'user_id' => $user->id,
+                'recompensa_id' => $articulo->id,
+                'origen' => 'tienda_paypal',
+                'obtenida_at' => now(),
+            ]);
+        });
+
+        // 3. Generar PDF y enviar correo
+        $pdf = Pdf::loadView('pdf.factura', [
+            'factura' => $factura,
+            'user'    => $user,
+        ]);
+
+        try {
+            Mail::to($user->email)->send(new FacturaPagoMail($factura, $pdf->output()));
+        } catch (\Exception $e) {
+            \Log::error('Error enviando email de factura (articulo): ' . $e->getMessage());
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Artículo comprado con éxito',
+            'redirect' => route('pago.exito', ['factura' => $factura->id])
         ]);
     }
 }
