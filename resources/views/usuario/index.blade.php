@@ -78,38 +78,6 @@
                 @endif
             </article>
 
-            <article class="panel-card">
-                <div class="panel-header">
-                    <h2>Tarjetas</h2>
-                    <a class="btn-link" href="{{ route('usuario.tarjeta.create') }}">+ Añadir tarjeta</a>
-                </div>
-
-                @if ($tarjeta)
-                    <div class="tarjeta-row">
-                        <span>{{ $tarjeta->titular }}</span>
-                        <span>{{ $tarjeta->numero_enmascarado }}</span>
-                    </div>
-
-                    <div class="tarjeta-meta">
-                        <span>Caducidad: {{ $tarjeta->fecha_caducidad ?? 'No disponible' }}</span>
-                        @if (($tarjetaCaducada ?? false) === true)
-                            <strong class="tarjeta-status tarjeta-status--expired">Caducada</strong>
-                        @else
-                            <strong class="tarjeta-status tarjeta-status--active">Activa</strong>
-                        @endif
-                    </div>
-
-                    @if (($tarjetaCaducada ?? false) === false)
-                        <form method="POST" action="{{ route('usuario.tarjeta.destroy') }}" class="tarjeta-actions">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn-main btn-danger">Eliminar tarjeta</button>
-                        </form>
-                    @endif
-                @else
-                    <p class="panel-empty">Aún no tienes una tarjeta registrada.</p>
-                @endif
-            </article>
 
             <article class="panel-card inventario-card">
                 <div class="panel-header panel-header-stack">
