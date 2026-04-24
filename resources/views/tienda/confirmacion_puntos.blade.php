@@ -28,14 +28,71 @@
                 <p><strong>Precio:</strong> {{ number_format((float) $pack->precio_euros, 2, ',', '.') }}€</p>
 
                 <div class="store-actions">
-                    <form method="POST" action="{{ route('tienda.puntos.comprar', ['packPuntos' => $pack->id]) }}">
-                        @csrf
-                        <button type="submit" class="store-btn">Si, comprar</button>
-                    </form>
-                    <a href="{{ route('tienda.puntos') }}" class="store-btn-secondary">No</a>
+                    <div id="paypal-button-container" style="width: 100%;"></div>
+                    <a href="{{ route('tienda.puntos') }}" class="store-btn-secondary" style="margin-top: 1rem; display: block; text-align: center;">Cancelar</a>
                 </div>
             </div>
         </div>
     </section>
 </div>
+
+@push('scripts')
+<script src="https://www.paypal.com/sdk/js?client-id={{ config('services.paypal.client_id') }}&currency=EUR&vault=true"></script>
+<script>
+    const captureUrl = "{{ route('tienda.puntos.paypal.capturar') }}";
+    const csrfToken = "{{ csrf_token() }}";
+    const packId = "{{ $pack->id }}";
+
+    function processPaymentSuccess(orderID) {
+        const container = document.getElementById('paypal-button-container');
+        container.innerHTML = `
+            <div style="text-align:center; padding: 2rem;">
+                <p>Procesando compra de puntos...</p>
+            </div>
+        `;
+
+        fetch(captureUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken
+            },
+            body: JSON.stringify({ 
+                orderID: orderID,
+                pack_id: packId
+            })
+        })
+        .then(response => response.json())
+        .then(res => {
+            if (res.status === 'success') {
+                window.location.href = res.redirect;
+            } else {
+                alert(res.message || "Error al procesar el pago.");
+                location.reload();
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Error de conexión.");
+            location.reload();
+        });
+    }
+
+    paypal.Buttons({
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: { value: '{{ $pack->precio_euros }}' },
+                    description: 'Compra de {{ $pack->puntos }} puntos - Moveet'
+                }]
+            });
+        },
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                processPaymentSuccess(data.orderID);
+            });
+        }
+    }).render('#paypal-button-container');
+</script>
+@endpush
 @endsection

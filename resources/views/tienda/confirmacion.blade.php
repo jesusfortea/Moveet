@@ -40,12 +40,18 @@
                     @if ($bloqueadoPremium)
                         <span class="store-btn store-btn-disabled" aria-disabled="true">Requiere premium</span>
                     @else
-                        <form method="POST" action="{{ route('tienda.comprar', ['recompensa' => $articulo->id]) }}">
-                            @csrf
-                            <button type="submit" class="store-btn">Si</button>
-                        </form>
+                        <div style="display: flex; flex-direction: column; gap: 1rem; width: 100%;">
+                            <form method="POST" action="{{ route('tienda.comprar', ['recompensa' => $articulo->id]) }}" style="width: 100%;">
+                                @csrf
+                                <button type="submit" class="store-btn" style="width: 100%;">Comprar con {{ number_format((int) $articulo->puntos_necesarios, 0, ',', '.') }} puntos</button>
+                            </form>
+                            
+                            <div style="text-align: center; color: #718096; font-size: 0.9rem; margin: 0.5rem 0;">— O —</div>
+                            
+                            <div id="paypal-button-container" style="width: 100%;"></div>
+                        </div>
                     @endif
-                    <a href="{{ route('tienda.index') }}" class="store-btn-secondary">No</a>
+                    <a href="{{ route('tienda.index') }}" class="store-btn-secondary" style="margin-top: 1rem; display: block; text-align: center;">Cancelar</a>
                 </div>
 
                 <ol class="store-help">
@@ -59,4 +65,61 @@
         </div>
     </section>
 </div>
+@push('scripts')
+<script src="https://www.paypal.com/sdk/js?client-id={{ config('services.paypal.client_id') }}&currency=EUR&vault=true"></script>
+<script>
+    const captureUrl = "{{ route('tienda.articulo.paypal.capturar', $articulo->id) }}";
+    const csrfToken = "{{ csrf_token() }}";
+
+    function processPaymentSuccess(orderID) {
+        const container = document.getElementById('paypal-button-container');
+        container.innerHTML = `
+            <div style="text-align:center; padding: 2rem;">
+                <p>Procesando compra...</p>
+            </div>
+        `;
+
+        fetch(captureUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken
+            },
+            body: JSON.stringify({ orderID: orderID })
+        })
+        .then(response => response.json())
+        .then(res => {
+            if (res.status === 'success') {
+                window.location.href = res.redirect;
+            } else {
+                alert(res.message || "Error al procesar el pago.");
+                location.reload();
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Error de conexión.");
+            location.reload();
+        });
+    }
+
+    if (document.getElementById('paypal-button-container')) {
+        paypal.Buttons({
+            createOrder: function(data, actions) {
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: { value: '{{ number_format($articulo->puntos_necesarios / 100, 2, '.', '') }}' },
+                        description: 'Compra de artículo: {{ $articulo->nombre }} - Moveet'
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    processPaymentSuccess(data.orderID);
+                });
+            }
+        }).render('#paypal-button-container');
+    }
+</script>
+@endpush
 @endsection

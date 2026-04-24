@@ -90,17 +90,4 @@ class PagoController extends Controller
         return $pdf->download('factura_' . str_pad($factura->id, 6, '0', STR_PAD_LEFT) . '.pdf');
     }
 
-    public function previsualizarCorreo(Factura $factura)
-    {
-        if ($factura->user_id !== Auth::id()) {
-            abort(403);
-        }
-
-        $pdf = Pdf::loadView('pdf.factura', [
-            'factura' => $factura,
-            'user'    => $factura->user,
-        ]);
-
-        return new \App\Mail\FacturaPagoMail($factura, $pdf->output());
-    }
 }
