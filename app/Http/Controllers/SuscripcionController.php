@@ -2,92 +2,62 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TarjetaBancaria;
+use App\Models\Factura;
 use App\Models\User;
+use App\Mail\FacturaPagoMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SuscripcionController extends Controller
 {
     public function index()
     {
         $user = Auth::user() ?? User::first();
-        // Cargamos todas las tarjetas bancarias del usuario
-        $tarjetas = $user->tarjetasBancarias;
 
         return view('suscripcion', [
-            'tarjetas' => $tarjetas,
             'esPremium' => (bool)$user->premium,
         ]);
     }
 
-    public function storeCard(Request $request)
+    public function capturarPayPalPremium(Request $request)
     {
-        $user = Auth::user() ?? User::first();
+        $user = Auth::user();
 
-        $validated = $request->validate([
-            'numero_tarjeta' => ['required', 'string', 'max:24'],
-            'fecha_caducidad' => ['required', 'string', 'regex:/^(0[1-9]|1[0-2])\/(\d{2})$/'],
-            'codigo_seguridad' => ['required', 'digits:3'],
-            'titular' => ['required', 'string', 'max:120'],
-        ], [
-            'numero_tarjeta.required' => 'El número de tarjeta es obligatorio.',
-            'fecha_caducidad.required' => 'La fecha de caducidad es obligatoria.',
-            'fecha_caducidad.regex' => 'El formato de fecha debe ser MM/YY (ej: 12/26).',
-            'codigo_seguridad.required' => 'El código de seguridad es obligatorio.',
-            'codigo_seguridad.digits' => 'El código CVC debe tener exactamente 3 dígitos.',
-            'titular.required' => 'El nombre del titular es obligatorio.',
-            'titular.max' => 'El nombre del titular no puede exceder los 120 caracteres.',
-        ]);
-
-        $soloDigitos = preg_replace('/\D+/', '', $validated['numero_tarjeta']);
-
-        if (strlen($soloDigitos) !== 16) {
-            return back()
-                ->withErrors(['numero_tarjeta' => 'El número de tarjeta debe tener exactamente 16 dígitos.'])
-                ->withInput();
+        if (!$user) {
+            return response()->json(['status' => 'error', 'message' => 'No autorizado'], 401);
         }
 
-        $ultimosCuatro = substr($soloDigitos, -4);
-        $numeroEnmascarado = '**** **** **** ' . $ultimosCuatro;
-
-        // Ahora usamos CREATE en lugar de updateOrCreate para permitir múltiples tarjetas
-        TarjetaBancaria::create([
-            'user_id' => $user->id,
-            'titular' => $validated['titular'],
-            'numero_enmascarado' => $numeroEnmascarado,
-            'token_pago' => 'tok_simulated_' . bin2hex(random_bytes(8)),
-            'marca' => 'Visa',
+        // 1. Crear factura
+        $factura = Factura::create([
+            'user_id'         => $user->id,
+            'importe'         => 19.99,
+            'concepto'        => 'Suscripción Premium Moveet',
+            'nombre_titular'  => $user->name,
+            'email_titular'   => $user->email,
+            'ultimos_digitos' => 'PAYP',
         ]);
 
-        return redirect()->back()->with('success', 'Tarjeta añadida correctamente.');
-    }
-
-    public function subscribe(Request $request)
-    {
-        $user = Auth::user() ?? User::first();
-
-        if ($user->premium) {
-            return redirect()->back()->with('error', 'Ya eres un usuario Premium.');
-        }
-
-        // Validar que se haya seleccionado una tarjeta y que pertenezca al usuario
-        $request->validate([
-            'tarjeta_id' => 'required|exists:tarjetas_bancarias,id',
-        ], [
-            'tarjeta_id.required' => 'Debes seleccionar una tarjeta para suscribirte.',
-        ]);
-
-        $tarjeta = TarjetaBancaria::where('id', $request->tarjeta_id)
-                                  ->where('user_id', $user->id)
-                                  ->first();
-
-        if (!$tarjeta) {
-            return redirect()->back()->with('error', 'La tarjeta seleccionada no es válida.');
-        }
-
+        // 2. Activamos Premium
         $user->update(['premium' => true]);
 
-        return redirect()->route('pase.paseo')->with('success', '¡Enhorabuena! Ahora eres un usuario Premium.');
+        // 3. Generar PDF y enviar correo
+        $pdf = Pdf::loadView('pdf.factura', [
+            'factura' => $factura,
+            'user'    => $user,
+        ]);
+
+        try {
+            Mail::to($user->email)->send(new FacturaPagoMail($factura, $pdf->output()));
+        } catch (\Exception $e) {
+            \Log::error('Error enviando email de factura (premium): ' . $e->getMessage());
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => '¡Ahora eres Premium!',
+            'redirect' => route('pago.exito', ['factura' => $factura->id])
+        ]);
     }
 }

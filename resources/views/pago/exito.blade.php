@@ -75,45 +75,56 @@
         color: var(--texto-principal);
     }
 
-    .btn-download {
-        display: inline-flex;
+    .success-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .btn-home {
+        display: flex;
+        justify-content: center;
         align-items: center;
-        gap: 0.5rem;
-        padding: 0.85rem 1.5rem;
-        background-color: transparent;
-        color: var(--primario);
-        border: 2px solid var(--primario);
-        border-radius: 12px;
+        width: 100%;
+        padding: 1.1rem;
+        background: linear-gradient(135deg, #56C470 0%, #3DA656 100%);
+        color: white !important;
+        border: none;
+        border-radius: 16px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 15px rgba(86, 196, 112, 0.3);
+    }
+
+
+    .btn-download {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.75rem;
+        width: 100%;
+        padding: 1rem;
+        background-color: #F1F5F9;
+        color: #475569 !important;
+        border: 2px solid #E2E8F0;
+        border-radius: 16px;
         font-size: 1rem;
         font-weight: 600;
         text-decoration: none;
         transition: all 0.3s ease;
-        margin-bottom: 1rem;
     }
 
     .btn-download:hover {
-        background-color: var(--primario);
-        color: white;
+        background-color: #E2E8F0;
+        border-color: #CBD5E1;
+        color: #1E293B !important;
     }
 
-    .btn-home {
-        display: block;
-        width: 100%;
-        padding: 1rem;
-        background-color: var(--primario);
-        color: white;
-        border: none;
-        border-radius: 12px;
-        font-size: 1.1rem;
-        font-weight: 700;
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-
-    .btn-home:hover {
-        background-color: var(--primario-hover);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(86, 196, 112, 0.3);
+    .btn-download span {
+        font-size: 1.2rem;
     }
 </style>
 @endpush
@@ -132,13 +143,15 @@
             <p>Fecha: <strong>{{ $factura->created_at->format('d/m/Y H:i') }}</strong></p>
         </div>
 
-        <a href="{{ route('pago.descargar', $factura->id) }}" class="btn-download">
-            <span>📄</span> Descargar Factura PDF
-        </a>
+        <div class="success-actions">
+            <a href="{{ route('pago.descargar', $factura->id) }}" class="btn-download">
+                <span>📄</span> Descargar Factura PDF
+            </a>
 
-        <a href="{{ route('home') }}" class="btn-home">
-            Volver a mis misiones
-        </a>
+            <a href="{{ route('home') }}" class="btn-home">
+                Volver a mis misiones
+            </a>
+        </div>
     </div>
 </div>
 @endsection
