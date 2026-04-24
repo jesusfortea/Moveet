@@ -53,6 +53,7 @@
             <article class="panel-card">
                 <div class="panel-header">
                     <h2>Racha diaria</h2>
+                    <a class="btn-link" href="{{ route('usuario.historial_puntos') }}">Historial puntos</a>
                 </div>
 
                 <div class="tarjeta-row">
@@ -138,6 +139,52 @@
                         <p class="panel-empty">Todavia no tienes objetos en inventario.</p>
                     @endforelse
                 </div>
+            </article>
+
+            <article class="panel-card">
+                <div class="panel-header panel-header-stack">
+                    <h2>Logros</h2>
+                    <a class="btn-link" href="{{ route('usuario.notificaciones') }}">Notificaciones</a>
+                </div>
+
+                @if($logros->count() > 0)
+                    <div class="inventario-grid">
+                        @foreach($logros->take(4) as $logro)
+                            <div class="inventario-item" style="background: #f8fafc;">
+                                <span class="cantidad">+{{ $logro->puntos_bonus }}</span>
+                                <div class="recompensa-visual"><span>{{ $logro->icono }}</span></div>
+                                <p>{{ $logro->nombre }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="panel-empty">Aun no has desbloqueado logros. Completa misiones y socializa para conseguirlos.</p>
+                @endif
+            </article>
+
+            <article class="panel-card">
+                <div class="panel-header panel-header-stack">
+                    <h2>Referidos</h2>
+                </div>
+                <div class="tarjeta-row">
+                    <span>Tu codigo</span>
+                    <strong>{{ $usuario->referral_code ?? 'No disponible' }}</strong>
+                </div>
+                <div class="tarjeta-row">
+                    <span>Referidos premiados</span>
+                    <strong>{{ $referidosPremiados }}</strong>
+                </div>
+
+                @if($referidos->count() > 0)
+                    <div style="margin-top: 10px; display:grid; gap:6px;">
+                        @foreach($referidos as $ref)
+                            <div class="tarjeta-row" style="padding: 6px 8px; border: 1px solid #e5e7eb; border-radius: 10px;">
+                                <span>{{ $ref->referred?->name ?? 'Usuario' }}</span>
+                                <strong>{{ $ref->rewarded_at ? 'Premiado' : 'Pendiente' }}</strong>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
             </article>
         </section>
     </div>

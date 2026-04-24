@@ -60,14 +60,17 @@
     {{-- Historial en lista --}}
     <div style="display: grid; gap: 10px;">
         @forelse($historial as $registro)
+            @php
+                $isSpent = in_array($registro->tipo, ['spent', 'store']) || (int) $registro->cantidad < 0;
+            @endphp
             <div style="background: white; border: 1px solid #d8e3e0; border-radius: 10px; padding: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
                 <div style="flex: 1; min-width: 0;">
                     <div style="font-weight: 700; color: #1E2A28;">{{ $registro->motivo ?? 'Movimiento de puntos' }}</div>
                     <div style="font-size: 12px; color: #7a9190; margin-top: 4px;">{{ $registro->created_at->format('d/m/Y H:i') }}</div>
                 </div>
                 <div style="text-align: right;">
-                    <div style="font-size: 18px; font-weight: 800; color: {{ in_array($registro->tipo, ['spent', 'admin_adjustment']) && $registro->cantidad < 0 ? '#e06060' : '#2e7d32' }};">
-                        {{ in_array($registro->tipo, ['spent', 'admin_adjustment']) && $registro->cantidad < 0 ? '-' : '+' }}{{ number_format(abs($registro->cantidad)) }}
+                    <div style="font-size: 18px; font-weight: 800; color: {{ $isSpent ? '#e06060' : '#2e7d32' }};">
+                        {{ $isSpent ? '-' : '+' }}{{ number_format(abs((int) $registro->cantidad)) }}
                     </div>
                     <span style="font-size: 11px; color: #7a9190; background: #f0f2f1; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px;">
                         @switch($registro->tipo)
@@ -84,7 +87,7 @@
                                 Misión
                                 @break
                             @case('store')
-                                Tienda
+                                Compra tienda
                                 @break
                             @case('referral')
                                 Referido

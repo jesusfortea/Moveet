@@ -6,6 +6,7 @@ use App\Models\PuntosHistorial;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class HistorialPuntosController extends Controller
@@ -49,10 +50,12 @@ class HistorialPuntosController extends Controller
         $tipos = ['earned', 'spent', 'reward', 'mission', 'store', 'referral', 'admin_adjustment'];
 
         $estadisticas = [
-            'total_ganados' => (int) PuntosHistorial::where('tipo', 'earned')->sum('cantidad'),
-            'total_gastados' => (int) PuntosHistorial::where('tipo', 'spent')->sum('cantidad'),
+            'total_ganados' => (int) PuntosHistorial::whereIn('tipo', ['earned', 'mission', 'reward', 'referral'])
+                ->sum('cantidad'),
+            'total_gastados' => (int) abs(PuntosHistorial::whereIn('tipo', ['spent', 'store'])
+                ->sum('cantidad')),
             'total_recompensas' => (int) PuntosHistorial::where('tipo', 'reward')->sum('cantidad'),
-            'top_ganadores' => PuntosHistorial::where('tipo', 'earned')
+            'top_ganadores' => PuntosHistorial::whereIn('tipo', ['earned', 'mission', 'reward', 'referral'])
                 ->groupBy('user_id')
                 ->selectRaw('user_id, SUM(cantidad) as total')
                 ->with('usuario')
@@ -95,11 +98,11 @@ class HistorialPuntosController extends Controller
 
         $estadisticas = [
             'total_ganados' => (int) PuntosHistorial::where('user_id', $user->id)
-                ->where('tipo', 'earned')
+                ->whereIn('tipo', ['earned', 'mission', 'reward', 'referral'])
                 ->sum('cantidad'),
             'total_gastados' => (int) PuntosHistorial::where('user_id', $user->id)
-                ->where('tipo', 'spent')
-                ->sum('cantidad'),
+                ->whereIn('tipo', ['spent', 'store'])
+                ->sum(DB::raw('ABS(cantidad)')),
             'saldo_actual' => $user->puntos,
         ];
 

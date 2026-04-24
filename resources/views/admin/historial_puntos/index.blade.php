@@ -73,7 +73,7 @@
     </form>
 
     {{-- Tabla de historial --}}
-    <div style="background: white; border: 1px solid #d8e3e0; border-radius: 10px; overflow: hidden;">
+    <div style="background: white; border: 1px solid #d8e3e0; border-radius: 10px; overflow-x: auto;">
         <table style="width: 100%; border-collapse: collapse;">
             <thead>
                 <tr style="background: #eef4f3; border-bottom: 1px solid #d8e3e0;">
@@ -86,6 +86,9 @@
             </thead>
             <tbody>
                 @forelse($historial as $registro)
+                    @php
+                        $isSpent = in_array($registro->tipo, ['spent', 'store']) || (int) $registro->cantidad < 0;
+                    @endphp
                     <tr style="border-bottom: 1px solid #f0f2f1; {{ $loop->even ? 'background: #f7f9f8;' : '' }}">
                         <td style="padding: 12px;">
                             <a href="{{ route('admin.usuarios.editar', $registro->usuario) }}" style="color: #8FA8A6; text-decoration: none; font-weight: 600;">
@@ -97,8 +100,8 @@
                                 {{ ucfirst(str_replace('_', ' ', $registro->tipo)) }}
                             </span>
                         </td>
-                        <td style="padding: 12px; text-align: right; font-weight: 700; color: {{ $registro->tipo === 'spent' || $registro->tipo === 'admin_adjustment' ? '#e06060' : '#2e7d32' }};">
-                            {{ $registro->tipo === 'spent' ? '-' : '+' }}{{ number_format($registro->cantidad) }}
+                        <td style="padding: 12px; text-align: right; font-weight: 700; color: {{ $isSpent ? '#e06060' : '#2e7d32' }};">
+                            {{ $isSpent ? '-' : '+' }}{{ number_format(abs((int) $registro->cantidad)) }}
                         </td>
                         <td style="padding: 12px; font-size: 13px; color: #516260;">{{ $registro->motivo }}</td>
                         <td style="padding: 12px; font-size: 12px; color: #7a9190;">{{ $registro->created_at->format('d/m/Y H:i') }}</td>

@@ -38,12 +38,29 @@ class UserController extends Controller
             ->sortByDesc('obtenida_at')
             ->values();
 
+        $logros = $user->logros()
+            ->orderByDesc('user_logros.achieved_at')
+            ->get();
+
+        $referidos = $user->referidos()
+            ->with('referred:id,name,email')
+            ->latest('created_at')
+            ->take(5)
+            ->get();
+
+        $referidosPremiados = $user->referidos()
+            ->whereNotNull('rewarded_at')
+            ->count();
+
         return view('usuario.index', [
             'usuario' => $user,
             'tarjeta' => $user->tarjetaBancaria,
             'tarjetaCaducada' => $user->tarjetaBancaria?->esta_caducada ?? false,
             'inventario' => $inventario,
             'streakFreezeCost' => $this->streakService->freezeCost(),
+            'logros' => $logros,
+            'referidos' => $referidos,
+            'referidosPremiados' => $referidosPremiados,
         ]);
     }
 

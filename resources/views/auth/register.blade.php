@@ -132,6 +132,21 @@
                 @enderror
             </div>
 
+            <div class="form-group">
+                <label for="referral_code">Código de referido (opcional)</label>
+                <input
+                    type="text"
+                    id="referral_code"
+                    name="referral_code"
+                    placeholder="ABC12345"
+                    value="{{ old('referral_code') }}"
+                >
+                <span class="error-message"></span>
+                @error('referral_code')
+                    <span style="color: #c33; font-size: 12px;">{{ $message }}</span>
+                @enderror
+            </div>
+
             <button type="submit" class="register-btn">Registrarse</button>
         </form>
 

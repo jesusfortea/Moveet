@@ -10,6 +10,12 @@ class StreakService
 {
     private const PREMIUM_FREEZES_PER_MONTH = 2;
     private const FREEZE_COST_POINTS = 250;
+    private const STREAK_REWARD_EVERY_DAYS = 7;
+    private const STREAK_REWARD_POINTS = 200;
+
+    public function __construct(private PointsHistoryService $pointsHistoryService)
+    {
+    }
 
     public function syncStreakState(User $user): void
     {
@@ -80,6 +86,17 @@ class StreakService
         $user->longest_streak = max((int) $user->longest_streak, (int) $user->current_streak);
         $user->streak_last_activity_date = $today->toDateString();
         $user->save();
+
+        if ((int) $user->current_streak > 0 && ((int) $user->current_streak % self::STREAK_REWARD_EVERY_DAYS) === 0) {
+            $user->increment('puntos', self::STREAK_REWARD_POINTS);
+
+            $this->pointsHistoryService->log(
+                $user,
+                'reward',
+                self::STREAK_REWARD_POINTS,
+                'Cofre de racha: ' . $user->current_streak . ' dias consecutivos'
+            );
+        }
     }
 
     public function buyFreeze(User $user): bool
@@ -92,6 +109,13 @@ class StreakService
             $user->decrement('puntos', self::FREEZE_COST_POINTS);
             $user->increment('streak_freezes');
         });
+
+        $this->pointsHistoryService->log(
+            $user,
+            'spent',
+            self::FREEZE_COST_POINTS,
+            'Compra de congelador de racha'
+        );
 
         return true;
     }
