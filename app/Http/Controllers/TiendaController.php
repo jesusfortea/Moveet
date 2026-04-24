@@ -16,9 +16,17 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\NotificationService;
+use App\Services\PointsHistoryService;
 
 class TiendaController extends Controller
 {
+    public function __construct(
+        private PointsHistoryService $pointsHistoryService,
+        private NotificationService $notificationService,
+    ) {
+    }
+
     private function assertProductoTienda(Recompensa $recompensa): Recompensa
     {
         abort_unless($recompensa->tipo === 'tienda' && $recompensa->visible_en_tienda, 404);
@@ -103,6 +111,21 @@ class TiendaController extends Controller
             ]);
         });
 
+        $this->pointsHistoryService->log(
+            $user,
+            'spent',
+            -$coste,
+            'Compra en tienda: ' . $articulo->nombre
+        );
+
+        $this->notificationService->notify(
+            $user->id,
+            'store',
+            'Compra completada',
+            'Has comprado "' . $articulo->nombre . '" correctamente.',
+            route('usuario.inventario')
+        );
+
         return redirect()->route('tienda.compra', ['recompensa' => $articulo->id])
             ->with('status', 'Articulo comprado correctamente.');
     }
@@ -150,6 +173,13 @@ class TiendaController extends Controller
         $user->puntos = (int) $user->puntos + (int) $packPuntos->puntos;
         $user->save();
 
+        $this->pointsHistoryService->log(
+            $user,
+            'earned',
+            (int) $packPuntos->puntos,
+            'Compra de pack de puntos: ' . $packPuntos->nombre
+        );
+
         return redirect()->route('tienda.puntos.compra', ['packPuntos' => $packPuntos->id])
             ->with('status', "Has comprado {$packPuntos->puntos} puntos correctamente.");
     }
@@ -186,6 +216,21 @@ class TiendaController extends Controller
         // 2. Añadir puntos
         $user->puntos = (int) $user->puntos + (int) $pack->puntos;
         $user->save();
+
+        $this->pointsHistoryService->log(
+            $user,
+            'earned',
+            (int) $pack->puntos,
+            'Compra PayPal de pack de puntos: ' . $pack->nombre
+        );
+
+        $this->notificationService->notify(
+            $user->id,
+            'billing',
+            'Puntos añadidos',
+            'Tu compra de puntos se ha procesado correctamente.',
+            route('usuario.historial_puntos')
+        );
 
         // 3. Generar PDF y enviar correo
         $pdf = Pdf::loadView('pdf.factura', [
@@ -241,6 +286,21 @@ class TiendaController extends Controller
                 'obtenida_at' => now(),
             ]);
         });
+
+        $this->pointsHistoryService->log(
+            $user,
+            'spent',
+            0,
+            'Compra PayPal de articulo: ' . $articulo->nombre
+        );
+
+        $this->notificationService->notify(
+            $user->id,
+            'billing',
+            'Articulo desbloqueado',
+            'Tu compra de "' . $articulo->nombre . '" se completo correctamente.',
+            route('usuario.inventario')
+        );
 
         // 3. Generar PDF y enviar correo
         $pdf = Pdf::loadView('pdf.factura', [

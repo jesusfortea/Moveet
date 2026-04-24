@@ -160,6 +160,13 @@
                                 @method('DELETE')
                                 <button type="submit" class="contact-action-btn contact-action-btn--delete" title="Eliminar">🗑️</button>
                             </form>
+
+                            <form method="POST" action="{{ route('reportes.usuarios.store', $contacto['contacto_id']) }}" style="margin: 0;" onsubmit="return confirm('¿Enviar reporte de este perfil al administrador?');">
+                                @csrf
+                                <input type="hidden" name="reason" value="conducta_inapropiada">
+                                <input type="hidden" name="details" value="Reporte enviado desde chat.">
+                                <button type="submit" class="contact-action-btn contact-action-btn--delete" title="Reportar">⚠️</button>
+                            </form>
                         </div>
                     </div>
                 @empty

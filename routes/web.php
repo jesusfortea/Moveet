@@ -18,6 +18,12 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PagoController;
 use App\Http\Controllers\RutaUsuarioController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HistorialPuntosController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PasswordRecoveryController;
+use App\Http\Controllers\ReporteController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 
 // Root: si hay sesión, home; si no, login.
 Route::get('/', function () {
@@ -31,6 +37,27 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'store'])->name('login.store');
     Route::get('/register', [AuthController::class, 'register'])->name('register');
     Route::post('/register', [AuthController::class, 'storeRegister'])->name('register.store');
+
+    Route::get('/forgot-password', [PasswordRecoveryController::class, 'showForgotPasswordForm'])->name('password.request');
+    Route::post('/forgot-password', [PasswordRecoveryController::class, 'sendResetLink'])->name('password.email');
+    Route::get('/reset-password/{token}', [PasswordRecoveryController::class, 'showResetPasswordForm'])->name('password.reset');
+    Route::post('/reset-password', [PasswordRecoveryController::class, 'resetPassword'])->name('password.update');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/email/verify', function () {
+        return view('auth.verify_email');
+    })->name('verification.notice');
+
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+        return redirect()->route('home')->with('status', 'Tu correo ha sido verificado correctamente.');
+    })->middleware(['signed'])->name('verification.verify');
+
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('status', 'Te hemos enviado un nuevo correo de verificacion.');
+    })->middleware('throttle:6,1')->name('verification.send');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -53,8 +80,15 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/usuario', [UserController::class, 'index'])->name('usuario.index');
     Route::post('/usuario', [UserController::class, 'updateProfile'])->name('usuario.update');
+    Route::get('/usuario/tarjeta', [UserController::class, 'createCard'])->name('usuario.tarjeta.create');
+    Route::post('/usuario/tarjeta', [UserController::class, 'storeCard'])->name('usuario.tarjeta.store');
+    Route::delete('/usuario/tarjeta', [UserController::class, 'destroyCard'])->name('usuario.tarjeta.destroy');
     Route::get('/usuario/inventario', [UserController::class, 'inventario'])->name('usuario.inventario');
     Route::post('/usuario/racha/congelador/comprar', [UserController::class, 'buyStreakFreeze'])->name('usuario.streak.freeze.buy');
+    Route::get('/usuario/historial-puntos', [HistorialPuntosController::class, 'userIndex'])->name('usuario.historial_puntos');
+    Route::get('/usuario/notificaciones', [NotificationController::class, 'index'])->name('usuario.notificaciones');
+    Route::post('/usuario/notificaciones/marcar-todas', [NotificationController::class, 'markAllAsRead'])->name('usuario.notificaciones.read_all');
+    Route::post('/usuario/notificaciones/{notification}/leer', [NotificationController::class, 'markAsRead'])->name('usuario.notificaciones.read_one');
 
     Route::get('/rutas', [RutaUsuarioController::class, 'index'])->name('rutas.index');
     Route::get('/rutas/crear', [RutaUsuarioController::class, 'crear'])->name('rutas.crear');
@@ -75,6 +109,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/chat/contactos/{contacto}', [ChatController::class, 'deleteContact'])->name('chat.contactos.destroy');
     Route::post('/chat/contactos/{contacto}/bloquear', [ChatController::class, 'blockContact'])->name('chat.contactos.block');
     Route::post('/chat/contactos/{contacto}/desbloquear', [ChatController::class, 'unblockContact'])->name('chat.contactos.unblock');
+    Route::post('/reportes/usuarios/{reportedUser}', [ReporteController::class, 'reportUser'])->name('reportes.usuarios.store');
     Route::post('/chat/solicitudes/{solicitud}/aceptar', [ChatController::class, 'acceptRequest'])->name('chat.solicitudes.accept');
     Route::post('/chat/solicitudes/{solicitud}/rechazar', [ChatController::class, 'rejectRequest'])->name('chat.solicitudes.reject');
     Route::get('/chat/contactos/{contacto}/mensajes', [ChatController::class, 'messages'])->name('chat.messages.index');
@@ -151,4 +186,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('/lugares/{lugar}', [AdminLugarController::class, 'actualizar'])->name('admin.lugares.actualizar');
     Route::get('/lugares/{lugar}/eliminar', [AdminLugarController::class, 'eliminar'])->name('admin.lugares.eliminar');
     Route::delete('/lugares/{lugar}', [AdminLugarController::class, 'confirmarEliminar'])->name('admin.lugares.confirmar-eliminar');
+
+    Route::get('/historial-puntos', [HistorialPuntosController::class, 'adminIndex'])->name('admin.historial_puntos');
+    Route::get('/reportes', [ReporteController::class, 'adminIndex'])->name('admin.reportes.index');
+    Route::patch('/reportes/{reporte}', [ReporteController::class, 'adminResolve'])->name('admin.reportes.resolve');
 });

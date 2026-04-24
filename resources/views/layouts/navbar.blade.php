@@ -2,7 +2,7 @@
     $navUser = \Illuminate\Support\Facades\Auth::user();
 @endphp
 
-<nav class="bg-[#8FA8A6] w-full h-[15vh] min-h-[92px] sticky top-0 left-0 z-[3000]">
+<nav class="bg-[#8FA8A6] w-full h-[15vh] min-h-[92px] sticky top-0 left-0 z-3000">
     <div class="h-full px-3 md:px-5 flex items-center justify-between gap-4">
 
         <div class="hidden md:flex items-center gap-3 min-w-0 w-[36%]">
@@ -66,6 +66,8 @@
             @endif
             <a href="{{ route('rutas.index') }}" class="whitespace-nowrap hover:opacity-80">Rutas</a>
             <a href="{{ route('tienda.index') }}" class="whitespace-nowrap hover:opacity-80">Tienda</a>
+            <a href="{{ route('usuario.historial_puntos') }}" class="whitespace-nowrap hover:opacity-80">Historial</a>
+            <a href="{{ route('usuario.notificaciones') }}" class="whitespace-nowrap hover:opacity-80">Notificaciones</a>
             <a href="{{ route('usuario.inventario') }}" class="whitespace-nowrap hover:opacity-80">Recompensas</a>
         </div>
 
@@ -103,6 +105,8 @@
                 @endif
                 <a href="{{ route('rutas.index') }}" class="block">Rutas</a>
                 <a href="{{ route('tienda.index') }}" class="block">Tienda</a>
+                <a href="{{ route('usuario.historial_puntos') }}" class="block">Historial</a>
+                <a href="{{ route('usuario.notificaciones') }}" class="block">Notificaciones</a>
                 <a href="{{ route('usuario.inventario') }}" class="block">Recompensas</a>
             </div>
 
@@ -117,7 +121,7 @@
 </aside>
 
 <script>
-    window.onload = function () {
+    document.addEventListener('DOMContentLoaded', function () {
         const toggle = document.getElementById('mobile-nav-toggle');
         const panel = document.getElementById('mobile-nav-panel');
         const backdrop = document.getElementById('mobile-nav-backdrop');

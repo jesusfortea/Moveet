@@ -251,6 +251,8 @@
                 <a href="{{ route('admin.lugares') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.lugares' || strpos(Route::currentRouteName(), 'admin.lugares.') === 0) active @endif">Lugares</a>
                 <a href="{{ route('admin.recompensas') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.recompensas') active @endif">Recompensas</a>
                 <a href="{{ route('admin.tienda') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.tienda' || strpos(Route::currentRouteName(), 'admin.tienda.') === 0) active @endif">Tienda</a>
+                <a href="{{ route('admin.historial_puntos') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.historial_puntos') active @endif">Historial puntos</a>
+                <a href="{{ route('admin.reportes.index') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.reportes.index') active @endif">Reportes</a>
             </aside>
             
             <!-- Content -->

@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
 
@@ -16,6 +17,8 @@ class User extends Authenticatable
         'name', 'username', 'email', 'password', 'dni', 'nacimiento',
         'telefono', 'phone', 'premium', 'premium_until', 'nivel', 'puntos', 'ruta_imagen', 'birth_date', 'is_admin',
         'current_streak', 'longest_streak', 'streak_last_activity_date', 'streak_freezes', 'streak_premium_month',
+        'referral_code', 'referred_by_user_id',
+        'last_location_latitude', 'last_location_longitude', 'last_location_timestamp',
     ];
 
     protected $attributes = [
@@ -38,7 +41,7 @@ class User extends Authenticatable
         'daily_mission_cycle_end'   => 'datetime',
         'weekly_mission_cycle_end'  => 'datetime',
         'streak_last_activity_date' => 'date',
-        'premium_until'             => 'datetime',
+        'last_location_timestamp'   => 'datetime',
     ];
 
     public function getPremiumAttribute($value)
@@ -81,6 +84,43 @@ class User extends Authenticatable
     public function solicitudesRecibidas()
     {
         return $this->hasMany(SolicitudAmistad::class, 'receptor_id');
+    }
+
+    public function puntosHistorial()
+    {
+        return $this->hasMany(PuntosHistorial::class);
+    }
+
+    public function notificacionesUsuario()
+    {
+        return $this->hasMany(UserNotification::class)->latest();
+    }
+
+    public function logros()
+    {
+        return $this->belongsToMany(Logro::class, 'user_logros')
+            ->withPivot(['achieved_at'])
+            ->withTimestamps();
+    }
+
+    public function referidoPor()
+    {
+        return $this->belongsTo(User::class, 'referred_by_user_id');
+    }
+
+    public function referidos()
+    {
+        return $this->hasMany(Referido::class, 'referrer_user_id');
+    }
+
+    public function reporteEnviados()
+    {
+        return $this->hasMany(ReporteContenido::class, 'reporter_user_id');
+    }
+
+    public function reporteRecibidos()
+    {
+        return $this->hasMany(ReporteContenido::class, 'reported_user_id');
     }
 
     // ── Pase de paseo ───────────────────────────────────────────

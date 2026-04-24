@@ -12,11 +12,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use App\Services\AchievementService;
+use App\Services\NotificationService;
+use App\Services\PointsHistoryService;
 
 class RutaUsuarioController extends Controller
 {
     private const CREATOR_REWARD_PERCENT = 0.10;
     private const CREATOR_DAILY_CAP = 500;
+
+    public function __construct(
+        private PointsHistoryService $pointsHistoryService,
+        private NotificationService $notificationService,
+        private AchievementService $achievementService,
+    ) {
+    }
 
     public function index(): View|RedirectResponse
     {
@@ -250,6 +260,23 @@ class RutaUsuarioController extends Controller
 
                     $this->refreshStats($ruta);
                 });
+
+                $this->pointsHistoryService->log(
+                    $user,
+                    'earned',
+                    (int) $ruta->puntos_recompensa,
+                    'Ruta completada: ' . $ruta->titulo
+                );
+
+                $this->notificationService->notify(
+                    $user->id,
+                    'route',
+                    'Ruta completada',
+                    'Has completado "' . $ruta->titulo . '" y ganado ' . (int) $ruta->puntos_recompensa . ' puntos.',
+                    route('usuario.historial_puntos')
+                );
+
+                $this->achievementService->syncBaseAchievements($user->fresh());
             }
 
             return $this->routeResponse($request, true, 'Ruta completada correctamente.', 200, [
@@ -477,6 +504,22 @@ class RutaUsuarioController extends Controller
 
                     if ($reward > 0) {
                         $creator->increment('puntos', $reward);
+
+                        $this->pointsHistoryService->log(
+                            $creator,
+                            'reward',
+                            $reward,
+                            'Bonus creador por valoracion 5 estrellas de ruta: ' . $ruta->titulo,
+                            $user->id
+                        );
+
+                        $this->notificationService->notify(
+                            $creator->id,
+                            'route',
+                            'Tu ruta ha sido valorada con 5 estrellas',
+                            'Has recibido ' . $reward . ' puntos de bonus por tu ruta "' . $ruta->titulo . '".',
+                            route('rutas.index')
+                        );
 
                         $completion->update([
                             'creator_reward_points' => $reward,
