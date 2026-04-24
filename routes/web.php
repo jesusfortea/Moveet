@@ -50,7 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/usuario', [UserController::class, 'updateProfile'])->name('usuario.update');
     Route::get('/usuario/tarjeta/nueva', [UserController::class, 'createCard'])->name('usuario.tarjeta.create');
     Route::post('/usuario/tarjeta', [UserController::class, 'storeCard'])->name('usuario.tarjeta.store');
-    Route::delete('/usuario/tarjeta', [UserController::class, 'destroyCard'])->name('usuario.tarjeta.destroy');
+    Route::delete('/usuario/tarjeta/{tarjeta}', [UserController::class, 'destroyCard'])->name('usuario.tarjeta.destroy');
     Route::get('/usuario/inventario', [UserController::class, 'inventario'])->name('usuario.inventario');
 
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');

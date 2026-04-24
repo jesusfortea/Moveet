@@ -26,15 +26,19 @@ class UserController extends Controller
             return redirect()->route('login');
         }
 
-
+        $tarjetas = $user->tarjetasBancarias()
+            ->latest('id')
+            ->get();
+        $tarjetaPrincipal = $tarjetas->first();
         $inventario = $user->inventario
             ->sortByDesc('obtenida_at')
             ->values();
 
         return view('usuario.index', [
             'usuario' => $user,
-            'tarjeta' => $user->tarjetaBancaria,
-            'tarjetaCaducada' => $user->tarjetaBancaria?->esta_caducada ?? false,
+            'tarjetas' => $tarjetas,
+            'tarjeta' => $tarjetaPrincipal,
+            'tarjetaCaducada' => $tarjetaPrincipal?->esta_caducada ?? false,
             'inventario' => $inventario,
         ]);
     }
@@ -109,6 +113,7 @@ class UserController extends Controller
 
         return view('usuario.tarjeta', [
             'usuario' => $user,
+            'tarjetas' => $user->tarjetasBancarias()->latest('id')->get(),
         ]);
     }
 
@@ -151,21 +156,21 @@ class UserController extends Controller
         $ultimosCuatro = substr($soloDigitos, -4);
         $numeroEnmascarado = '**** **** **** ' . $ultimosCuatro;
 
-        TarjetaBancaria::updateOrCreate(
-            ['user_id' => $user->id],
-            [
-                'titular' => $validated['titular'],
-                'numero_enmascarado' => $numeroEnmascarado,
-                'fecha_caducidad' => $validated['fecha_caducidad'],
-            ]
-        );
+        TarjetaBancaria::create([
+            'user_id' => $user->id,
+            'titular' => $validated['titular'],
+            'numero_enmascarado' => $numeroEnmascarado,
+            'fecha_caducidad' => $validated['fecha_caducidad'],
+            'token_pago' => 'tok_profile_' . bin2hex(random_bytes(8)),
+            'marca' => 'Visa',
+        ]);
 
         return redirect()
             ->route('usuario.index')
             ->with('status', 'Tarjeta guardada correctamente.');
     }
 
-    public function destroyCard(): RedirectResponse
+    public function destroyCard(TarjetaBancaria $tarjeta): RedirectResponse
     {
         $user = $this->resolveUser();
 
@@ -173,12 +178,10 @@ class UserController extends Controller
             return redirect()->route('login');
         }
 
-        $tarjeta = $user->tarjetaBancaria;
-
-        if (!$tarjeta) {
+        if ($tarjeta->user_id !== $user->id) {
             return redirect()
                 ->route('usuario.index')
-                ->with('status', 'No tienes ninguna tarjeta para eliminar.');
+                ->with('status', 'No puedes eliminar una tarjeta que no te pertenece.');
         }
 
         $tarjeta->delete();
