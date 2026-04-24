@@ -18,6 +18,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PagoController;
 use App\Http\Controllers\RutaUsuarioController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HistorialPuntosController;
 
 // Root: si hay sesión, home; si no, login.
 Route::get('/', function () {
@@ -55,6 +56,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/usuario', [UserController::class, 'updateProfile'])->name('usuario.update');
     Route::get('/usuario/inventario', [UserController::class, 'inventario'])->name('usuario.inventario');
     Route::post('/usuario/racha/congelador/comprar', [UserController::class, 'buyStreakFreeze'])->name('usuario.streak.freeze.buy');
+    Route::get('/usuario/historial-puntos', [HistorialPuntosController::class, 'userIndex'])->name('usuario.historial_puntos');
 
     Route::get('/rutas', [RutaUsuarioController::class, 'index'])->name('rutas.index');
     Route::get('/rutas/crear', [RutaUsuarioController::class, 'crear'])->name('rutas.crear');
@@ -151,4 +153,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('/lugares/{lugar}', [AdminLugarController::class, 'actualizar'])->name('admin.lugares.actualizar');
     Route::get('/lugares/{lugar}/eliminar', [AdminLugarController::class, 'eliminar'])->name('admin.lugares.eliminar');
     Route::delete('/lugares/{lugar}', [AdminLugarController::class, 'confirmarEliminar'])->name('admin.lugares.confirmar-eliminar');
+
+    Route::get('/historial-puntos', [HistorialPuntosController::class, 'adminIndex'])->name('admin.historial_puntos');
 });

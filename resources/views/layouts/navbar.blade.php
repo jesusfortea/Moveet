@@ -117,7 +117,7 @@
 </aside>
 
 <script>
-    window.onload = function () {
+    document.addEventListener('DOMContentLoaded', function () {
         const toggle = document.getElementById('mobile-nav-toggle');
         const panel = document.getElementById('mobile-nav-panel');
         const backdrop = document.getElementById('mobile-nav-backdrop');
