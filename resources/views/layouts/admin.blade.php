@@ -6,15 +6,21 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>@yield('title', 'Admin - Moveet')</title>
 
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+        *, *::before, *::after { box-sizing: border-box; }
+
         body {
+            margin: 0;
+            padding: 0;
             background: #f5f5f5;
+            font-family: 'Nunito', sans-serif;
         }
         
         .admin-page {
@@ -23,25 +29,27 @@
             min-height: 100vh;
         }
         
-        /* Navbar */
+        /* ── Navbar ── */
         .admin-navbar {
             background: #8FA8A6;
             display: flex;
             align-items: center;
             padding: 0 20px;
             height: 15vh;
+            min-height: 72px;
             position: relative;
             z-index: 50;
+            gap: 16px;
         }
         
         .admin-navbar-logo {
             flex: 0 0 auto;
-            margin-right: 20px;
         }
         
         .admin-navbar-logo img {
             height: 90px;
             width: auto;
+            display: block;
         }
         
         .admin-navbar-search {
@@ -52,49 +60,33 @@
         }
         
         .admin-navbar-search input {
-            width: 600px;
+            width: 100%;
+            max-width: 560px;
             padding: 10px 16px;
             border: none;
             border-radius: 6px;
             font-size: 14px;
-            color: #999;
+            color: #555;
+            font-family: 'Nunito', sans-serif;
         }
         
         .admin-navbar-user {
             flex: 0 0 auto;
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 14px;
             color: white;
-            margin-left: 2px
-        }
-        
-        .admin-navbar-logout {
-            flex: 0 0 auto;
-            color: white;
-            font-size: 15px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 12px 20px;
-            font-weight: 600;
-            transition: all 0.2s;
-            border-radius: 6px;
-        }
-        
-        .admin-navbar-logout:hover {
-            background: rgba(255, 255, 255, 0.1);
         }
         
         .admin-navbar-avatar {
-            width: 60px;
-            height: 60px;
+            width: 54px;
+            height: 54px;
             background: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
+            font-weight: 800;
             color: #8FA8A6;
             font-size: 20px;
             flex-shrink: 0;
@@ -102,45 +94,63 @@
         
         .admin-navbar-info p {
             margin: 0;
-            line-height: 1.2;
+            line-height: 1.25;
         }
         
         .admin-navbar-info p:first-child {
-            font-weight: bold;
+            font-weight: 700;
             font-size: 15px;
         }
         
         .admin-navbar-info p:last-child {
             font-size: 12px;
-            opacity: 0.9;
+            opacity: 0.85;
+        }
+
+        .admin-navbar-logout {
+            flex: 0 0 auto;
+            color: white;
+            font-size: 14px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px 18px;
+            font-weight: 700;
+            font-family: 'Nunito', sans-serif;
+            transition: background 0.2s;
+            border-radius: 6px;
         }
         
+        .admin-navbar-logout:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        /* ── Main grid ── */
         .admin-main {
             display: grid;
-            grid-template-columns: 260px 1fr;
-            flex: 1;
+            grid-template-columns: 240px 1fr;
             overflow: hidden;
         }
         
-        /* Sidebar */
+        /* ── Sidebar ── */
         .admin-sidebar {
             background: #c5d8d6;
             overflow-y: auto;
-            padding: 20px 16px;
+            padding: 18px 14px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
         
         .admin-sidebar-item {
-            padding: 16px 20px;
+            padding: 14px 18px;
             background: white;
             border: none;
             border-radius: 6px;
             color: #333;
             cursor: pointer;
             font-family: 'Nunito', sans-serif;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             transition: all 0.2s;
             text-align: center;
@@ -149,24 +159,26 @@
         }
         
         .admin-sidebar-item:hover {
-            background: #f0f0f0;
+            background: #eef2f1;
+            color: #1E2A28;
         }
         
         .admin-sidebar-item.active {
-            background: #9db3b0;
+            background: #8FA8A6;
             color: white;
             font-weight: 700;
         }
         
-        /* Content area */
+        /* ── Content area ── */
         .admin-content {
             background: white;
             overflow-y: auto;
-            padding: 40px;
+            padding: 36px 40px;
             display: flex;
             flex-direction: column;
         }
         
+        /* ── Stats (dashboard) ── */
         .admin-stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -190,7 +202,7 @@
             font-size: 2.8rem;
             font-weight: 900;
             color: #1E2A28;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         
         .admin-stat-label {
@@ -199,7 +211,7 @@
             color: #1E2A28;
         }
         
-        /* Footer */
+        /* ── Footer ── */
         .admin-footer {
             background: #8FA8A6;
             padding: 12px 20px;
@@ -207,9 +219,12 @@
             color: white;
             font-size: 13px;
             font-weight: 600;
-            line-height: 1.4;
+            line-height: 1.5;
         }
+
+        @stack('page-styles')
     </style>
+    @stack('styles')
 </head>
 <body>
     <div class="admin-page">
@@ -217,7 +232,9 @@
         <!-- Navbar -->
         <nav class="admin-navbar">
             <div class="admin-navbar-logo">
-                <img src="{{ asset('img/LogoUsarDiaDia.png') }}" alt="Logo Moveet">
+                <a href="{{ route('admin.dashboard') }}">
+                    <img src="{{ asset('img/LogoUsarDiaDia.png') }}" alt="Logo Moveet">
+                </a>
             </div>
             
             <div class="admin-navbar-search">
@@ -225,10 +242,10 @@
             </div>
             
             <div class="admin-navbar-user">
-                <div class="admin-navbar-avatar">{{ substr(Auth::user()->name ?? 'A', 0, 1) }}</div>
+                <div class="admin-navbar-avatar">{{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}</div>
                 <div class="admin-navbar-info">
                     <p>{{ Auth::user()->name ?? 'Admin' }}</p>
-                    <p>usuario administrador</p>
+                    <p>Administrador</p>
                 </div>
             </div>
             
@@ -243,16 +260,46 @@
             
             <!-- Sidebar -->
             <aside class="admin-sidebar">
-                <a href="{{ route('admin.dashboard') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.dashboard') active @endif">Dashboard</a>
-                <a href="{{ route('admin.usuarios') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.usuarios' || strpos(Route::currentRouteName(), 'admin.usuarios.') === 0) active @endif">Usuarios</a>
-                <a href="{{ route('admin.misiones') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.misiones' || strpos(Route::currentRouteName(), 'admin.misiones.') === 0) active @endif">Misiones</a>
-                <a href="{{ route('admin.eventos') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.eventos' || strpos(Route::currentRouteName(), 'admin.eventos.') === 0) active @endif">Eventos</a>
-                <a href="{{ route('admin.pase_paseo') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.pase_paseo' || strpos(Route::currentRouteName(), 'admin.pase_paseo.') === 0) active @endif">Pase de paseo</a>
-                <a href="{{ route('admin.lugares') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.lugares' || strpos(Route::currentRouteName(), 'admin.lugares.') === 0) active @endif">Lugares</a>
-                <a href="{{ route('admin.recompensas') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.recompensas') active @endif">Recompensas</a>
-                <a href="{{ route('admin.tienda') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.tienda' || strpos(Route::currentRouteName(), 'admin.tienda.') === 0) active @endif">Tienda</a>
-                <a href="{{ route('admin.historial_puntos') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.historial_puntos') active @endif">Historial puntos</a>
-                <a href="{{ route('admin.reportes.index') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.reportes.index') active @endif">Reportes</a>
+                <a href="{{ route('admin.dashboard') }}"
+                   class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.dashboard') active @endif">
+                   Dashboard
+                </a>
+                <a href="{{ route('admin.usuarios') }}"
+                   class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.usuarios' || str_starts_with(Route::currentRouteName() ?? '', 'admin.usuarios.')) active @endif">
+                   Usuarios
+                </a>
+                <a href="{{ route('admin.misiones') }}"
+                   class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.misiones' || str_starts_with(Route::currentRouteName() ?? '', 'admin.misiones.')) active @endif">
+                   Misiones
+                </a>
+                <a href="{{ route('admin.eventos') }}"
+                   class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.eventos' || str_starts_with(Route::currentRouteName() ?? '', 'admin.eventos.')) active @endif">
+                   Eventos
+                </a>
+                <a href="{{ route('admin.pase_paseo') }}"
+                   class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.pase_paseo' || str_starts_with(Route::currentRouteName() ?? '', 'admin.pase_paseo.')) active @endif">
+                   Pase de paseo
+                </a>
+                <a href="{{ route('admin.lugares') }}"
+                   class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.lugares' || str_starts_with(Route::currentRouteName() ?? '', 'admin.lugares.')) active @endif">
+                   Lugares
+                </a>
+                <a href="{{ route('admin.recompensas') }}"
+                   class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.recompensas' || str_starts_with(Route::currentRouteName() ?? '', 'admin.recompensas.')) active @endif">
+                   Recompensas
+                </a>
+                <a href="{{ route('admin.tienda') }}"
+                   class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.tienda' || str_starts_with(Route::currentRouteName() ?? '', 'admin.tienda.')) active @endif">
+                   Tienda
+                </a>
+                <a href="{{ route('admin.historial_puntos') }}"
+                   class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.historial_puntos') active @endif">
+                   Historial puntos
+                </a>
+                <a href="{{ route('admin.reportes.index') }}"
+                   class="admin-sidebar-item @if(str_starts_with(Route::currentRouteName() ?? '', 'admin.reportes')) active @endif">
+                   Reportes
+                </a>
             </aside>
             
             <!-- Content -->
@@ -263,9 +310,7 @@
         
         <!-- Footer -->
         <footer class="admin-footer">
-            Moveet<br>
-            @2025<br>
-            www.moveet.es
+            Moveet &copy; {{ date('Y') }} &nbsp;·&nbsp; www.moveet.es
         </footer>
 
         @stack('scripts')

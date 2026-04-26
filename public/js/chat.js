@@ -97,6 +97,15 @@ window.onload = () => {
         }
 
         sendButton.disabled = true;
+        input.disabled = true;
+
+        // Append message instantly for better UX
+        const tempId = 'temp-' + Date.now();
+        const tempHtml = `<article class="message-bubble message-bubble--out" data-temp-id="${tempId}"><p>${escapeHtml(contenido)}</p><span>${new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span></article>`;
+        const prevEmpty = messagesContainer.querySelector('.chat-empty');
+        if (prevEmpty) prevEmpty.remove();
+        messagesContainer.insertAdjacentHTML('beforeend', tempHtml);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
         try {
             const response = await fetch(chatConfig.sendUrl, {
@@ -112,18 +121,27 @@ window.onload = () => {
 
             if (!response.ok) {
                 const errorPayload = await response.json().catch(() => ({}));
-                throw new Error(errorPayload.message || 'No se pudo enviar el mensaje');
+                // Remove optimistic message
+                messagesContainer.querySelector(`[data-temp-id="${tempId}"]`)?.remove();
+                alert(errorPayload.message || 'No se pudo enviar el mensaje');
+                input.value = contenido;
+                return;
             }
 
+            const payload = await response.json();
+            lastMessageId = payload.last_message_id || lastMessageId;
             input.value = '';
             await refreshMessages({ forceScroll: true });
             input.focus();
         } catch (error) {
             console.error(error);
+            messagesContainer.querySelector(`[data-temp-id="${tempId}"]`)?.remove();
         } finally {
             sendButton.disabled = false;
+            input.disabled = false;
+            input.focus();
         }
-    });
+    };
 
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
     refreshMessages({ forceScroll: true });

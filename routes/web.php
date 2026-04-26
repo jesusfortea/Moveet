@@ -44,7 +44,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/reset-password', [PasswordRecoveryController::class, 'resetPassword'])->name('password.update');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'not_blocked'])->group(function () {
     Route::get('/email/verify', function () {
         return view('auth.verify_email');
     })->name('verification.notice');
@@ -62,7 +62,7 @@ Route::middleware('auth')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'not_blocked'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::post('/misiones/{mision}/completar', [HomeController::class, 'completarMision']);
 
@@ -131,7 +131,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/suscripcion', [SuscripcionController::class, 'index'])->name('suscripcion');
 });
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+Route::middleware(['auth', 'not_blocked', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
     Route::get('/usuarios', [AdminController::class, 'usuarios'])->name('admin.usuarios');
@@ -139,6 +139,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::post('/usuarios', [AdminController::class, 'guardarUsuario'])->name('admin.usuarios.guardar');
     Route::get('/usuarios/{user}/editar', [AdminController::class, 'editarUsuario'])->name('admin.usuarios.editar');
     Route::put('/usuarios/{user}', [AdminController::class, 'actualizarUsuario'])->name('admin.usuarios.actualizar');
+    Route::patch('/usuarios/{user}/bloqueo', [AdminController::class, 'toggleBloqueoUsuario'])->name('admin.usuarios.toggle-bloqueo');
     Route::get('/usuarios/{user}/eliminar', [AdminController::class, 'eliminarUsuario'])->name('admin.usuarios.eliminar');
     Route::delete('/usuarios/{user}', [AdminController::class, 'confirmarEliminar'])->name('admin.usuarios.confirmar-eliminar');
 
