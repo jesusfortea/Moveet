@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminMisionController;
 use App\Http\Controllers\AdminTiendaController;
 use App\Http\Controllers\AdminPaseDePaseoController;
 use App\Http\Controllers\AdminLugarController;
+use App\Http\Controllers\AtencionUsuarioController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\HomeController;
@@ -33,6 +34,8 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/atencion-al-usuario', [AtencionUsuarioController::class, 'create'])->name('atencion.create');
+Route::post('/atencion-al-usuario', [AtencionUsuarioController::class, 'store'])->name('atencion.store');
 
 // Rutas públicas para preguntas
 Route::get('/preguntas', [PreguntaController::class, 'index'])->name('preguntas.index');

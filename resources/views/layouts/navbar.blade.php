@@ -63,6 +63,7 @@
             <a href="{{ route('pase.paseo') }}" class="whitespace-nowrap hover:opacity-80">Pase de paseo</a>
             <a href="{{ route('tienda.index') }}" class="whitespace-nowrap hover:opacity-80">Tienda</a>
             <a href="{{ route('usuario.inventario') }}" class="whitespace-nowrap hover:opacity-80">Recompensas</a>
+            <a href="{{ route('atencion.create') }}" class="whitespace-nowrap hover:opacity-80">Atención al usuario</a>
             <a href="{{ route('preguntas.index') }}" class="whitespace-nowrap hover:opacity-80"><i class="fas fa-star mr-1"></i>Reseñas</a>
         </div>
 
@@ -97,6 +98,7 @@
                 <a href="{{ route('pase.paseo') }}" class="block">Pase de paseo</a>
                 <a href="{{ route('tienda.index') }}" class="block">Tienda</a>
                 <a href="{{ route('usuario.inventario') }}" class="block">Recompensas</a>
+                <a href="{{ route('atencion.create') }}" class="block">Atención al usuario</a>
                 <a href="{{ route('preguntas.index') }}" class="block"><i class="fas fa-star mr-1"></i>Reseñas</a>
             </div>
 
