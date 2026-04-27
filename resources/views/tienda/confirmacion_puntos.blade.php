@@ -67,13 +67,13 @@
             if (res.status === 'success') {
                 window.location.href = res.redirect;
             } else {
-                alert(res.message || "Error al procesar el pago.");
+                window.showAppAlert(res.message || "Error al procesar el pago.", 'error', 'Compra no completada');
                 location.reload();
             }
         })
         .catch(err => {
             console.error(err);
-            alert("Error de conexión.");
+            window.showAppAlert("Error de conexión.", 'error', 'Error de red');
             location.reload();
         });
     }

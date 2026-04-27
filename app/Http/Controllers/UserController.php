@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Logro;
+use App\Models\TarjetaBancaria;
 use App\Models\User;
+use App\Services\AchievementService;
 use App\Services\StreakService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -13,7 +16,10 @@ use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    public function __construct(private StreakService $streakService)
+    public function __construct(
+        private StreakService $streakService,
+        private AchievementService $achievementService,
+    )
     {
     }
 
@@ -31,6 +37,7 @@ class UserController extends Controller
         }
 
         $this->streakService->syncStreakState($user);
+        $user->ensureReferralCode();
         $user = $user->fresh();
 
         $inventario = $user->inventario
@@ -142,4 +149,151 @@ class UserController extends Controller
         ]);
     }
 
+    public function logros(): View|RedirectResponse
+    {
+        $user = $this->resolveUser();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $this->achievementService->ensureCatalog();
+
+        $logrosCatalogo = Logro::query()
+            ->where('activo', true)
+            ->orderBy('puntos_bonus')
+            ->get();
+
+        $logrosDesbloqueados = $user->logros()
+            ->orderByDesc('user_logros.achieved_at')
+            ->get()
+            ->keyBy('id');
+
+        return view('usuario.logros', [
+            'usuario' => $user,
+            'logrosCatalogo' => $logrosCatalogo,
+            'logrosDesbloqueados' => $logrosDesbloqueados,
+        ]);
+    }
+
+    public function referidos(): View|RedirectResponse
+    {
+        $user = $this->resolveUser();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $user->ensureReferralCode();
+        $user = $user->fresh();
+
+        $referidos = $user->referidos()
+            ->with('referred:id,name,email')
+            ->latest('created_at')
+            ->get();
+
+        $totales = [
+            'total' => $referidos->count(),
+            'premiados' => $referidos->whereNotNull('rewarded_at')->count(),
+            'pendientes' => $referidos->whereNull('rewarded_at')->count(),
+            'puntos_ganados' => (int) $referidos
+                ->whereNotNull('rewarded_at')
+                ->sum('reward_points'),
+        ];
+
+        return view('usuario.referidos', [
+            'usuario' => $user,
+            'referidos' => $referidos,
+            'totales' => $totales,
+        ]);
+    }
+
+    public function createCard(): View|RedirectResponse
+    {
+        $user = $this->resolveUser();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        return view('usuario.tarjeta', [
+            'usuario' => $user,
+        ]);
+    }
+
+    public function storeCard(Request $request): RedirectResponse
+    {
+        $user = $this->resolveUser();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $validated = $request->validate([
+            'numero_tarjeta' => ['required', 'string', 'max:24'],
+            'fecha_caducidad' => ['required', 'string', 'regex:/^(0[1-9]|1[0-2])\/(\d{2})$/'],
+            'codigo_seguridad' => ['required', 'digits_between:3,4'],
+            'titular' => ['required', 'string', 'max:120'],
+        ]);
+
+        try {
+            $expira = Carbon::createFromFormat('m/y', $validated['fecha_caducidad'])->endOfMonth();
+            if ($expira->lt(now()->startOfDay())) {
+                return back()
+                    ->withErrors(['fecha_caducidad' => 'La tarjeta esta caducada.'])
+                    ->withInput();
+            }
+        } catch (\Throwable $e) {
+            return back()
+                ->withErrors(['fecha_caducidad' => 'La fecha de caducidad no es valida.'])
+                ->withInput();
+        }
+
+        $soloDigitos = preg_replace('/\D+/', '', $validated['numero_tarjeta']);
+
+        if (strlen($soloDigitos) < 12 || strlen($soloDigitos) > 19) {
+            return back()
+                ->withErrors(['numero_tarjeta' => 'El numero de tarjeta no es valido.'])
+                ->withInput();
+        }
+
+        $ultimosCuatro = substr($soloDigitos, -4);
+        $numeroEnmascarado = '**** **** **** ' . $ultimosCuatro;
+
+        TarjetaBancaria::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'titular' => $validated['titular'],
+                'numero_enmascarado' => $numeroEnmascarado,
+                'fecha_caducidad' => $validated['fecha_caducidad'],
+            ]
+        );
+
+        return redirect()
+            ->route('usuario.index')
+            ->with('status', 'Tarjeta guardada correctamente.');
+    }
+
+    public function destroyCard(): RedirectResponse
+    {
+        $user = $this->resolveUser();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $tarjeta = $user->tarjetaBancaria;
+
+        if (!$tarjeta) {
+            return redirect()
+                ->route('usuario.index')
+                ->with('status', 'No tienes ninguna tarjeta para eliminar.');
+        }
+
+        $tarjeta->delete();
+
+        return redirect()
+            ->route('usuario.index')
+            ->with('status', 'Tarjeta eliminada correctamente.');
+    }
 }

@@ -19,15 +19,15 @@
                     const isPremiumLevel = card.getAttribute('data-is-premium') === 'true';
 
                     if (isClaimed) {
-                        alert('Ya has reclamado esta recompensa.');
+                        window.showAppAlert('Ya has reclamado esta recompensa.', 'info', 'Recompensa ya reclamada');
                     } else if (isLocked) {
-                        alert('Aún no tienes el nivel necesario para esta recompensa.');
+                        window.showAppAlert('Aún no tienes el nivel necesario para esta recompensa.', 'warning', 'Nivel insuficiente');
                     } else if (isPremiumLevel && !document.querySelector('.subscribe-btn')) {
                         // if subscribe-btn is hidden it might mean they are premium, but another check can be used.
                         // Actually, safer to just say it's premium if it fails the other checks.
-                        alert('Debes ser Premium para reclamar esta recompensa.');
+                        window.showAppAlert('Debes ser Premium para reclamar esta recompensa.', 'warning', 'Recompensa premium');
                     } else {
-                        // alert('No puedes reclamar esta recompensa todavía.');
+                        // Estado no reclamable sin motivo adicional.
                     }
                     return;
                 }
@@ -55,12 +55,19 @@
                         badge.innerText = '✅ Reclamado';
                         card.appendChild(badge);
 
+                        const puntosGanados = Number(data.puntos_ganados || 0);
+                        const msg = puntosGanados > 0
+                            ? `Has reclamado ${rewardNombre} y ganado ${puntosGanados} puntos.`
+                            : `Has reclamado ${rewardNombre}.`;
+
+                        window.showAppAlert(msg, 'success', 'Recompensa reclamada');
+
                     } else {
-                        alert('Error: ' + data.message);
+                        window.showAppAlert(data.message ? ('Error: ' + data.message) : 'No se pudo reclamar la recompensa.', 'error', 'Error');
                     }
                 } catch (error) {
                     console.error('Error al reclamar:', error);
-                    alert('Ocurrió un error de red al procesar la reclamación.');
+                    window.showAppAlert('Ocurrió un error de red al procesar la reclamación.', 'error', 'Error de red');
                 }
             };
         });

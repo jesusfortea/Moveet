@@ -2,48 +2,71 @@
 
 @section('title', 'Notificaciones · Moveet')
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/usuario.css') }}">
+@endpush
+
 @section('content')
-<div style="max-width: 900px; margin: 24px auto; padding: 0 12px;">
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:14px; flex-wrap:wrap;">
-        <h1 style="font-size: 1.8rem; font-weight: 800; color: #1E2A28;">Notificaciones</h1>
+<div class="usuario-page">
+    <div class="inventario-topbar">
+        <a class="volver-link" href="{{ route('usuario.index') }}">&lt; Volver</a>
+        <h1 class="usuario-page-title usuario-page-title--center">Notificaciones</h1>
         <form action="{{ route('usuario.notificaciones.read_all') }}" method="POST">
             @csrf
-            <button style="padding:10px 14px; border:none; border-radius:10px; background:#8FA8A6; color:white; font-weight:700;">Marcar todas como leídas</button>
+            <button type="submit" class="btn-main">Marcar todas leídas</button>
         </form>
     </div>
 
     @if (session('status'))
-        <div style="margin-bottom:12px; background:#ecfdf3; border:1px solid #86efac; color:#166534; border-radius:10px; padding:10px 12px;">{{ session('status') }}</div>
+        <div class="usuario-alert">{{ session('status') }}</div>
     @endif
 
-    <div style="display:grid; gap:10px;">
-        @forelse($notifications as $item)
-            <div style="border:1px solid #d1d5db; border-radius:12px; background: {{ $item->read_at ? '#ffffff' : '#f0fdf4' }}; padding:12px;">
-                <div style="display:flex; justify-content:space-between; gap:10px; align-items:center; flex-wrap:wrap;">
-                    <strong style="color:#1f2937;">{{ $item->title }}</strong>
-                    <small style="color:#6b7280;">{{ $item->created_at?->diffForHumans() }}</small>
-                </div>
-                @if($item->body)
-                    <p style="margin:8px 0; color:#4b5563;">{{ $item->body }}</p>
-                @endif
-                <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                    @if($item->action_url)
-                        <a href="{{ $item->action_url }}" style="color:#0f766e; font-weight:700;">Abrir</a>
-                    @endif
-                    @if(!$item->read_at)
-                        <form action="{{ route('usuario.notificaciones.read_one', $item) }}" method="POST">
-                            @csrf
-                            <button style="border:none; background:transparent; color:#047857; font-weight:700;">Marcar como leída</button>
-                        </form>
-                    @endif
-                </div>
-            </div>
-        @empty
-            <p style="color:#6b7280;">Todavía no tienes notificaciones.</p>
-        @endforelse
-    </div>
+    <section class="panel-card inventario-panel-full">
+        <div class="panel-header">
+            <h2>Tus notificaciones</h2>
+            @if($notifications->where('read_at', null)->count() > 0)
+                <span class="inventario-count">{{ $notifications->where('read_at', null)->count() }} sin leer</span>
+            @endif
+        </div>
 
-    <div style="margin-top:16px;">
+        <div style="display: grid; gap: 10px; margin-top: 4px;">
+            @forelse($notifications as $item)
+                <div class="tarjeta-row" style="
+                    display: grid;
+                    grid-template-columns: 1fr;
+                    background: {{ $item->read_at ? '#f3f6f5' : '#e9f6ee' }};
+                    border-color: {{ $item->read_at ? '#5f6f6d' : '#86c9a0' }};
+                    border-radius: 4px;
+                    gap: 6px;
+                ">
+                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <strong style="font-size: .95rem;">{{ $item->title }}</strong>
+                        <small style="color: #7a9190; font-size: .78rem;">{{ $item->created_at?->diffForHumans() }}</small>
+                    </div>
+
+                    @if($item->body)
+                        <p style="margin: 0; font-size: .88rem; color: #41514f; font-weight: 400;">{{ $item->body }}</p>
+                    @endif
+
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                        @if($item->action_url)
+                            <a href="{{ $item->action_url }}" class="btn-link" style="font-size: .85rem;">Abrir &rarr;</a>
+                        @endif
+                        @if(!$item->read_at)
+                            <form action="{{ route('usuario.notificaciones.read_one', $item) }}" method="POST" style="margin: 0;">
+                                @csrf
+                                <button type="submit" class="btn-link" style="font-size: .85rem;">Marcar como leída</button>
+                            </form>
+                        @endif
+                    </div>
+                </div>
+            @empty
+                <p class="panel-empty panel-empty--center" style="padding: 24px 0;">Todavía no tienes notificaciones.</p>
+            @endforelse
+        </div>
+    </section>
+
+    <div style="margin-top: 16px;">
         {{ $notifications->links() }}
     </div>
 </div>

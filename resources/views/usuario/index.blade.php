@@ -112,7 +112,7 @@
             <article class="panel-card">
                 <div class="panel-header panel-header-stack">
                     <h2>Logros</h2>
-                    <a class="btn-link" href="{{ route('usuario.notificaciones') }}">Notificaciones</a>
+                    <a class="btn-link" href="{{ route('usuario.logros') }}">Ver todos &gt;</a>
                 </div>
 
                 @if($logros->count() > 0)
@@ -133,6 +133,7 @@
             <article class="panel-card">
                 <div class="panel-header panel-header-stack">
                     <h2>Referidos</h2>
+                    <a class="btn-link" href="{{ route('usuario.referidos') }}">Ver detalle &gt;</a>
                 </div>
                 <div class="tarjeta-row">
                     <span>Tu codigo</span>

@@ -19,6 +19,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'current_streak', 'longest_streak', 'streak_last_activity_date', 'streak_freezes', 'streak_premium_month',
         'referral_code', 'referred_by_user_id',
         'last_location_latitude', 'last_location_longitude', 'last_location_timestamp',
+        'is_blocked', 'blocked_at', 'blocked_reason',
     ];
 
     protected $attributes = [
@@ -37,11 +38,13 @@ class User extends Authenticatable implements MustVerifyEmail
         'nacimiento'             => 'date',
         'premium'                => 'boolean',
         'is_admin'               => 'boolean',
+        'is_blocked'             => 'boolean',
         'password'               => 'hashed',
         'daily_mission_cycle_end'   => 'datetime',
         'weekly_mission_cycle_end'  => 'datetime',
         'streak_last_activity_date' => 'date',
         'last_location_timestamp'   => 'datetime',
+        'blocked_at'             => 'datetime',
     ];
 
     public function getPremiumAttribute($value)
@@ -189,5 +192,18 @@ class User extends Authenticatable implements MustVerifyEmail
         }
 
         return asset(ltrim($this->ruta_imagen, '/'));
+    }
+
+    public function ensureReferralCode(): void
+    {
+        if (!empty($this->referral_code)) {
+            return;
+        }
+
+        do {
+            $code = strtoupper(Str::random(8));
+        } while (self::query()->where('referral_code', $code)->exists());
+
+        $this->forceFill(['referral_code' => $code])->save();
     }
 }

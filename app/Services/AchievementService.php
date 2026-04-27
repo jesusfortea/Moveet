@@ -8,9 +8,47 @@ use Carbon\Carbon;
 
 class AchievementService
 {
+    public function ensureCatalog(): void
+    {
+        foreach ($this->definitions() as $definition) {
+            Logro::firstOrCreate(
+                ['slug' => $definition['slug']],
+                [
+                    'nombre' => $definition['nombre'],
+                    'descripcion' => $definition['descripcion'],
+                    'icono' => $definition['icono'],
+                    'puntos_bonus' => $definition['puntos_bonus'],
+                    'activo' => true,
+                ]
+            );
+        }
+    }
+
     public function syncBaseAchievements(User $user): void
     {
-        $definitions = [
+        $this->ensureCatalog();
+
+        foreach ($this->definitions() as $definition) {
+            $logro = Logro::query()->where('slug', $definition['slug'])->first();
+
+            if (!$logro) {
+                continue;
+            }
+
+            $alreadyUnlocked = $user->logros()->where('logro_id', $logro->id)->exists();
+
+            if ($alreadyUnlocked || !$definition['condition']($user)) {
+                continue;
+            }
+
+            $user->logros()->attach($logro->id, ['achieved_at' => Carbon::now()]);
+            $user->increment('puntos', (int) $logro->puntos_bonus);
+        }
+    }
+
+    private function definitions(): array
+    {
+        return [
             [
                 'slug' => 'racha_7_dias',
                 'nombre' => 'Constancia de Acero',
@@ -56,27 +94,5 @@ class AchievementService
                 },
             ],
         ];
-
-        foreach ($definitions as $definition) {
-            $logro = Logro::firstOrCreate(
-                ['slug' => $definition['slug']],
-                [
-                    'nombre' => $definition['nombre'],
-                    'descripcion' => $definition['descripcion'],
-                    'icono' => $definition['icono'],
-                    'puntos_bonus' => $definition['puntos_bonus'],
-                    'activo' => true,
-                ]
-            );
-
-            $alreadyUnlocked = $user->logros()->where('logro_id', $logro->id)->exists();
-
-            if ($alreadyUnlocked || !$definition['condition']($user)) {
-                continue;
-            }
-
-            $user->logros()->attach($logro->id, ['achieved_at' => Carbon::now()]);
-            $user->increment('puntos', (int) $logro->puntos_bonus);
-        }
     }
 }

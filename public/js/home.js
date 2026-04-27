@@ -503,7 +503,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 if (elChangBtn) {
     elChangBtn.onclick = () => {
         if (EVENTO) {
-            alert('Estas misiones pertenecen al evento activo y no pueden cambiarse desde esta pantalla.');
+            window.showAppAlert('Estas misiones pertenecen al evento activo y no pueden cambiarse desde esta pantalla.', 'warning', 'Cambio no permitido');
             return;
         }
 

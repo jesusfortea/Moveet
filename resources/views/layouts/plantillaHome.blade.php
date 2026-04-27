@@ -39,6 +39,62 @@
 
     {{-- Leaflet JS --}}
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        window.showAppAlert = function (message, icon = 'info', title = 'Aviso') {
+            if (window.Swal) {
+                return Swal.fire({
+                    title,
+                    text: message,
+                    icon,
+                    confirmButtonColor: '#8FA8A6'
+                });
+            }
+
+            return Promise.resolve();
+        };
+
+        window.showAppConfirm = function (message, title = 'Confirmar acción') {
+            if (window.Swal) {
+                return Swal.fire({
+                    title,
+                    text: message,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, continuar',
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonColor: '#8FA8A6',
+                    cancelButtonColor: '#9ca3af'
+                }).then(function (result) {
+                    return result.isConfirmed;
+                });
+            }
+
+            return Promise.resolve(false);
+        };
+
+        document.addEventListener('submit', function (event) {
+            const form = event.target.closest('form[data-swal-confirm]');
+            if (!form || form.dataset.swalConfirmed === '1') {
+                return;
+            }
+
+            event.preventDefault();
+
+            const message = form.getAttribute('data-swal-confirm-message') || '¿Confirmas esta acción?';
+            const title = form.getAttribute('data-swal-confirm-title') || 'Confirmar acción';
+
+            window.showAppConfirm(message, title).then(function (ok) {
+                if (!ok) {
+                    return;
+                }
+
+                form.dataset.swalConfirmed = '1';
+                form.submit();
+            });
+        });
+    </script>
 
     @stack('scripts')
 

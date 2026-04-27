@@ -44,7 +44,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/reset-password', [PasswordRecoveryController::class, 'resetPassword'])->name('password.update');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'not_blocked'])->group(function () {
     Route::get('/email/verify', function () {
         return view('auth.verify_email');
     })->name('verification.notice');
@@ -62,7 +62,7 @@ Route::middleware('auth')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'not_blocked'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::post('/misiones/{mision}/completar', [HomeController::class, 'completarMision']);
 
@@ -84,6 +84,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/usuario/tarjeta', [UserController::class, 'storeCard'])->name('usuario.tarjeta.store');
     Route::delete('/usuario/tarjeta', [UserController::class, 'destroyCard'])->name('usuario.tarjeta.destroy');
     Route::get('/usuario/inventario', [UserController::class, 'inventario'])->name('usuario.inventario');
+    Route::get('/usuario/logros', [UserController::class, 'logros'])->name('usuario.logros');
+    Route::get('/usuario/referidos', [UserController::class, 'referidos'])->name('usuario.referidos');
     Route::post('/usuario/racha/congelador/comprar', [UserController::class, 'buyStreakFreeze'])->name('usuario.streak.freeze.buy');
     Route::get('/usuario/historial-puntos', [HistorialPuntosController::class, 'userIndex'])->name('usuario.historial_puntos');
     Route::get('/usuario/notificaciones', [NotificationController::class, 'index'])->name('usuario.notificaciones');
@@ -131,7 +133,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/suscripcion', [SuscripcionController::class, 'index'])->name('suscripcion');
 });
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+Route::middleware(['auth', 'not_blocked', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
     Route::get('/usuarios', [AdminController::class, 'usuarios'])->name('admin.usuarios');
@@ -139,6 +141,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::post('/usuarios', [AdminController::class, 'guardarUsuario'])->name('admin.usuarios.guardar');
     Route::get('/usuarios/{user}/editar', [AdminController::class, 'editarUsuario'])->name('admin.usuarios.editar');
     Route::put('/usuarios/{user}', [AdminController::class, 'actualizarUsuario'])->name('admin.usuarios.actualizar');
+    Route::patch('/usuarios/{user}/bloqueo', [AdminController::class, 'toggleBloqueoUsuario'])->name('admin.usuarios.toggle-bloqueo');
     Route::get('/usuarios/{user}/eliminar', [AdminController::class, 'eliminarUsuario'])->name('admin.usuarios.eliminar');
     Route::delete('/usuarios/{user}', [AdminController::class, 'confirmarEliminar'])->name('admin.usuarios.confirmar-eliminar');
 

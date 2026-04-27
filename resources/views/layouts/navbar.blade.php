@@ -95,7 +95,7 @@
                     <span class="text-xs opacity-70">Nvl {{ $navUser->nivel }}</span>
                 </div>
             @endif
-            <div class="space-y-5 text-center font-medium">
+                <div class="space-y-5 text-center font-medium">
                 <a href="{{ route('home') }}" class="block">Inicio</a>
                 <a href="{{ route('eventos') }}" class="block">Evento</a>
                 <a href="{{ route('chat.index') }}" class="block">Chat</a>
@@ -109,6 +109,7 @@
                 <a href="{{ route('usuario.notificaciones') }}" class="block">Notificaciones</a>
                 <a href="{{ route('usuario.inventario') }}" class="block">Recompensas</a>
             </div>
+        </div>{{-- fin flex-col --}}
 
         <div class="flex items-center gap-2 text-[11px] text-[#4f5f5d]">
             <img class="w-10 h-10 object-contain" src="{{ asset('img/LogoUsarDiaDia.png') }}" alt="Logo Moveet">

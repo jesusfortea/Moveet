@@ -152,13 +152,13 @@
             if (res.status === 'success') {
                 window.location.href = res.redirect;
             } else {
-                alert(res.message || "Hubo un error al activar la suscripción.");
+                window.showAppAlert(res.message || "Hubo un error al activar la suscripción.", 'error', 'Error de suscripción');
                 location.reload();
             }
         })
         .catch(err => {
             console.error(err);
-            alert("Error de conexión.");
+            window.showAppAlert("Error de conexión.", 'error', 'Error de red');
             location.reload();
         });
     }
@@ -181,8 +181,9 @@
         }).render('#paypal-button-container');
     }
 
-    document.getElementById('btn-simulate-dev').addEventListener('click', function() {
-        if(confirm('¿Deseas simular el pago Premium exitoso?')) {
+    document.getElementById('btn-simulate-dev').addEventListener('click', async function() {
+        const ok = await window.showAppConfirm('¿Deseas simular el pago Premium exitoso?', 'Simulación de pago');
+        if (ok) {
             processSubscriptionSuccess('SIMULATED_PREMIUM_ID');
         }
     });

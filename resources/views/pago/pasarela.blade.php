@@ -189,13 +189,13 @@
             if (res.status === 'success') {
                 window.location.href = res.redirect;
             } else {
-                alert(res.message || "Hubo un error al procesar el pago.");
+                window.showAppAlert(res.message || "Hubo un error al procesar el pago.", 'error', 'Pago no completado');
                 location.reload();
             }
         })
         .catch(err => {
             console.error(err);
-            alert("Error de conexión al procesar el pago.");
+            window.showAppAlert("Error de conexión al procesar el pago.", 'error', 'Error de red');
             location.reload();
         });
     }
@@ -217,13 +217,14 @@
             },
             onError: function(err) {
                 console.error(err);
-                alert("Hubo un error con la pasarela de PayPal.");
+                window.showAppAlert("Hubo un error con la pasarela de PayPal.", 'error', 'Error de PayPal');
             }
         }).render('#paypal-button-container');
     }
 
-    document.getElementById('btn-simulate-dev').addEventListener('click', function() {
-        if(confirm('¿Deseas simular un pago exitoso sin pasar por PayPal?')) {
+    document.getElementById('btn-simulate-dev').addEventListener('click', async function() {
+        const ok = await window.showAppConfirm('¿Deseas simular un pago exitoso sin pasar por PayPal?', 'Simulación de pago');
+        if (ok) {
             processPaymentSuccess('SIMULATED_ORDER_ID');
         }
     });

@@ -31,13 +31,25 @@ class AuthController extends Controller
             $request->session()->regenerate();
             $user = Auth::user();
 
-            if (!$user->hasVerifiedEmail()) {
-                return redirect()->route('verification.notice');
+            if ($user->is_blocked) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()
+                    ->withInput($request->only('email'))
+                    ->withErrors([
+                        'email' => 'Tu cuenta está bloqueada por incumplimiento de las normas de la comunidad.',
+                    ]);
             }
-            
-            // Redirigir a admin si es administrador
+
+            // Admins bypass email verification and go directly to dashboard
             if ($user->is_admin) {
                 return redirect('/admin/dashboard');
+            }
+
+            if (!$user->hasVerifiedEmail()) {
+                return redirect()->route('verification.notice');
             }
             
             return redirect()->intended(route('home'));

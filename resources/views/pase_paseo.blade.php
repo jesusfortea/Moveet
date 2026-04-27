@@ -13,6 +13,23 @@
 
 @section('content')
 <div class="battlepass-wrapper">
+    @if (session('status'))
+        <div style="max-width: 980px; margin: 10px auto 16px; background: #e8f7ed; border: 1px solid #9ed1ad; border-radius: 8px; padding: 10px 12px; font-weight: 700; color: #2e6e3e;">
+            {{ session('status') }}
+        </div>
+    @endif
+
+    @if(!$pase)
+        <div style="max-width: 980px; margin: 20px auto; background: #f5f7f7; border: 1px solid #d5dddd; border-radius: 12px; padding: 20px; text-align: center;">
+            <h2 style="margin: 0 0 8px; font-size: 1.4rem;">Pase de paseo no disponible</h2>
+            <p style="margin: 0; color: #556563;">Todavia no hay un pase activo. Vuelve mas tarde o contacta con administracion.</p>
+        </div>
+    @elseif(empty($niveles))
+        <div style="max-width: 980px; margin: 20px auto; background: #f5f7f7; border: 1px solid #d5dddd; border-radius: 12px; padding: 20px; text-align: center;">
+            <h2 style="margin: 0 0 8px; font-size: 1.4rem;">Pase sin recompensas configuradas</h2>
+            <p style="margin: 0; color: #556563;">Existe un pase activo, pero no tiene recompensas asociadas. Configuralas desde el panel de administracion.</p>
+        </div>
+    @else
     <div class="battlepass-track-container">
         <div class="battlepass-track">
             
@@ -84,12 +101,15 @@
 
         </div>
     </div>
+    @endif
 </div>
 
 {{-- Inyectar URL de reclamación para el JS --}}
-<script>
-    window.battlepassRoutes = {
-        reclamar: "{{ route('pase.reclamar', ['recompensa' => ':id']) }}"
-    };
-</script>
+@if($pase && !empty($niveles))
+    <script>
+        window.battlepassRoutes = {
+            reclamar: "{{ route('pase.reclamar', ['recompensa' => ':id']) }}"
+        };
+    </script>
+@endif
 @endsection
