@@ -9,264 +9,147 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
-    
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    
-    <style>
-        body {
-            background: #f5f5f5;
-        }
-        
-        .admin-page {
-            display: grid;
-            grid-template-rows: 15vh 1fr auto;
-            min-height: 100vh;
-        }
-        
-        /* Navbar */
-        .admin-navbar {
-            background: #8FA8A6;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            height: 15vh;
-            position: relative;
-            z-index: 50;
-        }
-        
-        .admin-navbar-logo {
-            flex: 0 0 auto;
-            margin-right: 20px;
-        }
-        
-        .admin-navbar-logo img {
-            height: 90px;
-            width: auto;
-        }
-        
-        .admin-navbar-search {
-            flex: 1;
-            min-width: 0;
-            display: flex;
-            justify-content: center;
-        }
-        
-        .admin-navbar-search input {
-            width: 600px;
-            padding: 10px 16px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            color: #999;
-        }
-        
-        .admin-navbar-user {
-            flex: 0 0 auto;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            color: white;
-            margin-left: 2px
-        }
-        
-        .admin-navbar-logout {
-            flex: 0 0 auto;
-            color: white;
-            font-size: 15px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 12px 20px;
-            font-weight: 600;
-            transition: all 0.2s;
-            border-radius: 6px;
-        }
-        
-        .admin-navbar-logout:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .admin-navbar-avatar {
-            width: 60px;
-            height: 60px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: #8FA8A6;
-            font-size: 20px;
-            flex-shrink: 0;
-        }
-        
-        .admin-navbar-info p {
-            margin: 0;
-            line-height: 1.2;
-        }
-        
-        .admin-navbar-info p:first-child {
-            font-weight: bold;
-            font-size: 15px;
-        }
-        
-        .admin-navbar-info p:last-child {
-            font-size: 12px;
-            opacity: 0.9;
-        }
-        
-        .admin-main {
-            display: grid;
-            grid-template-columns: 260px 1fr;
-            flex: 1;
-            overflow: hidden;
-        }
-        
-        /* Sidebar */
-        .admin-sidebar {
-            background: #c5d8d6;
-            overflow-y: auto;
-            padding: 20px 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .admin-sidebar-item {
-            padding: 16px 20px;
-            background: white;
-            border: none;
-            border-radius: 6px;
-            color: #333;
-            cursor: pointer;
-            font-family: 'Nunito', sans-serif;
-            font-size: 15px;
-            font-weight: 600;
-            transition: all 0.2s;
-            text-align: center;
-            display: block;
-            text-decoration: none;
-        }
-        
-        .admin-sidebar-item:hover {
-            background: #f0f0f0;
-        }
-        
-        .admin-sidebar-item.active {
-            background: #9db3b0;
-            color: white;
-            font-weight: 700;
-        }
-        
-        /* Content area */
-        .admin-content {
-            background: white;
-            overflow-y: auto;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .admin-stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-        }
-        
-        .admin-stat-card {
-            background: #d0dbd9;
-            border-radius: 8px;
-            padding: 36px 24px;
-            text-align: center;
-            transition: all 0.3s;
-        }
-        
-        .admin-stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        
-        .admin-stat-number {
-            font-size: 2.8rem;
-            font-weight: 900;
-            color: #1E2A28;
-            margin-bottom: 16px;
-        }
-        
-        .admin-stat-label {
-            font-size: 14px;
-            font-weight: 600;
-            color: #1E2A28;
-        }
-        
-        /* Footer */
-        .admin-footer {
-            background: #8FA8A6;
-            padding: 12px 20px;
-            text-align: center;
-            color: white;
-            font-size: 13px;
-            font-weight: 600;
-            line-height: 1.4;
-        }
-    </style>
 </head>
-<body>
-    <div class="admin-page">
-        
-        <!-- Navbar -->
-        <nav class="admin-navbar">
-            <div class="admin-navbar-logo">
-                <img src="{{ asset('img/LogoUsarDiaDia.png') }}" alt="Logo Moveet">
-            </div>
-            
-            <div class="admin-navbar-search">
-                <input type="text" placeholder="Escribe algo...">
-            </div>
-            
-            <div class="admin-navbar-user">
-                <div class="admin-navbar-avatar">{{ substr(Auth::user()->name ?? 'A', 0, 1) }}</div>
-                <div class="admin-navbar-info">
-                    <p>{{ Auth::user()->name ?? 'Admin' }}</p>
-                    <p>usuario administrador</p>
+<body class="bg-[#f5f5f5] text-[#1E2A28] overflow-hidden">
+    @php
+        $adminUser = \Illuminate\Support\Facades\Auth::user();
+        $currentRoute = \Illuminate\Support\Facades\Route::currentRouteName();
+        $adminLinks = [
+            ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'keywords' => 'inicio panel principal'],
+            ['label' => 'Usuarios', 'route' => 'admin.usuarios', 'keywords' => 'clientes cuentas personas'],
+            ['label' => 'Misiones', 'route' => 'admin.misiones', 'keywords' => 'retos tareas'],
+            ['label' => 'Eventos', 'route' => 'admin.eventos', 'keywords' => 'actividades calendario'],
+            ['label' => 'Rese&ntilde;as de usuarios', 'route' => 'admin.preguntas', 'keywords' => 'preguntas faq opiniones comentarios valoraciones resenas reseñas'],
+            ['label' => 'Pase de paseo', 'route' => 'admin.pase_paseo', 'keywords' => 'pases paseo'],
+            ['label' => 'Lugares', 'route' => 'admin.lugares', 'keywords' => 'sitios ubicaciones'],
+            ['label' => 'Recompensas', 'route' => 'admin.recompensas', 'keywords' => 'premios regalos'],
+            ['label' => 'Tienda', 'route' => 'admin.tienda', 'keywords' => 'productos compras'],
+        ];
+    @endphp
+
+    <div class="h-screen grid grid-rows-[78px_minmax(0,1fr)_22px]">
+        <header class="bg-[#8FA8A6] px-4">
+            <div class="flex h-full items-center gap-3">
+                <div class="shrink-0">
+                    <img src="{{ asset('img/LogoUsarDiaDia.png') }}" alt="Logo Moveet" class="h-[54px] w-auto">
+                </div>
+
+                <div class="flex flex-1 justify-center">
+                    <div class="relative w-full max-w-[500px]">
+                        <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[12px] text-[#8a9594]">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input
+                            id="admin-menu-search"
+                            type="text"
+                            placeholder="Buscar secciones del panel..."
+                            class="w-full rounded-[8px] border-2 border-[#2f2f2f] bg-white px-4 py-2 pl-8 text-[12px] text-[#1E2A28] outline-none"
+                        >
+                    </div>
+                </div>
+
+                <div class="hidden shrink-0 items-center gap-3 text-white md:flex">
+                    <div class="flex h-[40px] w-[40px] items-center justify-center rounded-full bg-white text-[13px] font-bold text-[#8FA8A6]">
+                        {{ strtoupper(substr($adminUser?->name ?? 'A', 0, 1)) }}
+                    </div>
+                    <div class="leading-tight">
+                        <p class="text-[13px] font-bold">{{ $adminUser->name ?? 'Admin' }}</p>
+                        <p class="text-[10px] opacity-95">usuario administrador</p>
+                    </div>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="text-[12px] font-semibold transition hover:opacity-80">
+                            Salir
+                        </button>
+                    </form>
                 </div>
             </div>
-            
-            <form action="{{ route('logout') }}" method="POST" style="display: inline;">
-                @csrf
-                <button type="submit" class="admin-navbar-logout">Salir</button>
-            </form>
-        </nav>
-        
-        <!-- Main content -->
-        <div class="admin-main">
-            
-            <!-- Sidebar -->
-            <aside class="admin-sidebar">
-                <a href="{{ route('admin.dashboard') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.dashboard') active @endif">Dashboard</a>
-                <a href="{{ route('admin.usuarios') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.usuarios' || strpos(Route::currentRouteName(), 'admin.usuarios.') === 0) active @endif">Usuarios</a>
-                <a href="{{ route('admin.misiones') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.misiones' || strpos(Route::currentRouteName(), 'admin.misiones.') === 0) active @endif">Misiones</a>
-                <a href="{{ route('admin.eventos') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.eventos' || strpos(Route::currentRouteName(), 'admin.eventos.') === 0) active @endif">Eventos</a>
-                <a href="{{ route('admin.pase_paseo') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.pase_paseo' || strpos(Route::currentRouteName(), 'admin.pase_paseo.') === 0) active @endif">Pase de paseo</a>
-                <a href="{{ route('admin.lugares') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.lugares' || strpos(Route::currentRouteName(), 'admin.lugares.') === 0) active @endif">Lugares</a>
-                <a href="{{ route('admin.recompensas') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.recompensas') active @endif">Recompensas</a>
-                <a href="{{ route('admin.tienda') }}" class="admin-sidebar-item @if(Route::currentRouteName() == 'admin.tienda' || strpos(Route::currentRouteName(), 'admin.tienda.') === 0) active @endif">Tienda</a>
-            </aside>
-            
-            <!-- Content -->
-            <div class="admin-content">
-                @yield('content')
-            </div>
-        </div>
-        
-        <!-- Footer -->
-        <footer class="admin-footer">
-            Moveet<br>
-            @2025<br>
-            www.moveet.es
-        </footer>
+        </header>
 
-        @stack('scripts')
+        <div class="grid min-h-0 grid-cols-[184px_minmax(0,1fr)] overflow-hidden">
+            <aside class="min-h-0 overflow-hidden bg-[#c5d8d6]">
+                <div class="h-full overflow-y-auto px-3 py-4 space-y-3">
+                    @foreach ($adminLinks as $link)
+                        @php
+                            $isActive = $currentRoute === $link['route'] || str_starts_with($currentRoute ?? '', $link['route'] . '.');
+                        @endphp
+                        <a
+                            href="{{ route($link['route']) }}"
+                            data-menu-label="{{ mb_strtolower($link['label'] . ' ' . ($link['keywords'] ?? '')) }}"
+                            class="admin-menu-link block rounded-[8px] px-3 py-3 text-center text-[12px] font-semibold leading-tight transition {{ $isActive ? 'bg-[#9fb2b0] text-white' : 'bg-white text-[#1E2A28] hover:bg-[#f0f0f0]' }}"
+                        >
+                            {!! $link['label'] !!}
+                        </a>
+                    @endforeach
+
+                    <p id="admin-menu-empty" class="hidden rounded-[8px] bg-white px-3 py-3 text-center text-[11px] text-[#58706e]">
+                        No hay coincidencias para esa b&uacute;squeda.
+                    </p>
+                </div>
+            </aside>
+
+            <main class="min-h-0 overflow-y-auto bg-white px-4 py-4">
+                @yield('content')
+            </main>
+        </div>
+
+        <footer class="flex items-center justify-center bg-[#8FA8A6] text-center text-[10px] font-semibold leading-tight text-white">
+            Moveet
+        </footer>
     </div>
+
+    <script>
+        (function () {
+            const searchInput = document.getElementById('admin-menu-search');
+            const links = Array.from(document.querySelectorAll('.admin-menu-link'));
+            const emptyState = document.getElementById('admin-menu-empty');
+
+            if (!searchInput || !links.length || !emptyState) {
+                return;
+            }
+
+            const normalize = (value) => value
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .trim();
+
+            const filterLinks = () => {
+                const query = normalize(searchInput.value);
+                let visibleCount = 0;
+
+                links.forEach((link) => {
+                    const label = normalize(link.dataset.menuLabel || link.textContent || '');
+                    const isVisible = query === '' || label.includes(query);
+
+                    link.classList.toggle('hidden', !isVisible);
+
+                    if (isVisible) {
+                        visibleCount += 1;
+                    }
+                });
+
+                emptyState.classList.toggle('hidden', visibleCount > 0);
+            };
+
+            searchInput.addEventListener('input', filterLinks);
+            searchInput.addEventListener('keydown', function (event) {
+                if (event.key !== 'Enter') {
+                    return;
+                }
+
+                event.preventDefault();
+
+                const firstVisibleLink = links.find((link) => !link.classList.contains('hidden'));
+
+                if (firstVisibleLink) {
+                    window.location.href = firstVisibleLink.href;
+                }
+            });
+        })();
+    </script>
+
+    @stack('scripts')
 </body>
 </html>

@@ -286,7 +286,7 @@
         <div class="navbar-links">
             <a href="#features">Características</a>
             <a href="#about">Sobre Moveet</a>
-            <a href="{{ route('preguntas.index') }}">Preguntas Frecuentes</a>
+            <a href="{{ route('preguntas.index') }}">Resenas</a>
             <a href="{{ route('login') }}" class="btn-primary">Iniciar Sesión</a>
         </div>
     </nav>

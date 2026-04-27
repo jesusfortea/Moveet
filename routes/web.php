@@ -36,6 +36,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Rutas públicas para preguntas
 Route::get('/preguntas', [PreguntaController::class, 'index'])->name('preguntas.index');
+Route::get('/preguntas/crear', [PreguntaController::class, 'create'])
+    ->middleware('auth')
+    ->name('preguntas.create');
 Route::get('/preguntas/{pregunta}', [PreguntaController::class, 'show'])->name('preguntas.show');
 
 Route::middleware('auth')->group(function () {
@@ -85,7 +88,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/suscripcion/comprar', [SuscripcionController::class, 'subscribe'])->name('suscripcion.comprar');
 
     // Rutas autenticadas para preguntas
-    Route::get('/preguntas/crear', [PreguntaController::class, 'create'])->name('preguntas.create');
     Route::post('/preguntas', [PreguntaController::class, 'store'])->name('preguntas.store');
     Route::get('/preguntas/{pregunta}/editar', [PreguntaController::class, 'edit'])->name('preguntas.edit');
     Route::put('/preguntas/{pregunta}', [PreguntaController::class, 'update'])->name('preguntas.update');
