@@ -2,24 +2,48 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, Notifiable;
+    use HasFactory;
+    use Notifiable;
 
     protected $fillable = [
-        'name', 'username', 'email', 'password', 'dni', 'nacimiento',
-        'telefono', 'phone', 'premium', 'premium_until', 'nivel', 'puntos', 'ruta_imagen', 'birth_date', 'is_admin',
-        'current_streak', 'longest_streak', 'streak_last_activity_date', 'streak_freezes', 'streak_premium_month',
-        'referral_code', 'referred_by_user_id',
-        'last_location_latitude', 'last_location_longitude', 'last_location_timestamp',
-        'is_blocked', 'blocked_at', 'blocked_reason',
+        'name',
+        'username',
+        'email',
+        'password',
+        'dni',
+        'nacimiento',
+        'telefono',
+        'phone',
+        'premium',
+        'premium_until',
+        'nivel',
+        'puntos',
+        'ruta_imagen',
+        'birth_date',
+        'is_admin',
+        'friend_code',
+        'current_streak',
+        'longest_streak',
+        'streak_last_activity_date',
+        'streak_freezes',
+        'streak_premium_month',
+        'referral_code',
+        'referred_by_user_id',
+        'last_location_latitude',
+        'last_location_longitude',
+        'last_location_timestamp',
+        'is_blocked',
+        'blocked_at',
+        'blocked_reason',
     ];
 
     protected $attributes = [
@@ -31,20 +55,23 @@ class User extends Authenticatable implements MustVerifyEmail
         'streak_freezes' => 0,
     ];
 
-    protected $hidden = ['password', 'remember_token'];
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
     protected $casts = [
-        'email_verified_at'      => 'datetime',
-        'nacimiento'             => 'date',
-        'premium'                => 'boolean',
-        'is_admin'               => 'boolean',
-        'is_blocked'             => 'boolean',
-        'password'               => 'hashed',
-        'daily_mission_cycle_end'   => 'datetime',
-        'weekly_mission_cycle_end'  => 'datetime',
+        'email_verified_at' => 'datetime',
+        'nacimiento' => 'date',
+        'premium' => 'boolean',
+        'is_admin' => 'boolean',
+        'is_blocked' => 'boolean',
+        'password' => 'hashed',
+        'daily_mission_cycle_end' => 'datetime',
+        'weekly_mission_cycle_end' => 'datetime',
         'streak_last_activity_date' => 'date',
-        'last_location_timestamp'   => 'datetime',
-        'blocked_at'             => 'datetime',
+        'last_location_timestamp' => 'datetime',
+        'blocked_at' => 'datetime',
     ];
 
     public function getPremiumAttribute($value)
@@ -52,15 +79,15 @@ class User extends Authenticatable implements MustVerifyEmail
         if ($value && $this->premium_until) {
             return now()->lessThanOrEqualTo($this->premium_until);
         }
-        return (bool)$value;
+
+        return (bool) $value;
     }
 
-    // ── Misiones ────────────────────────────────────────────────
     public function misiones()
     {
         return $this->belongsToMany(Mision::class, 'user_mision')
-                    ->withPivot(['completada', 'fecha_asignacion', 'fecha_limite', 'fecha_completado'])
-                    ->withTimestamps();
+            ->withPivot(['completada', 'fecha_asignacion', 'fecha_limite', 'fecha_completado'])
+            ->withTimestamps();
     }
 
     public function misionesDiarias()
@@ -73,7 +100,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->misiones()->where('semanal', true);
     }
 
-    // ── Contactos ───────────────────────────────────────────────
     public function contactos()
     {
         return $this->hasMany(Contacto::class);
@@ -126,12 +152,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(ReporteContenido::class, 'reported_user_id');
     }
 
-    // ── Pase de paseo ───────────────────────────────────────────
     public function pasesDePaseo()
     {
         return $this->belongsToMany(PaseDePaseo::class, 'user_pase_de_paseo')
-                    ->withPivot(['nivel_actual', 'fecha_inicio', 'fecha_fin'])
-                    ->withTimestamps();
+            ->withPivot(['nivel_actual', 'fecha_inicio', 'fecha_fin'])
+            ->withTimestamps();
     }
 
     public function paseActivo()
@@ -139,7 +164,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->pasesDePaseo()->wherePivotNull('fecha_fin')->latest('pivot_fecha_inicio');
     }
 
-    // ── Inventario ──────────────────────────────────────────────
     public function inventario()
     {
         return $this->hasMany(Inventario::class);
@@ -148,11 +172,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function recompensas()
     {
         return $this->belongsToMany(Recompensa::class, 'inventario')
-                    ->withPivot(['origen', 'obtenida_at'])
-                    ->withTimestamps();
+            ->withPivot(['origen', 'obtenida_at'])
+            ->withTimestamps();
     }
 
-    // ── Tienda ──────────────────────────────────────────────────
     public function comprasTienda()
     {
         return $this->hasMany(CompraTienda::class);

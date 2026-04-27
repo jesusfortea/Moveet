@@ -14,9 +14,11 @@
         messagesUrl: @json(isset($contactoSeleccionadoId) ? route('chat.messages.index', ['contacto' => $contactoSeleccionadoId]) : null),
         sendUrl: @json(isset($contactoSeleccionadoId) ? route('chat.messages.store', ['contacto' => $contactoSeleccionadoId]) : null),
         lastMessageId: {{ $mensajes->last()?->id ?? 'null' }},
+        qrScanUrl: @json(route('chat.qr.scan')),
     };
 </script>
 <script src="{{ asset('js/chat.js') }}"></script>
+<script src="{{ asset('js/invite.js') }}"></script>
 @endpush
 
 @section('content')
@@ -25,6 +27,10 @@
 
     @if (session('status'))
         <div class="chat-alert">{{ session('status') }}</div>
+    @endif
+
+    @if (session('error'))
+        <div class="chat-alert chat-alert--error">{{ session('error') }}</div>
     @endif
 
     <div class="chat-layout {{ isset($contactoSeleccionadoId) ? 'chat-layout--mobile-chat' : 'chat-layout--mobile-list' }}">
@@ -73,8 +79,14 @@
         </section>
 
         <aside class="contacts-panel">
-            <div class="contacts-panel-header">
-                <h2>Contactos</h2>
+            <div class="contacts-panel-header contacts-panel-header--stack">
+                <div class="contacts-panel-title-row">
+                    <h2>Contactos</h2>
+                    <div class="contacts-panel-tools">
+                        <button type="button" class="contacts-tool-btn" id="open-my-qr">Mi QR</button>
+                        <button type="button" class="contacts-tool-btn contacts-tool-btn--secondary" id="open-scan-qr">Escanear QR</button>
+                    </div>
+                </div>
             </div>
 
             @if (($solicitudesRecibidas ?? collect())->isNotEmpty())
@@ -139,7 +151,7 @@
                                 </small>
                             </div>
                         </a>
-                        
+
                         <div class="contact-actions">
                             @if ($contacto['bloqueado_por_mi'] ?? false)
                                 <form method="POST" action="{{ route('chat.contactos.unblock', $contacto['model']) }}" style="margin: 0;">
@@ -154,7 +166,7 @@
                             @else
                                 <span class="contact-action-btn contact-action-btn--blocked" title="Bloqueado por el otro usuario">🔒</span>
                             @endif
-                            
+
                             <form method="POST" action="{{ route('chat.contactos.destroy', $contacto['model']) }}" style="margin: 0;" data-swal-confirm data-swal-confirm-title="Eliminar contacto" data-swal-confirm-message="¿Seguro que quieres eliminar este contacto?">
                                 @csrf
                                 @method('DELETE')
@@ -177,19 +189,66 @@
             <details class="add-contact-drawer">
                 <summary class="add-contact-fab" aria-label="Agregar contacto">+</summary>
 
-                <form class="add-contact-card" method="POST" action="{{ route('chat.contactos.store') }}">
+                <form class="add-contact-card" id="add-contact-form" method="POST" action="{{ route('chat.contactos.store') }}">
                     @csrf
-                    <h3>Agregar Contacto</h3>
+                    <h3>Agregar contacto</h3>
 
                     @if ($errors->has('contacto'))
                         <p class="add-contact-error">{{ $errors->first('contacto') }}</p>
                     @endif
 
-                    <input type="text" name="contacto" value="{{ old('contacto') }}" placeholder="Nombre del contacto..." autocomplete="off">
-                    <button type="submit">Enviar</button>
+                    <input type="text" name="contacto" id="contacto-input" value="{{ old('contacto') }}" placeholder="Nombre o email..." autocomplete="off">
+                    <button type="submit">Enviar solicitud</button>
+                    <p class="invite-inline-message" id="add-contact-feedback" hidden></p>
                 </form>
             </details>
         </aside>
     </div>
+
+    <dialog class="qr-modal" id="my-qr-modal">
+        <div class="qr-modal-content">
+            <button class="qr-modal-close" id="close-my-qr-modal" aria-label="Cerrar">✕</button>
+            <h2>Tu QR para añadir amigos</h2>
+            <p class="invite-message">Escanéalo desde otro móvil o comparte el enlace directo.</p>
+            <div class="qr-container" id="qr-container">{!! $personalQr['svg'] !!}</div>
+            <div class="invite-code-display">
+                <p>Código de invitación:</p>
+                <div class="code-box">
+                    <span id="invite-code" data-link="{{ $personalQr['url'] }}">{{ $personalQr['code'] }}</span>
+                    <button type="button" class="copy-code-btn" id="copy-code-btn">Copiar</button>
+                </div>
+            </div>
+            <div class="invite-actions">
+                <button type="button" class="qr-modal-action" id="copy-qr-link">Copiar enlace</button>
+                <button type="button" class="qr-modal-action secondary" id="close-my-qr-btn">Cerrar</button>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog class="qr-modal qr-modal--scan" id="scan-qr-modal">
+        <div class="qr-modal-content qr-modal-content--scan">
+            <button class="qr-modal-close" id="close-scan-qr-modal" aria-label="Cerrar">✕</button>
+            <h2>Escanear QR</h2>
+            <p class="invite-message">Apunta la cámara al QR de otro usuario de Moveet.</p>
+
+            <div class="scanner-shell">
+                <video id="qr-video" class="qr-video" playsinline muted></video>
+                <div class="scanner-placeholder" id="scanner-placeholder">Activa la cámara para escanear</div>
+            </div>
+
+            <p class="scanner-status" id="scanner-status">Preparado para escanear.</p>
+
+            <div class="invite-actions invite-actions--scan">
+                <button type="button" class="qr-modal-action" id="start-scan-btn">Activar cámara</button>
+                <button type="button" class="qr-modal-action secondary" id="stop-scan-btn">Detener</button>
+            </div>
+
+            <form class="scan-manual-form" id="scan-manual-form">
+                <label for="scan-manual-input">Pegar enlace o código</label>
+                <input type="text" id="scan-manual-input" name="qr_value" placeholder="Pega aquí el enlace o el código QR">
+                <button type="submit" class="qr-modal-action">Usar código</button>
+            </form>
+        </div>
+    </dialog>
 </div>
 @endsection
