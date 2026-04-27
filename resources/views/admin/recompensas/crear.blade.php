@@ -39,7 +39,7 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
                     <div>
                         <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333; font-size: 13px;">Tipo <span style="color: #c00;">*</span></label>
-                        <select name="tipo" required style="width: 100%; padding: 10px 12px; border: 2px solid {{ $errors->has('tipo') ? '#c00' : '#999' }}; border-radius: 4px; font-size: 13px; box-sizing: border-box; background: {{ $errors->has('tipo') ? '#fff5f5' : '#fff' }};">
+                        <select id="tipo_recompensa" name="tipo" required style="width: 100%; padding: 10px 12px; border: 2px solid {{ $errors->has('tipo') ? '#c00' : '#999' }}; border-radius: 4px; font-size: 13px; box-sizing: border-box; background: {{ $errors->has('tipo') ? '#fff5f5' : '#fff' }};">
                             <option value="tienda" {{ old('tipo', 'tienda') === 'tienda' ? 'selected' : '' }}>Tienda</option>
                             <option value="pase_de_paseo" {{ old('tipo') === 'pase_de_paseo' ? 'selected' : '' }}>Pase de paseo</option>
                         </select>
@@ -48,6 +48,23 @@
                         <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333; font-size: 13px;">Imagen de recompensa <span style="color: #c00;">*</span></label>
                         <input type="file" name="ruta_imagen" required accept="image/*" style="width: 100%; padding: 9px 12px; border: 2px solid {{ $errors->has('ruta_imagen') ? '#c00' : '#999' }}; border-radius: 4px; font-size: 13px; box-sizing: border-box; background: {{ $errors->has('ruta_imagen') ? '#fff5f5' : '#fff' }};">
                     </div>
+                </div>
+
+                <div id="pase_selector_wrap" style="margin-bottom: 15px; display: none;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333; font-size: 13px;">Pase de paseo asociado <span style="color: #c00;">*</span></label>
+                    <select id="pase_de_paseo_id" name="pase_de_paseo_id" style="width: 100%; padding: 10px 12px; border: 2px solid {{ $errors->has('pase_de_paseo_id') ? '#c00' : '#999' }}; border-radius: 4px; font-size: 13px; box-sizing: border-box; background: {{ $errors->has('pase_de_paseo_id') ? '#fff5f5' : '#fff' }};">
+                        <option value="">Selecciona un pase</option>
+                        @foreach($pases as $pase)
+                            <option value="{{ $pase->id }}" {{ (string) old('pase_de_paseo_id') === (string) $pase->id ? 'selected' : '' }}>
+                                {{ $pase->nombre }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @if($errors->has('pase_de_paseo_id'))
+                        <span style="color: #c00; font-size: 11px; margin-top: 3px; display: block;">❌ {{ $errors->first('pase_de_paseo_id') }}</span>
+                    @else
+                        <span style="color: #666; font-size: 11px; margin-top: 3px; display: block;">Obligatorio para recompensas tipo Pase de paseo.</span>
+                    @endif
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
@@ -78,4 +95,28 @@
             </form>
         </div>
     </div>
+
+    <script>
+        (function () {
+            const tipo = document.getElementById('tipo_recompensa');
+            const wrap = document.getElementById('pase_selector_wrap');
+            const paseSelect = document.getElementById('pase_de_paseo_id');
+
+            if (!tipo || !wrap || !paseSelect) {
+                return;
+            }
+
+            const refresh = function () {
+                const isPase = tipo.value === 'pase_de_paseo';
+                wrap.style.display = isPase ? 'block' : 'none';
+                paseSelect.required = isPase;
+                if (!isPase) {
+                    paseSelect.value = '';
+                }
+            };
+
+            tipo.addEventListener('change', refresh);
+            refresh();
+        })();
+    </script>
 @endsection

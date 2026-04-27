@@ -18,9 +18,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use App\Services\AchievementService;
+use App\Services\NotificationService;
 
 class ChatController extends Controller
 {
+    public function __construct(
+        private NotificationService $notificationService,
+        private AchievementService $achievementService,
+    ) {
+    }
+
     private function resolveUser(): ?User
     {
         return Auth::user();
@@ -508,6 +516,14 @@ class ChatController extends Controller
             ]);
         });
 
+        $this->notificationService->notify(
+            $contacto->contacto_id,
+            'chat',
+            'Nuevo mensaje de ' . $user->name,
+            trim($validated['contenido']),
+            route('chat.index', ['contacto' => $contacto->id])
+        );
+
         $mensaje->load('emisor');
         $contacto->load(['amigo', 'chat.ultimoMensaje']);
 
@@ -648,6 +664,16 @@ class ChatController extends Controller
             $solicitud->update(['estado' => 'aceptada']);
             $this->ensureAcceptedContactPair($solicitud->emisor_id, $solicitud->receptor_id);
         });
+
+        $this->notificationService->notify(
+            $solicitud->emisor_id,
+            'social',
+            'Solicitud aceptada',
+            'Tu solicitud fue aceptada. Ya puedes chatear con tu nuevo contacto.',
+            route('chat.index')
+        );
+
+        $this->achievementService->syncBaseAchievements($user);
 
         return redirect()->route('chat.index')->with('status', 'Solicitud aceptada. Ya podéis chatear.');
     }

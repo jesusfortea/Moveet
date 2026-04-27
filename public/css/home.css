@@ -7,50 +7,57 @@
 
 /* ── Variables ─────────────────────────────────────────────────────── */
 :root {
-    --nav-h:          15vh;
+    --nav-h: 15vh;
 
-    --clr-primary:    #8FA8A6;
+    --clr-primary: #8FA8A6;
     --clr-primary-dk: #6B8F8D;
     --clr-primary-lt: #C5D8D6;
-    --clr-accent:     #56C470;
-    --clr-accent-lt:  #E8F8EC;
-    --clr-accent-dk:  #3DA855;
-    --clr-danger:     #E06060;
-    --clr-gold:       #F4A62A;
+    --clr-accent: #56C470;
+    --clr-accent-lt: #E8F8EC;
+    --clr-accent-dk: #3DA855;
+    --clr-danger: #E06060;
+    --clr-gold: #F4A62A;
 
-    --clr-bg:         #EEF2F1;
-    --clr-surface:    #FFFFFF;
-    --clr-text:       #1E2A28;
-    --clr-muted:      #7A9190;
-    --clr-border:     #D5E0DF;
+    --clr-bg: #EEF2F1;
+    --clr-surface: #FFFFFF;
+    --clr-text: #1E2A28;
+    --clr-muted: #7A9190;
+    --clr-border: #D5E0DF;
 
-    --radius-sm:      8px;
-    --radius-md:      14px;
-    --radius-lg:      20px;
-    --radius-pill:    100px;
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-pill: 100px;
 
-    --shadow-sm:      0 2px 8px rgba(30,42,40,.07);
-    --shadow-md:      0 4px 20px rgba(30,42,40,.12);
-    --shadow-lg:      0 8px 32px rgba(30,42,40,.16);
+    --shadow-sm: 0 2px 8px rgba(30, 42, 40, .07);
+    --shadow-md: 0 4px 20px rgba(30, 42, 40, .12);
+    --shadow-lg: 0 8px 32px rgba(30, 42, 40, .16);
 
-    --font:           'Nunito', sans-serif;
+    --font: 'Nunito', sans-serif;
 
-    --ease-out:       cubic-bezier(.22,.61,.36,1);
+    --ease-out: cubic-bezier(.22, .61, .36, 1);
 }
 
 /* ── Reset / Base ───────────────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-html, body {
+html,
+body {
     height: 100%;
     font-family: var(--font);
     background: var(--clr-bg);
     color: var(--clr-text);
-    overflow: auto;
+    overflow: hidden;
 }
 
 nav {
-    position: fixed;
+    position: sticky;
     top: 0;
     left: 0;
     width: 100%;
@@ -59,19 +66,20 @@ nav {
 
 /* ── Layout raíz ────────────────────────────────────────────────────── */
 .page-content {
-    padding-top: var(--nav-h);
-    min-height: 100vh;
+    height: calc(100vh - var(--nav-h));
     display: flex;
-    flex-direction: column;  /* FIX: columna para que home-layout use el espacio restante */
-    overflow-y: auto;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .home-layout {
     display: grid;
     grid-template-columns: 1fr 380px;
     width: 100%;
-    flex: 1;           /* FIX: ocupa el espacio restante tras el padding de la navbar */
-    min-height: 0;     /* FIX: permite que los hijos grid colapsen correctamente */
+    flex: 1;
+    /* FIX: ocupa el espacio restante tras el padding de la navbar */
+    min-height: 0;
+    /* FIX: permite que los hijos grid colapsen correctamente */
     overflow: hidden;
 }
 
@@ -82,7 +90,8 @@ nav {
 .map-panel {
     position: relative;
     overflow: hidden;
-    height: 100%;      /* FIX: necesario para que #map herede la altura correctamente */
+    height: 100%;
+    /* FIX: necesario para que #map herede la altura correctamente */
     min-height: 0;
 }
 
@@ -97,7 +106,7 @@ nav {
     position: absolute;
     inset: 0;
     z-index: 500;
-    background: rgba(238,242,241,.92);
+    background: rgba(238, 242, 241, .92);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -129,7 +138,11 @@ nav {
     animation: spin .8s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
 
 /* Badge flotante */
 .map-info-badge {
@@ -152,7 +165,9 @@ nav {
     white-space: nowrap;
 }
 
-.map-info-badge strong { color: var(--clr-primary-dk); }
+.map-info-badge strong {
+    color: var(--clr-primary-dk);
+}
 
 .badge-dot {
     width: 10px;
@@ -164,13 +179,27 @@ nav {
 }
 
 @keyframes pulse-dot {
-    0%, 100% { box-shadow: 0 0 0 3px var(--clr-accent-lt); }
-    50%       { box-shadow: 0 0 0 6px rgba(86,196,112,.18); }
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 3px var(--clr-accent-lt);
+    }
+
+    50% {
+        box-shadow: 0 0 0 6px rgba(86, 196, 112, .18);
+    }
 }
 
 @keyframes badge-in {
-    from { opacity: 0; transform: translateX(-50%) translateY(12px); }
-    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
 }
 
 /* ── Leaflet marker customizado ─────────────────────────────────── */
@@ -178,7 +207,7 @@ nav {
     background: var(--clr-primary);
     border: 3px solid #fff;
     border-radius: 50%;
-    box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
 }
 
 /* ── Botón de ubicación ────────────────────────────────────────── */
@@ -223,13 +252,27 @@ nav {
 }
 
 @keyframes location-btn-in {
-    from { opacity: 0; transform: translate(20px, 20px); }
-    to   { opacity: 1; transform: translate(0, 0); }
+    from {
+        opacity: 0;
+        transform: translate(20px, 20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(0, 0);
+    }
 }
 
 @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50%      { transform: translateY(-8px); }
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -241,14 +284,21 @@ nav {
     flex-direction: column;
     background: var(--clr-surface);
     border-left: 1px solid var(--clr-border);
-    box-shadow: -4px 0 24px rgba(30,42,40,.06);
+    box-shadow: -4px 0 24px rgba(30, 42, 40, .06);
     overflow: hidden;
     animation: panel-in .45s var(--ease-out) both;
 }
 
 @keyframes panel-in {
-    from { opacity: 0; transform: translateX(24px); }
-    to   { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 /* ── Cabecera ─────────────────────────────────────────────────── */
@@ -345,6 +395,7 @@ nav {
 .tab-btn:hover:not(.active) {
     background: var(--clr-bg);
     color: var(--clr-text);
+    overflow: hidden;
 }
 
 /* Botón cambiar misiones */
@@ -364,7 +415,9 @@ nav {
     margin-bottom: 4px;
 }
 
-.change-missions-btn:hover { color: var(--clr-primary-dk); }
+.change-missions-btn:hover {
+    color: var(--clr-primary-dk);
+}
 
 .btn-icon {
     font-size: 1.1rem;
@@ -401,9 +454,18 @@ nav {
     scrollbar-color: var(--clr-primary-lt) transparent;
 }
 
-.missions-list::-webkit-scrollbar       { width: 4px; }
-.missions-list::-webkit-scrollbar-track { background: transparent; }
-.missions-list::-webkit-scrollbar-thumb { background: var(--clr-primary-lt); border-radius: 4px; }
+.missions-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.missions-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.missions-list::-webkit-scrollbar-thumb {
+    background: var(--clr-primary-lt);
+    border-radius: 4px;
+}
 
 /* Tarjeta de misión */
 .mission-card {
@@ -437,15 +499,36 @@ nav {
 }
 
 /* Stagger animation */
-.mission-card:nth-child(1) { animation-delay: .05s; }
-.mission-card:nth-child(2) { animation-delay: .10s; }
-.mission-card:nth-child(3) { animation-delay: .15s; }
-.mission-card:nth-child(4) { animation-delay: .20s; }
-.mission-card:nth-child(5) { animation-delay: .25s; }
+.mission-card:nth-child(1) {
+    animation-delay: .05s;
+}
+
+.mission-card:nth-child(2) {
+    animation-delay: .10s;
+}
+
+.mission-card:nth-child(3) {
+    animation-delay: .15s;
+}
+
+.mission-card:nth-child(4) {
+    animation-delay: .20s;
+}
+
+.mission-card:nth-child(5) {
+    animation-delay: .25s;
+}
 
 @keyframes card-in {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .mission-card__body {
@@ -517,7 +600,7 @@ nav {
     font-size: .7rem;
     font-weight: 800;
     color: var(--clr-gold);
-    background: rgba(244,166,42,.12);
+    background: rgba(244, 166, 42, .12);
     border-radius: var(--radius-pill);
     padding: 2px 7px;
     margin-top: 4px;
@@ -635,7 +718,10 @@ nav {
         overflow: auto;
     }
 
-    html, body { overflow: auto; }
+    html,
+    body {
+        overflow: auto;
+    }
 
     .page-content {
         height: auto;
@@ -653,6 +739,7 @@ nav {
         max-height: 40vh;
     }
 }
+
 /* ════════════════════════════════════════════════════════════════
    Mission Toast — notificación al completar misión por proximidad
    ════════════════════════════════════════════════════════════════ */
@@ -668,31 +755,56 @@ nav {
     color: #fff;
     padding: .85rem 1.4rem;
     border-radius: 999px;
-    box-shadow: 0 8px 32px rgba(0,0,0,.35);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, .35);
     z-index: 9999;
-    transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .35s;
+    transition: transform .35s cubic-bezier(.34, 1.56, .64, 1), opacity .35s;
     opacity: 0;
     white-space: nowrap;
     max-width: 90vw;
 }
+
 .mission-toast.visible {
     transform: translateX(-50%) translateY(0);
     opacity: 1;
 }
+
 .mission-toast__icon {
-    width: 2rem; height: 2rem;
+    width: 2rem;
+    height: 2rem;
     background: #56C470;
     border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1rem; font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 700;
     flex-shrink: 0;
 }
+
 .mission-toast__text {
-    display: flex; flex-direction: column; gap: .15rem;
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
 }
-.mission-toast__title { font-size: .7rem; opacity: .7; font-weight: 500; letter-spacing: .03em; }
-.mission-toast__name  { font-size: .9rem; font-weight: 600; }
-.mission-toast__pts   { font-size: .95rem; font-weight: 700; color: #FFD700; margin-left: auto; }
+
+.mission-toast__title {
+    font-size: .7rem;
+    opacity: .7;
+    font-weight: 500;
+    letter-spacing: .03em;
+}
+
+.mission-toast__name {
+    font-size: .9rem;
+    font-weight: 600;
+}
+
+.mission-toast__pts {
+    font-size: .95rem;
+    font-weight: 700;
+    color: #FFD700;
+    margin-left: auto;
+}
 
 /* ══════════════════════════════════════════════════════════════════
    Route distance label — etiqueta flotante en la polilínea OSRM
@@ -705,6 +817,6 @@ nav {
     padding: .2rem .55rem;
     border-radius: 999px;
     white-space: nowrap;
-    box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
     pointer-events: none;
 }

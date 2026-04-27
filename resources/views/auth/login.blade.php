@@ -63,6 +63,10 @@
             <button type="submit" class="login-btn">Entrar</button>
         </form>
 
+        <div class="register-link" style="margin-top: 10px;">
+            <a href="{{ route('password.request') }}">¿Olvidaste tu contraseña?</a>
+        </div>
+
         <div class="register-link">
             ¿No tienes cuenta? <a href="{{ route('register') }}">Regístrate aquí</a>
         </div>

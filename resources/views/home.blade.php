@@ -81,9 +81,65 @@
 
         <div class="panel-divider"></div>
 
-        {{-- Lista de misiones --}}
-        <div class="missions-list" id="missions-list" role="list">
-            {{-- Renderizado dinámico vía JS --}}
+        {{-- Listas de misiones --}}
+        <div class="missions-lists-container">
+            {{-- Diarias --}}
+            <div id="diarias-list" class="missions-list" role="list">
+                @php
+                    $diarias = collect($misiones)->where('semanal', false)->sortBy('completada');
+                @endphp
+                @if($diarias->isEmpty())
+                    <div class="missions-empty">
+                        <div class="missions-empty__icon">🎯</div>
+                        <p>No hay misiones diarias disponibles.</p>
+                    </div>
+                @else
+                    @foreach($diarias as $m)
+                        <div class="mission-card {{ $m['completada'] ? 'completed' : '' }}" data-id="{{ $m['id'] }}" role="listitem">
+                            <div class="mission-card__check">{{ $m['completada'] ? '✓' : '' }}</div>
+                            <div class="mission-card__body">
+                                <div class="mission-card__name">{{ $m['nombre'] }}</div>
+                                @if($m['premium'])
+                                    <span class="mission-card__premium">⭐ Premium</span>
+                                @endif
+                                @if($m['direccion'] && !$m['completada'])
+                                    <div class="mission-card__sub direccion-sub">📍 {{ $m['direccion'] }}</div>
+                                @endif
+                            </div>
+                            <div class="mission-card__points points-label">{{ $m['completada'] ? '+'.$m['puntos'].' ptos' : $m['puntos'].' ptos' }}</div>
+                        </div>
+                    @endforeach
+                @endif
+            </div>
+
+            {{-- Semanales --}}
+            <div id="semanales-list" class="missions-list" role="list" style="display: none;">
+                @php
+                    $semanales = collect($misiones)->where('semanal', true)->sortBy('completada');
+                @endphp
+                @if($semanales->isEmpty())
+                    <div class="missions-empty">
+                        <div class="missions-empty__icon">🎯</div>
+                        <p>No hay misiones semanales disponibles.</p>
+                    </div>
+                @else
+                    @foreach($semanales as $m)
+                        <div class="mission-card {{ $m['completada'] ? 'completed' : '' }}" data-id="{{ $m['id'] }}" role="listitem">
+                            <div class="mission-card__check">{{ $m['completada'] ? '✓' : '' }}</div>
+                            <div class="mission-card__body">
+                                <div class="mission-card__name">{{ $m['nombre'] }}</div>
+                                @if($m['premium'])
+                                    <span class="mission-card__premium">⭐ Premium</span>
+                                @endif
+                                @if($m['direccion'] && !$m['completada'])
+                                    <div class="mission-card__sub direccion-sub">📍 {{ $m['direccion'] }}</div>
+                                @endif
+                            </div>
+                            <div class="mission-card__points points-label">{{ $m['completada'] ? '+'.$m['puntos'].' ptos' : $m['puntos'].' ptos' }}</div>
+                        </div>
+                    @endforeach
+                @endif
+            </div>
         </div>
 
         {{-- Pie: temporizador --}}

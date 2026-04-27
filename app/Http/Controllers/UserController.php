@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Logro;
 use App\Models\TarjetaBancaria;
 use App\Models\User;
+use App\Services\AchievementService;
+use App\Services\StreakService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,6 +16,13 @@ use Illuminate\View\View;
 
 class UserController extends Controller
 {
+    public function __construct(
+        private StreakService $streakService,
+        private AchievementService $achievementService,
+    )
+    {
+    }
+
     private function resolveUser(): ?User
     {
         return Auth::user();
@@ -26,17 +36,57 @@ class UserController extends Controller
             return redirect()->route('login');
         }
 
+        $this->streakService->syncStreakState($user);
+        $user->ensureReferralCode();
+        $user = $user->fresh();
 
         $inventario = $user->inventario
             ->sortByDesc('obtenida_at')
             ->values();
 
+        $logros = $user->logros()
+            ->orderByDesc('user_logros.achieved_at')
+            ->get();
+
+        $referidos = $user->referidos()
+            ->with('referred:id,name,email')
+            ->latest('created_at')
+            ->take(5)
+            ->get();
+
+        $referidosPremiados = $user->referidos()
+            ->whereNotNull('rewarded_at')
+            ->count();
+
         return view('usuario.index', [
             'usuario' => $user,
-            'tarjeta' => $user->tarjetaBancaria,
-            'tarjetaCaducada' => $user->tarjetaBancaria?->esta_caducada ?? false,
             'inventario' => $inventario,
+            'streakFreezeCost' => $this->streakService->freezeCost(),
+            'logros' => $logros,
+            'referidos' => $referidos,
+            'referidosPremiados' => $referidosPremiados,
         ]);
+    }
+
+    public function buyStreakFreeze(): RedirectResponse
+    {
+        $user = $this->resolveUser();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $this->streakService->syncStreakState($user);
+
+        if (!$this->streakService->buyFreeze($user->fresh())) {
+            return redirect()
+                ->route('usuario.index')
+                ->with('status', 'No tienes puntos suficientes para comprar un congelador de racha.');
+        }
+
+        return redirect()
+            ->route('usuario.index')
+            ->with('status', 'Has comprado un congelador de racha.');
     }
 
     public function updateProfile(Request $request): RedirectResponse
@@ -96,6 +146,65 @@ class UserController extends Controller
         return view('usuario.inventario', [
             'usuario' => $user,
             'inventario' => $inventario,
+        ]);
+    }
+
+    public function logros(): View|RedirectResponse
+    {
+        $user = $this->resolveUser();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $this->achievementService->ensureCatalog();
+
+        $logrosCatalogo = Logro::query()
+            ->where('activo', true)
+            ->orderBy('puntos_bonus')
+            ->get();
+
+        $logrosDesbloqueados = $user->logros()
+            ->orderByDesc('user_logros.achieved_at')
+            ->get()
+            ->keyBy('id');
+
+        return view('usuario.logros', [
+            'usuario' => $user,
+            'logrosCatalogo' => $logrosCatalogo,
+            'logrosDesbloqueados' => $logrosDesbloqueados,
+        ]);
+    }
+
+    public function referidos(): View|RedirectResponse
+    {
+        $user = $this->resolveUser();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $user->ensureReferralCode();
+        $user = $user->fresh();
+
+        $referidos = $user->referidos()
+            ->with('referred:id,name,email')
+            ->latest('created_at')
+            ->get();
+
+        $totales = [
+            'total' => $referidos->count(),
+            'premiados' => $referidos->whereNotNull('rewarded_at')->count(),
+            'pendientes' => $referidos->whereNull('rewarded_at')->count(),
+            'puntos_ganados' => (int) $referidos
+                ->whereNotNull('rewarded_at')
+                ->sum('reward_points'),
+        ];
+
+        return view('usuario.referidos', [
+            'usuario' => $user,
+            'referidos' => $referidos,
+            'totales' => $totales,
         ]);
     }
 

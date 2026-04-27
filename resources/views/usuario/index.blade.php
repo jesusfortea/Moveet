@@ -52,36 +52,33 @@
         <section class="usuario-main">
             <article class="panel-card">
                 <div class="panel-header">
-                    <h2>Tarjetas</h2>
-                    <a class="btn-link" href="{{ route('usuario.tarjeta.create') }}">+ Añadir tarjeta</a>
+                    <h2>Racha diaria</h2>
+                    <a class="btn-link" href="{{ route('usuario.historial_puntos') }}">Historial puntos</a>
                 </div>
 
-                @if ($tarjeta)
-                    <div class="tarjeta-row">
-                        <span>{{ $tarjeta->titular }}</span>
-                        <span>{{ $tarjeta->numero_enmascarado }}</span>
-                    </div>
+                <div class="tarjeta-row">
+                    <span>Racha actual</span>
+                    <strong>{{ $usuario->current_streak }} dias</strong>
+                </div>
+                <div class="tarjeta-row">
+                    <span>Mejor racha</span>
+                    <strong>{{ $usuario->longest_streak }} dias</strong>
+                </div>
+                <div class="tarjeta-row" style="margin-bottom: 12px;">
+                    <span>Congeladores</span>
+                    <strong>{{ $usuario->streak_freezes }}</strong>
+                </div>
 
-                    <div class="tarjeta-meta">
-                        <span>Caducidad: {{ $tarjeta->fecha_caducidad ?? 'No disponible' }}</span>
-                        @if (($tarjetaCaducada ?? false) === true)
-                            <strong class="tarjeta-status tarjeta-status--expired">Caducada</strong>
-                        @else
-                            <strong class="tarjeta-status tarjeta-status--active">Activa</strong>
-                        @endif
-                    </div>
+                <form method="POST" action="{{ route('usuario.streak.freeze.buy') }}" class="tarjeta-actions">
+                    @csrf
+                    <button type="submit" class="btn-main">Comprar congelador ({{ number_format($streakFreezeCost, 0, ',', '.') }} ptos)</button>
+                </form>
 
-                    @if (($tarjetaCaducada ?? false) === false)
-                        <form method="POST" action="{{ route('usuario.tarjeta.destroy') }}" class="tarjeta-actions">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn-main btn-danger">Eliminar tarjeta</button>
-                        </form>
-                    @endif
-                @else
-                    <p class="panel-empty">Aún no tienes una tarjeta registrada.</p>
+                @if($usuario->premium)
+                    <p class="panel-empty" style="margin-top: 10px;">Premium incluye congeladores mensuales gratis.</p>
                 @endif
             </article>
+
 
             <article class="panel-card inventario-card">
                 <div class="panel-header panel-header-stack">
@@ -110,6 +107,53 @@
                         <p class="panel-empty">Todavia no tienes objetos en inventario.</p>
                     @endforelse
                 </div>
+            </article>
+
+            <article class="panel-card">
+                <div class="panel-header panel-header-stack">
+                    <h2>Logros</h2>
+                    <a class="btn-link" href="{{ route('usuario.logros') }}">Ver todos &gt;</a>
+                </div>
+
+                @if($logros->count() > 0)
+                    <div class="inventario-grid">
+                        @foreach($logros->take(4) as $logro)
+                            <div class="inventario-item" style="background: #f8fafc;">
+                                <span class="cantidad">+{{ $logro->puntos_bonus }}</span>
+                                <div class="recompensa-visual"><span>{{ $logro->icono }}</span></div>
+                                <p>{{ $logro->nombre }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <p class="panel-empty">Aun no has desbloqueado logros. Completa misiones y socializa para conseguirlos.</p>
+                @endif
+            </article>
+
+            <article class="panel-card">
+                <div class="panel-header panel-header-stack">
+                    <h2>Referidos</h2>
+                    <a class="btn-link" href="{{ route('usuario.referidos') }}">Ver detalle &gt;</a>
+                </div>
+                <div class="tarjeta-row">
+                    <span>Tu codigo</span>
+                    <strong>{{ $usuario->referral_code ?? 'No disponible' }}</strong>
+                </div>
+                <div class="tarjeta-row">
+                    <span>Referidos premiados</span>
+                    <strong>{{ $referidosPremiados }}</strong>
+                </div>
+
+                @if($referidos->count() > 0)
+                    <div style="margin-top: 10px; display:grid; gap:6px;">
+                        @foreach($referidos as $ref)
+                            <div class="tarjeta-row" style="padding: 6px 8px; border: 1px solid #e5e7eb; border-radius: 10px;">
+                                <span>{{ $ref->referred?->name ?? 'Usuario' }}</span>
+                                <strong>{{ $ref->rewarded_at ? 'Premiado' : 'Pendiente' }}</strong>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
             </article>
         </section>
     </div>

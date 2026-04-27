@@ -9,46 +9,7 @@
    window.misionesData  = @json($misiones);
    window.misionesReset = @json($fechaLimite);   // ISO string
    ─────────────────────────────────────────────────────────────────── */
-const MISIONES = window.misionesData ?? [
-    /* Diarias */
-    {
-        id: 1, nombre: 'Caminar 500 metros.',
-        puntos: 30, semanal: false, completada: false,
-        premium: false, metros_requeridos: 500, ejeX: null, ejeY: null,
-        direccion: null
-    },
-    {
-        id: 2, nombre: 'Chatear con un amigo.',
-        puntos: 10, semanal: false, completada: true,
-        premium: false, metros_requeridos: null, ejeX: null, ejeY: null,
-        direccion: null
-    },
-    {
-        id: 3, nombre: 'Visitar la tienda Nike más cercana.',
-        puntos: 50, semanal: false, completada: false,
-        premium: true, ejeX: null, ejeY: null,      // se rellenan con geolocalización
-        direccion: 'Nike Store, tu ciudad'
-    },
-    /* Semanales */
-    {
-        id: 4, nombre: 'Correr 5 km sin parar.',
-        puntos: 100, semanal: true, completada: false,
-        premium: false, ejeX: null, ejeY: null,
-        direccion: null
-    },
-    {
-        id: 5, nombre: 'Asistir a un evento local.',
-        puntos: 200, semanal: true, completada: false,
-        premium: true, ejeX: null, ejeY: null,
-        direccion: null
-    },
-    {
-        id: 6, nombre: 'Hacer 3 amigos nuevos en la app.',
-        puntos: 80, semanal: true, completada: true,
-        premium: false, ejeX: null, ejeY: null,
-        direccion: null
-    },
-];
+const MISIONES = window.misionesData || [];
 
 const EVENTO = window.eventoData ?? null;
 
@@ -79,15 +40,18 @@ let capasRutas = [];
 let marcadoresMisiones = [];
 let userCoords = null;
 let lastPosition = null;
+let lastSpeedKmh = 0;
+let lastAccuracyMeters = null;
 let recorridoTotal = 0;
 const misionesConMeta = new Set();
 
 /* ── DOM refs ───────────────────────────────────────────────────── */
 const elLoading = document.getElementById('map-loading');
-const elMissions = document.getElementById('missions-list');
 const elCountdown = document.getElementById('timer-countdown');
 const elBarFill = document.getElementById('timer-bar-fill');
 const elChangBtn = document.getElementById('change-missions-btn');
+const listDiarias = document.getElementById('diarias-list');
+const listSemanales = document.getElementById('semanales-list');
 
 function getCsrfToken() {
     const el = document.querySelector('meta[name="csrf-token"]');
@@ -95,6 +59,14 @@ function getCsrfToken() {
 }
 
 function completarMisionEnServidor(mision) {
+    const payload = {
+        distance_meters: Number.isFinite(recorridoTotal) ? Math.round(recorridoTotal) : 0,
+        speed_kmh: Number.isFinite(lastSpeedKmh) ? Number(lastSpeedKmh.toFixed(2)) : 0,
+        accuracy_meters: Number.isFinite(lastAccuracyMeters) ? Number(lastAccuracyMeters.toFixed(2)) : null,
+        latitude: userCoords ? userCoords[0] : null,
+        longitude: userCoords ? userCoords[1] : null,
+    };
+
     return fetch(`/misiones/${mision.id}/completar`, {
         method: 'POST',
         headers: {
@@ -102,7 +74,7 @@ function completarMisionEnServidor(mision) {
             'Accept': 'application/json',
             'X-CSRF-TOKEN': getCsrfToken(),
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify(payload),
     }).then(res => {
         if (!res.ok) {
             return res.json().then(body => {
@@ -231,68 +203,46 @@ function renderMapaMisiones(userLat, userLng) {
    ════════════════════════════════════════════════════════════════ */
 
 /**
- * Genera el HTML de una tarjeta de misión.
+ * Actualiza el DOM para marcar una misión como completada.
  */
-function tarjetaMision(m) {
-    const completada = m.completada ? 'completed' : '';
-    const checkIcon = m.completada ? '✓' : '';
-    const puntosLabel = m.completada ? `+${m.puntos} ptos` : `${m.puntos} ptos`;
-    const premiumBadge = m.premium
-        ? `<span class="mission-card__premium">⭐ Premium</span>`
-        : '';
-
-    return `
-        <div class="mission-card ${completada}" data-id="${m.id}" role="listitem">
-            <div class="mission-card__check">${checkIcon}</div>
-            <div class="mission-card__body">
-                <div class="mission-card__name">${m.nombre}</div>
-                ${premiumBadge}
-                ${m.direccion && !m.completada
-            ? `<div class="mission-card__sub">📍 ${m.direccion}</div>`
-            : ''}
-            </div>
-            <div class="mission-card__points">${puntosLabel}</div>
-        </div>
-    `.trim();
+function marcarMisionCompletadaEnDOM(id) {
+    const cards = document.querySelectorAll(`.mission-card[data-id="${id}"]`);
+    cards.forEach(card => {
+        card.classList.add('completed');
+        const check = card.querySelector('.mission-card__check');
+        if (check) check.textContent = '✓';
+        const points = card.querySelector('.points-label');
+        if (points && !points.textContent.startsWith('+')) {
+            points.textContent = '+' + points.textContent;
+        }
+        const dir = card.querySelector('.direccion-sub');
+        if (dir) dir.remove();
+    });
 }
 
 /**
- * Renderiza la lista de misiones según el tab activo o todas si hay evento.
+ * Muestra la lista de misiones según el tab activo.
  */
 function renderMisiones() {
-    let lista;
-
     if (EVENTO) {
-        // En caso de que se esté ejecutando un evento, mostraremos todas sus misiones y omitiremos filtro semanal/diario
-        lista = MISIONES;
-    } else {
-        // Filtrar por tab activo
-        const esSemanal = tabActiva === 'semanales';
-        lista = MISIONES.filter(m => m.semanal === esSemanal);
-    }
-
-    if (lista.length === 0) {
-        elMissions.innerHTML = `
-            <div class="missions-empty">
-                <div class="missions-empty__icon">🎯</div>
-                <p>No hay misiones ${EVENTO ? 'en este evento' : (tabActiva === 'semanales' ? 'semanales' : 'diarias')} disponibles.</p>
-            </div>
-        `;
+        if (listDiarias) listDiarias.style.display = 'block';
+        if (listSemanales) listSemanales.style.display = 'none';
         return;
     }
 
-    /* Completadas al final */
-    const ordenadas = [
-        ...lista.filter(m => !m.completada),
-        ...lista.filter(m => m.completada),
-    ];
-
-    elMissions.innerHTML = ordenadas.map(tarjetaMision).join('');
+    if (tabActiva === 'semanales') {
+        if (listDiarias) listDiarias.style.display = 'none';
+        if (listSemanales) listSemanales.style.display = 'block';
+    } else {
+        if (listDiarias) listDiarias.style.display = 'block';
+        if (listSemanales) listSemanales.style.display = 'none';
+    }
 
     /* Recount badge */
     const cercanas = document.querySelector('.map-info-badge strong');
     if (cercanas) {
-        const conCoords = lista.filter(m => m.ejeX && !m.completada).length;
+        const esSemanal = tabActiva === 'semanales';
+        const conCoords = MISIONES.filter(m => m.semanal === esSemanal && m.ejeX && !m.completada).length;
         cercanas.textContent = conCoords;
     }
 }
@@ -368,7 +318,7 @@ function verificarMetasRecorrido(distancia) {
                 completarMisionEnServidor(m)
                     .then(data => {
                         m.completada = true;
-                        renderMisiones();
+                        marcarMisionCompletadaEnDOM(m.id);
                         if (mapa && userCoords) {
                             renderMapaMisiones(userCoords[0], userCoords[1]);
                         }
@@ -405,7 +355,7 @@ function verificarProximidadMisiones(userLat, userLng) {
                 completarMisionEnServidor(m)
                     .then(data => {
                         m.completada = true;
-                        renderMisiones();
+                        marcarMisionCompletadaEnDOM(m.id);
                         if (mapa && userCoords) {
                             renderMapaMisiones(userCoords[0], userCoords[1]);
                         }
@@ -454,6 +404,8 @@ function iniciarGeolocalizacion() {
     navigator.geolocation.watchPosition(
         pos => {
             const coords = [pos.coords.latitude, pos.coords.longitude];
+            lastAccuracyMeters = pos.coords.accuracy;
+            lastSpeedKmh = pos.coords.speed != null ? pos.coords.speed * 3.6 : 0;
 
             if (!lastPosition) {
                 lastPosition = coords;
@@ -551,23 +503,18 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 if (elChangBtn) {
     elChangBtn.onclick = () => {
         if (EVENTO) {
-            alert('Estas misiones pertenecen al evento activo y no pueden cambiarse desde esta pantalla.');
+            window.showAppAlert('Estas misiones pertenecen al evento activo y no pueden cambiarse desde esta pantalla.', 'warning', 'Cambio no permitido');
             return;
         }
 
-        /* Lógica para procesar un pago real si el usuario decide cambiar las misiones antes de tiempo.
-           TODO: Reemplazar con redirección al controlador de la pasarela de pagos. */
-        const confirmado = confirm('¿Cambiar misiones por 0,99 €?');
-        if (confirmado) {
-            alert('En desarrollo: Redirigiendo al proceso de pago…');
-        }
+        window.location.href = '/pago/cambiar-misiones';
     };
 }
 
 /**
  * Click en tarjeta de misión → centrar mapa en esa misión.
  */
-elMissions.onclick = e => {
+document.addEventListener('click', e => {
     const card = e.target.closest('.mission-card');
     if (!card || !mapa) return;
 
@@ -587,7 +534,7 @@ elMissions.onclick = e => {
             mk.openPopup();
         }
     });
-};
+});
 
 /* ════════════════════════════════════════════════════════════════
    ARRANQUE

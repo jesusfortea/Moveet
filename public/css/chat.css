@@ -24,8 +24,6 @@ body {
 }
 
 .page-content {
-    padding-top: 15vh;
-    min-height: 100vh;
     overflow-y: auto;
 }
 
