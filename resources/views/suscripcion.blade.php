@@ -104,6 +104,11 @@
                 @if($esPremium)
                     <div style="text-align: center; padding: 1rem; background: #f0fff4; border: 1px solid #c6f6d5; color: #2f855a; border-radius: 12px; font-weight: 700;">
                         ¡Ya eres usuario Premium!
+                        @if($premiumUntil)
+                            <div style="font-size: 0.8rem; margin-top: 0.5rem; font-weight: 400; color: #48bb78;">
+                                Tu suscripción expira el {{ $premiumUntil->format('d/m/Y') }}
+                            </div>
+                        @endif
                     </div>
                 @else
                     <div id="paypal-button-container" style="margin-top: 1rem;"></div>

@@ -18,6 +18,7 @@ class SuscripcionController extends Controller
 
         return view('suscripcion', [
             'esPremium' => (bool)$user->premium,
+            'premiumUntil' => $user->premium_until,
         ]);
     }
 
@@ -39,8 +40,11 @@ class SuscripcionController extends Controller
             'ultimos_digitos' => 'PAYP',
         ]);
 
-        // 2. Activamos Premium
-        $user->update(['premium' => true]);
+        // 2. Activamos Premium por 1 mes
+        $user->update([
+            'premium' => true,
+            'premium_until' => now()->addMonth(),
+        ]);
 
         // 3. Generar PDF y enviar correo
         $pdf = Pdf::loadView('pdf.factura', [

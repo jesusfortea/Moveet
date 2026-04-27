@@ -15,7 +15,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     protected $fillable = [
         'name', 'username', 'email', 'password', 'dni', 'nacimiento',
-        'telefono', 'phone', 'premium', 'nivel', 'puntos', 'ruta_imagen', 'birth_date', 'is_admin',
+        'telefono', 'phone', 'premium', 'premium_until', 'nivel', 'puntos', 'ruta_imagen', 'birth_date', 'is_admin',
         'current_streak', 'longest_streak', 'streak_last_activity_date', 'streak_freezes', 'streak_premium_month',
         'referral_code', 'referred_by_user_id',
         'last_location_latitude', 'last_location_longitude', 'last_location_timestamp',
@@ -46,6 +46,14 @@ class User extends Authenticatable implements MustVerifyEmail
         'last_location_timestamp'   => 'datetime',
         'blocked_at'             => 'datetime',
     ];
+
+    public function getPremiumAttribute($value)
+    {
+        if ($value && $this->premium_until) {
+            return now()->lessThanOrEqualTo($this->premium_until);
+        }
+        return (bool)$value;
+    }
 
     // ── Misiones ────────────────────────────────────────────────
     public function misiones()

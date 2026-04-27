@@ -60,8 +60,6 @@ class UserController extends Controller
 
         return view('usuario.index', [
             'usuario' => $user,
-            'tarjeta' => $user->tarjetaBancaria,
-            'tarjetaCaducada' => $user->tarjetaBancaria?->esta_caducada ?? false,
             'inventario' => $inventario,
             'streakFreezeCost' => $this->streakService->freezeCost(),
             'logros' => $logros,
