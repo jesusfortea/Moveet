@@ -56,7 +56,8 @@
             </form>
         </div>
 
-        <div class="flex-1 h-full hidden md:flex items-center justify-center gap-7 lg:gap-9 text-[#1E2A28] font-semibold">
+        <div class="flex-1 h-full hidden md:flex items-center justify-center gap-6 lg:gap-8 text-[#1E2A28] font-semibold">
+            <!-- Inicio -->
             <a href="{{ route('home') }}" class="whitespace-nowrap hover:opacity-80">Inicio</a>
             <a href="{{ route('eventos') }}" class="whitespace-nowrap hover:opacity-80">Evento</a>
             <a href="{{ route('chat.index') }}" class="whitespace-nowrap hover:opacity-80">Chat</a>
@@ -85,11 +86,11 @@
 
 <div id="mobile-nav-backdrop" class="md:hidden fixed inset-0 bg-black/20 z-40 hidden"></div>
 
-<aside id="mobile-nav-panel" class="md:hidden fixed top-[15vh] left-0 w-[220px] max-w-[75vw] h-[calc(100vh-15vh)] bg-[#9bb0ae] z-50 shadow-xl -translate-x-full transition-transform duration-200 ease-out">
-    <div class="h-full flex flex-col justify-between p-4 text-[#1E2A28]">
+<aside id="mobile-nav-panel" class="md:hidden fixed top-[15vh] left-0 w-[240px] max-w-[75vw] h-[calc(100vh-15vh)] bg-[#9bb0ae] z-50 shadow-xl -translate-x-full transition-transform duration-200 ease-out overflow-y-auto">
+    <div class="min-h-full flex flex-col justify-between p-4 text-[#1E2A28]">
         <div>
             @if ($navUser)
-                <div class="flex flex-col items-center mb-6 pb-4 border-b border-black/10">
+                <div class="flex flex-col items-center mb-5 pb-4 border-b border-black/10">
                     <div class="flex items-center gap-2 mb-1">
                         <span class="font-bold text-lg">{{ $navUser->puntos }} puntos</span>
                         <a href="{{ route('tienda.puntos') }}" class="flex items-center justify-center w-5 h-5 bg-[#1E2A28] text-white rounded-full text-[12px] font-bold">+</a>

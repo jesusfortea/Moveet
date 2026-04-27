@@ -9,7 +9,7 @@
         @if($canCreate)
             <a href="{{ route('rutas.crear') }}" style="background: #8FA8A6; color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none; font-weight: 700;">Crear ruta</a>
         @else
-            <span style="font-size: 13px; color: #586866; font-weight: 600;">Crear rutas: nivel 15+ o premium</span>
+            <span style="font-size: 13px; color: #586866; font-weight: 600;">Crear rutas: Premium</span>
         @endif
     </div>
 
