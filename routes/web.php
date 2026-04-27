@@ -12,6 +12,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EventoController;
 use App\Http\Controllers\PaseDePaseoController;
+use App\Http\Controllers\PreguntaController;
 use App\Http\Controllers\SuscripcionController;
 use App\Http\Controllers\TiendaController;
 use App\Http\Controllers\UserController;
@@ -32,6 +33,10 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Rutas públicas para preguntas
+Route::get('/preguntas', [PreguntaController::class, 'index'])->name('preguntas.index');
+Route::get('/preguntas/{pregunta}', [PreguntaController::class, 'show'])->name('preguntas.show');
 
 Route::middleware('auth')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -78,6 +83,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/suscripcion', [SuscripcionController::class, 'index'])->name('suscripcion');
     Route::post('/suscripcion/tarjeta', [SuscripcionController::class, 'storeCard'])->name('suscripcion.tarjeta.store');
     Route::post('/suscripcion/comprar', [SuscripcionController::class, 'subscribe'])->name('suscripcion.comprar');
+
+    // Rutas autenticadas para preguntas
+    Route::get('/preguntas/crear', [PreguntaController::class, 'create'])->name('preguntas.create');
+    Route::post('/preguntas', [PreguntaController::class, 'store'])->name('preguntas.store');
+    Route::get('/preguntas/{pregunta}/editar', [PreguntaController::class, 'edit'])->name('preguntas.edit');
+    Route::put('/preguntas/{pregunta}', [PreguntaController::class, 'update'])->name('preguntas.update');
+    Route::delete('/preguntas/{pregunta}', [PreguntaController::class, 'destroy'])->name('preguntas.destroy');
+    Route::post('/preguntas/{pregunta}/responder', [PreguntaController::class, 'responder'])->name('preguntas.responder');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
@@ -135,4 +148,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::put('/lugares/{lugar}', [AdminLugarController::class, 'actualizar'])->name('admin.lugares.actualizar');
     Route::get('/lugares/{lugar}/eliminar', [AdminLugarController::class, 'eliminar'])->name('admin.lugares.eliminar');
     Route::delete('/lugares/{lugar}', [AdminLugarController::class, 'confirmarEliminar'])->name('admin.lugares.confirmar-eliminar');
+
+    // Rutas de preguntas (admin)
+    Route::get('/preguntas', [PreguntaController::class, 'adminPanel'])->name('admin.preguntas');
 });
