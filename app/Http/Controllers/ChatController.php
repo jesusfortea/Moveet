@@ -124,15 +124,31 @@ class ChatController extends Controller
     {
         $code = $this->ensureFriendCode($user);
         $url = route('chat.qr.accept', ['code' => $code]);
-        $renderer = new QRCode(new QROptions([
+        $options = new QROptions([
             'outputInterface' => QRMarkupSVG::class,
             'eccLevel' => EccLevel::L,
-        ]));
+            'svgPreserveAspectRatio' => 'xMidYMid meet',
+            'svgViewBoxSize' => 300,
+            'drawLightModules' => true,
+        ]);
+        
+        $qrCode = new QRCode($options);
+        // Obtener el SVG como string puro (no como data URI)
+        $svg = $qrCode->render($url);
+        
+        // Si es un data URI, extraer solo el SVG
+        if (strpos($svg, 'data:image/svg+xml') === 0) {
+            // Decodificar desde base64
+            $parts = explode(',', $svg, 2);
+            if (count($parts) === 2) {
+                $svg = base64_decode($parts[1]);
+            }
+        }
 
         return [
             'code' => $code,
             'url' => $url,
-            'svg' => $renderer->render($url),
+            'svg' => $svg,
         ];
     }
 
