@@ -27,7 +27,7 @@ body {
 }
 
 .page-content {
-    padding-top: 15vh;
+    padding-top: 0;
     min-height: 100vh;
     overflow-y: auto;
 }
@@ -317,11 +317,11 @@ body {
 }
 
 .inventario-item--full {
-    min-height: 210px;
+    min-height: 240px;
 }
 
 .inventario-grid--full {
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .inventario-meta {
@@ -453,7 +453,32 @@ body {
         grid-template-columns: 1fr;
     }
 
+    .inventario-grid--full {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .card-page-title {
         font-size: 1.9rem;
+    }
+}
+
+@media (max-width: 1200px) {
+    .inventario-grid--full {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 680px) {
+    .inventario-grid--full {
+        grid-template-columns: 1fr;
+    }
+
+    .inventario-item--full {
+        min-height: 210px;
+    }
+
+    .panel-header {
+        flex-wrap: wrap;
+        gap: 8px;
     }
 }

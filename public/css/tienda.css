@@ -45,7 +45,7 @@
 .store-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
+    gap: 16px;
 }
 
 .store-card {
@@ -116,6 +116,7 @@
 .store-actions {
     display: flex;
     gap: 8px;
+    flex-wrap: wrap;
 }
 
 .store-btn,
@@ -130,6 +131,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    min-width: 120px;
 }
 
 .store-btn {
@@ -172,7 +174,7 @@
 .store-confirm-grid {
     display: grid;
     grid-template-columns: 170px 1fr;
-    gap: 16px;
+    gap: 20px;
     align-items: start;
 }
 
@@ -354,5 +356,41 @@
     .shop-pack--hero {
         width: 100%;
         max-width: 300px;
+    }
+}
+
+@media (max-width: 1100px) {
+    .store-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 780px) {
+    .store-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .store-card {
+        padding: 16px;
+    }
+
+    .store-confirm-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .store-confirm-title,
+    .store-buy-title,
+    .store-title {
+        font-size: 1.65rem;
+    }
+
+    .store-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .store-btn,
+    .store-btn-secondary {
+        width: 100%;
     }
 }

@@ -2,7 +2,7 @@
     $navUser = \Illuminate\Support\Facades\Auth::user();
 @endphp
 
-<nav class="bg-[#8FA8A6] w-full h-[15vh] min-h-[92px] fixed top-0 left-0 z-50">
+<nav class="bg-[#8FA8A6] w-full h-[15vh] min-h-[92px] sticky top-0 left-0 z-3000">
     <div class="h-full px-3 md:px-5 flex items-center justify-between gap-4">
 
         <div class="hidden md:flex items-center gap-3 min-w-0 w-[36%]">
@@ -61,8 +61,16 @@
             <a href="{{ route('eventos') }}" class="whitespace-nowrap hover:opacity-80">Evento</a>
             <a href="{{ route('chat.index') }}" class="whitespace-nowrap hover:opacity-80">Chat</a>
             <a href="{{ route('pase.paseo') }}" class="whitespace-nowrap hover:opacity-80">Pase de paseo</a>
+            @if($navUser?->premium)
+                <a href="{{ route('rutas.crear') }}" class="whitespace-nowrap hover:opacity-80">Crear ruta</a>
+            @endif
+            <a href="{{ route('rutas.index') }}" class="whitespace-nowrap hover:opacity-80">Rutas</a>
             <a href="{{ route('tienda.index') }}" class="whitespace-nowrap hover:opacity-80">Tienda</a>
+            <a href="{{ route('usuario.historial_puntos') }}" class="whitespace-nowrap hover:opacity-80">Historial</a>
+            <a href="{{ route('usuario.notificaciones') }}" class="whitespace-nowrap hover:opacity-80">Notificaciones</a>
             <a href="{{ route('usuario.inventario') }}" class="whitespace-nowrap hover:opacity-80">Recompensas</a>
+            <a href="{{ route('atencion.create') }}" class="whitespace-nowrap hover:opacity-80">Atención al usuario</a>
+            <a href="{{ route('preguntas.index') }}" class="whitespace-nowrap hover:opacity-80"><i class="fas fa-star mr-1"></i>Reseñas</a>
         </div>
 
         <form method="POST" action="{{ route('logout') }}" class="shrink-0 hidden md:block">
@@ -89,14 +97,23 @@
                     <span class="text-xs opacity-70">Nvl {{ $navUser->nivel }}</span>
                 </div>
             @endif
-            <div class="space-y-5 text-center font-medium">
+                <div class="space-y-5 text-center font-medium">
                 <a href="{{ route('home') }}" class="block">Inicio</a>
                 <a href="{{ route('eventos') }}" class="block">Evento</a>
                 <a href="{{ route('chat.index') }}" class="block">Chat</a>
                 <a href="{{ route('pase.paseo') }}" class="block">Pase de paseo</a>
+                @if($navUser?->premium)
+                    <a href="{{ route('rutas.crear') }}" class="block">Crear ruta</a>
+                @endif
+                <a href="{{ route('rutas.index') }}" class="block">Rutas</a>
                 <a href="{{ route('tienda.index') }}" class="block">Tienda</a>
+                <a href="{{ route('usuario.historial_puntos') }}" class="block">Historial</a>
+                <a href="{{ route('usuario.notificaciones') }}" class="block">Notificaciones</a>
                 <a href="{{ route('usuario.inventario') }}" class="block">Recompensas</a>
+                <a href="{{ route('atencion.create') }}" class="block">Atención al usuario</a>
+                <a href="{{ route('preguntas.index') }}" class="block"><i class="fas fa-star mr-1"></i>Reseñas</a>
             </div>
+        </div>{{-- fin flex-col --}}
 
         <div class="flex items-center gap-2 text-[11px] text-[#4f5f5d]">
             <img class="w-10 h-10 object-contain" src="{{ asset('img/LogoUsarDiaDia.png') }}" alt="Logo Moveet">
@@ -109,7 +126,7 @@
 </aside>
 
 <script>
-    window.onload = function () {
+    document.addEventListener('DOMContentLoaded', function () {
         const toggle = document.getElementById('mobile-nav-toggle');
         const panel = document.getElementById('mobile-nav-panel');
         const backdrop = document.getElementById('mobile-nav-backdrop');

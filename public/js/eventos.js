@@ -14,6 +14,10 @@ let marcadorUsuario = null;
 let marcadoresMisiones = [];   // markers + círculos
 let rutasCapas = {};   // { [misionId]: [L.Layer, ...] }
 let userCoords = null;
+let recorridoTotal = 0;
+let lastPosition = null;
+let lastSpeedKmh = 0;
+let lastAccuracyMeters = null;
 
 /* ── Control de completado ──────────────────────────────────────── */
 const misionesProximidadCompletadas = new Set();
@@ -27,6 +31,14 @@ function getCsrfToken() {
 
 /* ── Completar misión en servidor ───────────────────────────────── */
 function completarMisionEnServidor(mision) {
+    const payload = {
+        distance_meters: Number.isFinite(recorridoTotal) ? Math.round(recorridoTotal) : 0,
+        speed_kmh: Number.isFinite(lastSpeedKmh) ? Number(lastSpeedKmh.toFixed(2)) : 0,
+        accuracy_meters: Number.isFinite(lastAccuracyMeters) ? Number(lastAccuracyMeters.toFixed(2)) : null,
+        latitude: userCoords ? userCoords[0] : null,
+        longitude: userCoords ? userCoords[1] : null,
+    };
+
     return fetch(`/misiones/${mision.id}/completar`, {
         method: 'POST',
         headers: {
@@ -34,7 +46,7 @@ function completarMisionEnServidor(mision) {
             'Accept': 'application/json',
             'X-CSRF-TOKEN': getCsrfToken(),
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify(payload),
     }).then(res => {
         if (!res.ok) return res.json().then(b => { throw new Error(b.message || 'Error'); });
         return res.json();
@@ -326,6 +338,15 @@ function iniciarGeolocalizacion() {
         pos => {
             const coords = [pos.coords.latitude, pos.coords.longitude];
             userCoords = coords;
+            lastAccuracyMeters = pos.coords.accuracy;
+            lastSpeedKmh = pos.coords.speed != null ? pos.coords.speed * 3.6 : 0;
+
+            if (!lastPosition) {
+                lastPosition = coords;
+            } else {
+                recorridoTotal += calcularDistanciaMetros(lastPosition, coords);
+                lastPosition = coords;
+            }
 
             // Verificar proximidad
             verificarProximidadMisiones(coords[0], coords[1]);

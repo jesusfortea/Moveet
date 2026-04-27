@@ -40,6 +40,8 @@ let capasRutas = [];
 let marcadoresMisiones = [];
 let userCoords = null;
 let lastPosition = null;
+let lastSpeedKmh = 0;
+let lastAccuracyMeters = null;
 let recorridoTotal = 0;
 const misionesConMeta = new Set();
 
@@ -57,6 +59,14 @@ function getCsrfToken() {
 }
 
 function completarMisionEnServidor(mision) {
+    const payload = {
+        distance_meters: Number.isFinite(recorridoTotal) ? Math.round(recorridoTotal) : 0,
+        speed_kmh: Number.isFinite(lastSpeedKmh) ? Number(lastSpeedKmh.toFixed(2)) : 0,
+        accuracy_meters: Number.isFinite(lastAccuracyMeters) ? Number(lastAccuracyMeters.toFixed(2)) : null,
+        latitude: userCoords ? userCoords[0] : null,
+        longitude: userCoords ? userCoords[1] : null,
+    };
+
     return fetch(`/misiones/${mision.id}/completar`, {
         method: 'POST',
         headers: {
@@ -64,7 +74,7 @@ function completarMisionEnServidor(mision) {
             'Accept': 'application/json',
             'X-CSRF-TOKEN': getCsrfToken(),
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify(payload),
     }).then(res => {
         if (!res.ok) {
             return res.json().then(body => {
@@ -394,6 +404,8 @@ function iniciarGeolocalizacion() {
     navigator.geolocation.watchPosition(
         pos => {
             const coords = [pos.coords.latitude, pos.coords.longitude];
+            lastAccuracyMeters = pos.coords.accuracy;
+            lastSpeedKmh = pos.coords.speed != null ? pos.coords.speed * 3.6 : 0;
 
             if (!lastPosition) {
                 lastPosition = coords;
@@ -491,7 +503,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 if (elChangBtn) {
     elChangBtn.onclick = () => {
         if (EVENTO) {
-            alert('Estas misiones pertenecen al evento activo y no pueden cambiarse desde esta pantalla.');
+            window.showAppAlert('Estas misiones pertenecen al evento activo y no pueden cambiarse desde esta pantalla.', 'warning', 'Cambio no permitido');
             return;
         }
 

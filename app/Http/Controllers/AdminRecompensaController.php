@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PaseDePaseo;
 use App\Models\Recompensa;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,7 +23,9 @@ class AdminRecompensaController extends Controller
 
     public function crear(): View
     {
-        return view('admin.recompensas.crear');
+        $pases = PaseDePaseo::query()->orderBy('nombre')->get();
+
+        return view('admin.recompensas.crear', compact('pases'));
     }
 
     public function guardar(Request $request): RedirectResponse
@@ -31,6 +34,7 @@ class AdminRecompensaController extends Controller
             'nombre' => ['required', 'string', 'max:255'],
             'descripcion' => ['required', 'string', 'max:255'],
             'tipo' => ['required', 'in:tienda,pase_de_paseo'],
+            'pase_de_paseo_id' => ['nullable', 'required_if:tipo,pase_de_paseo', 'integer', 'exists:pase_de_paseo,id'],
             'puntos_necesarios' => ['required', 'integer', 'min:0'],
             'nivel_necesario' => ['required', 'integer', 'min:1'],
             'ruta_imagen' => ['required', 'image', 'max:4096'],
@@ -42,6 +46,9 @@ class AdminRecompensaController extends Controller
         }
 
         Recompensa::create([
+            'pase_de_paseo_id' => $validated['tipo'] === 'pase_de_paseo'
+                ? (int) $validated['pase_de_paseo_id']
+                : null,
             'nombre' => $validated['nombre'],
             'descripcion' => $validated['descripcion'],
             'tipo' => $validated['tipo'],
@@ -57,7 +64,9 @@ class AdminRecompensaController extends Controller
 
     public function editar(Recompensa $recompensa): View
     {
-        return view('admin.recompensas.editar', compact('recompensa'));
+        $pases = PaseDePaseo::query()->orderBy('nombre')->get();
+
+        return view('admin.recompensas.editar', compact('recompensa', 'pases'));
     }
 
     public function actualizar(Request $request, Recompensa $recompensa): RedirectResponse
@@ -66,6 +75,7 @@ class AdminRecompensaController extends Controller
             'nombre' => ['required', 'string', 'max:255'],
             'descripcion' => ['required', 'string', 'max:255'],
             'tipo' => ['required', 'in:tienda,pase_de_paseo'],
+            'pase_de_paseo_id' => ['nullable', 'required_if:tipo,pase_de_paseo', 'integer', 'exists:pase_de_paseo,id'],
             'puntos_necesarios' => ['required', 'integer', 'min:0'],
             'nivel_necesario' => ['required', 'integer', 'min:1'],
             'ruta_imagen' => ['nullable', 'image', 'max:4096'],
@@ -84,6 +94,9 @@ class AdminRecompensaController extends Controller
         }
 
         $recompensa->update([
+            'pase_de_paseo_id' => $validated['tipo'] === 'pase_de_paseo'
+                ? (int) $validated['pase_de_paseo_id']
+                : null,
             'nombre' => $validated['nombre'],
             'descripcion' => $validated['descripcion'],
             'tipo' => $validated['tipo'],

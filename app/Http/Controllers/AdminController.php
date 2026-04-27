@@ -138,6 +138,8 @@ class AdminController extends Controller
 
         if ($request->filled('password')) {
             $validated['password'] = Hash::make($request->password);
+        } else {
+            unset($validated['password']);
         }
 
         $validated['premium'] = $request->boolean('premium');
@@ -157,5 +159,32 @@ class AdminController extends Controller
         $user->delete();
 
         return redirect()->route('admin.usuarios')->with('success', 'Usuario eliminado correctamente.');
+    }
+
+    public function toggleBloqueoUsuario(User $user): RedirectResponse
+    {
+        $admin = auth()->user();
+
+        if (!$admin) {
+            return redirect()->route('login');
+        }
+
+        if ((int) $admin->id === (int) $user->id) {
+            return redirect()->route('admin.usuarios')->with('error', 'No puedes bloquear tu propia cuenta.');
+        }
+
+        $isBlocked = (bool) $user->is_blocked;
+
+        $user->update([
+            'is_blocked' => !$isBlocked,
+            'blocked_at' => $isBlocked ? null : now(),
+            'blocked_reason' => $isBlocked ? null : 'Bloqueado manualmente por administración.',
+        ]);
+
+        $message = $isBlocked
+            ? 'Usuario desbloqueado correctamente.'
+            : 'Usuario bloqueado correctamente.';
+
+        return redirect()->route('admin.usuarios')->with('success', $message);
     }
 }

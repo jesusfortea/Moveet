@@ -7,10 +7,25 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Mision;
 use App\Models\User;
+use App\Services\AchievementService;
+use App\Services\AntiCheatService;
+use App\Services\PointsHistoryService;
+use App\Services\ReferralService;
+use App\Services\StreakService;
 use Carbon\Carbon;
 
 class HomeController extends Controller
 {
+    public function __construct(
+        private StreakService $streakService,
+        private AntiCheatService $antiCheatService,
+        private PointsHistoryService $pointsHistoryService,
+        private AchievementService $achievementService,
+        private ReferralService $referralService,
+    )
+    {
+    }
+
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -18,6 +33,8 @@ class HomeController extends Controller
         if (!$user) {
             return redirect()->route('login');
         }
+
+        $this->streakService->syncStreakState($user);
 
         // Gestionar ciclo semanal basado en fecha de registro
         if (!$user->weekly_mission_cycle_end) {
@@ -84,6 +101,14 @@ class HomeController extends Controller
             return response()->json(['message' => 'Usuario no encontrado'], 401);
         }
 
+        $validated = $request->validate([
+            'distance_meters' => ['nullable', 'numeric', 'min:0'],
+            'speed_kmh' => ['nullable', 'numeric', 'min:0'],
+            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
+            'accuracy_meters' => ['nullable', 'numeric', 'min:0'],
+        ]);
+
         $usuarioMision = $user->misiones()
             ->where('misiones.id', $mision->id)
             ->first();
@@ -99,6 +124,41 @@ class HomeController extends Controller
             ]);
         }
 
+        $distanceMeters = (float) ($validated['distance_meters'] ?? 0);
+        $speedKmh = (float) ($validated['speed_kmh'] ?? 0);
+        $hasGeoData = isset($validated['latitude']) && isset($validated['longitude']);
+
+        if ((int) $mision->metros_requeridos > 0 && $distanceMeters < (int) $mision->metros_requeridos) {
+            return response()->json([
+                'message' => 'No has completado la distancia minima requerida para esta mision.',
+            ], 422);
+        }
+
+        if ($hasGeoData) {
+            $antiCheat = $this->antiCheatService->validateLocationAndSpeed(
+                (float) $validated['latitude'],
+                (float) $validated['longitude'],
+                $speedKmh,
+                isset($validated['accuracy_meters']) ? (float) $validated['accuracy_meters'] : null,
+                $user
+            );
+
+            if (!$antiCheat['valid']) {
+                $this->antiCheatService->logSuspiciousActivity(
+                    $user,
+                    implode(' | ', $antiCheat['alerts']),
+                    isset($validated['latitude']) ? (float) $validated['latitude'] : null,
+                    isset($validated['longitude']) ? (float) $validated['longitude'] : null,
+                    $speedKmh
+                );
+
+                return response()->json([
+                    'message' => 'Actividad no valida detectada. Mision rechazada por seguridad.',
+                    'alerts' => $antiCheat['alerts'],
+                ], 422);
+            }
+        }
+
         DB::transaction(function () use ($user, $mision) {
             $user->increment('puntos', $mision->puntos);
             $user->misiones()->updateExistingPivot($mision->id, [
@@ -107,10 +167,36 @@ class HomeController extends Controller
             ]);
         });
 
+        if ($hasGeoData) {
+            $user->update([
+                'last_location_latitude' => $validated['latitude'],
+                'last_location_longitude' => $validated['longitude'],
+                'last_location_timestamp' => now(),
+            ]);
+        }
+
+        $this->streakService->registerWalkActivity($user->fresh());
+
+        $this->pointsHistoryService->log(
+            $user,
+            'mission',
+            (int) $mision->puntos,
+            'Mision completada: ' . $mision->nombre,
+            null,
+            $speedKmh > 0 ? $speedKmh : null,
+            $distanceMeters > 0 ? $distanceMeters : null,
+        );
+
+        $this->referralService->processFirstMissionReward($user->fresh());
+        $this->achievementService->syncBaseAchievements($user->fresh());
+
+        $user = $user->fresh();
+
         return response()->json([
             'message' => 'Misión completada',
             'mision_id' => $mision->id,
-            'puntos' => $user->fresh()->puntos,
+            'puntos' => $user->puntos,
+            'streak' => $user->current_streak,
         ]);
     }
 
