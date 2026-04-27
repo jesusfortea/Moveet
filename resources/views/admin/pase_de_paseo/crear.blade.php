@@ -23,7 +23,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('admin.pase_paseo.guardar') }}" method="POST" style="background: #d0dbd9; padding: 25px; border-radius: 8px;">
+            <form action="{{ route('admin.pase_paseo.guardar') }}" method="POST" enctype="multipart/form-data" style="background: #d0dbd9; padding: 25px; border-radius: 8px;">
                 @csrf
 
                 <div style="margin-bottom: 15px;">
@@ -37,12 +37,12 @@
                 </div>
 
                 <div style="margin-bottom: 20px;">
-                    <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333; font-size: 13px;">Ruta de imagen <span style="color: #c00;">*</span></label>
-                    <input type="text" name="ruta_imagen" value="{{ old('ruta_imagen') }}" required minlength="5" maxlength="500" placeholder="/img/paseos/deportivo.png" style="width: 100%; padding: 10px 12px; border: 2px solid {{ $errors->has('ruta_imagen') ? '#c00' : '#999' }}; border-radius: 4px; font-size: 13px; box-sizing: border-box; background: {{ $errors->has('ruta_imagen') ? '#fff5f5' : '#fff' }};">
+                    <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #333; font-size: 13px;">Imagen del pase <span style="color: #c00;">*</span></label>
+                    <input type="file" name="ruta_imagen" required accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" style="width: 100%; padding: 10px 12px; border: 2px solid {{ $errors->has('ruta_imagen') ? '#c00' : '#999' }}; border-radius: 4px; font-size: 13px; box-sizing: border-box; background: {{ $errors->has('ruta_imagen') ? '#fff5f5' : '#fff' }};">
                     @if ($errors->has('ruta_imagen'))
                         <span style="color: #c00; font-size: 11px; margin-top: 3px; display: block;">❌ {{ $errors->first('ruta_imagen') }}</span>
                     @else
-                        <span style="color: #666; font-size: 11px; margin-top: 3px; display: block;">Mínimo 5 caracteres, máximo 500</span>
+                        <span style="color: #666; font-size: 11px; margin-top: 3px; display: block;">Formatos permitidos: JPG, PNG o WEBP. Tamaño maximo: 2MB.</span>
                     @endif
                 </div>
 

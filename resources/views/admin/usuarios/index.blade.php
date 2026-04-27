@@ -69,7 +69,7 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     @if(auth()->id() !== $usuario->id)
-                                        <form method="POST" action="{{ route('admin.usuarios.toggle-bloqueo', $usuario) }}" style="display: inline-block; margin-right: 12px;" onsubmit="return confirm('{{ $usuario->is_blocked ? '¿Seguro que quieres desbloquear a este usuario?' : '¿Seguro que quieres bloquear a este usuario?' }}');">
+                                        <form method="POST" action="{{ route('admin.usuarios.toggle-bloqueo', $usuario) }}" style="display: inline-block; margin-right: 12px;" data-swal-confirm data-swal-confirm-title="Confirmar bloqueo" data-swal-confirm-message="{{ $usuario->is_blocked ? '¿Seguro que quieres desbloquear a este usuario?' : '¿Seguro que quieres bloquear a este usuario?' }}">
                                             @csrf
                                             @method('PATCH')
                                             <button type="submit" style="border: none; background: transparent; color: {{ $usuario->is_blocked ? '#0f5132' : '#842029' }}; cursor: pointer;" title="{{ $usuario->is_blocked ? 'Desbloquear usuario' : 'Bloquear usuario' }}">

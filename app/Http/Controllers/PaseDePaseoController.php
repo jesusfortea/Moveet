@@ -5,20 +5,36 @@ namespace App\Http\Controllers;
 use App\Models\PaseDePaseo;
 use App\Models\Recompensa;
 use App\Models\User;
+use App\Services\PointsHistoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class PaseDePaseoController extends Controller
 {
+    public function __construct(private PointsHistoryService $pointsHistoryService)
+    {
+    }
+
     public function index()
     {
         $user = Auth::user() ?? User::first();
-        
-        $pase = PaseDePaseo::with('recompensas')->first();
-        
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $pase = PaseDePaseo::with('recompensas')->latest('id')->first();
+
         if (!$pase) {
-            return redirect()->route('home')->with('error', 'No hay pase de paseo activo en este momento.');
+            return view('pase_paseo', [
+                'pase' => null,
+                'niveles' => [],
+                'nivelUsuario' => (int) $user->nivel,
+                'esPremium' => (bool) $user->premium,
+                'reclamadas' => [],
+            ])->with('status', 'No hay pase de paseo activo en este momento.');
         }
 
         // Obtener recompensas ya reclamadas por el usuario
@@ -63,6 +79,10 @@ class PaseDePaseoController extends Controller
     {
         $user = Auth::user() ?? User::first();
 
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no autenticado.'], 401);
+        }
+
         // 1. Validar que la recompensa sea de tipo pase_de_paseo
         if ($recompensa->tipo !== 'pase_de_paseo') {
             return response()->json(['message' => 'Esta recompensa no pertenece al pase de paseo.'], 403);
@@ -87,15 +107,34 @@ class PaseDePaseoController extends Controller
             return response()->json(['message' => 'Ya has reclamado esta recompensa.'], 409);
         }
 
-        // 5. Añadir al inventario
-        $user->recompensas()->attach($recompensa->id, [
-            'origen' => 'pase_de_paseo',
-            'obtenida_at' => Carbon::now(),
-        ]);
+        $puntosGanados = max(0, (int) $recompensa->puntos_necesarios);
+
+        DB::transaction(function () use ($user, $recompensa, $puntosGanados) {
+            // 5. Añadir al inventario
+            $user->recompensas()->attach($recompensa->id, [
+                'origen' => 'pase_de_paseo',
+                'obtenida_at' => Carbon::now(),
+            ]);
+
+            // 6. Otorgar puntos y guardar historial
+            if ($puntosGanados > 0) {
+                $user->increment('puntos', $puntosGanados);
+
+                $this->pointsHistoryService->log(
+                    $user,
+                    'reward',
+                    $puntosGanados,
+                    'Recompensa del Pase de paseo: ' . $recompensa->nombre
+                );
+            }
+        });
+
+        $user->refresh();
 
         return response()->json([
-            // Devolvemos solo el ID de la recompensa para no lanzar alertas innecesarias en la UI
-            'recompensa_id' => $recompensa->id
+            'recompensa_id' => $recompensa->id,
+            'puntos_ganados' => $puntosGanados,
+            'puntos_actuales' => (int) $user->puntos,
         ]);
     }
 }

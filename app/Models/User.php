@@ -185,4 +185,17 @@ class User extends Authenticatable implements MustVerifyEmail
 
         return asset(ltrim($this->ruta_imagen, '/'));
     }
+
+    public function ensureReferralCode(): void
+    {
+        if (!empty($this->referral_code)) {
+            return;
+        }
+
+        do {
+            $code = strtoupper(Str::random(8));
+        } while (self::query()->where('referral_code', $code)->exists());
+
+        $this->forceFill(['referral_code' => $code])->save();
+    }
 }

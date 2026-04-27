@@ -84,6 +84,8 @@ Route::middleware(['auth', 'not_blocked'])->group(function () {
     Route::post('/usuario/tarjeta', [UserController::class, 'storeCard'])->name('usuario.tarjeta.store');
     Route::delete('/usuario/tarjeta', [UserController::class, 'destroyCard'])->name('usuario.tarjeta.destroy');
     Route::get('/usuario/inventario', [UserController::class, 'inventario'])->name('usuario.inventario');
+    Route::get('/usuario/logros', [UserController::class, 'logros'])->name('usuario.logros');
+    Route::get('/usuario/referidos', [UserController::class, 'referidos'])->name('usuario.referidos');
     Route::post('/usuario/racha/congelador/comprar', [UserController::class, 'buyStreakFreeze'])->name('usuario.streak.freeze.buy');
     Route::get('/usuario/historial-puntos', [HistorialPuntosController::class, 'userIndex'])->name('usuario.historial_puntos');
     Route::get('/usuario/notificaciones', [NotificationController::class, 'index'])->name('usuario.notificaciones');

@@ -123,7 +123,7 @@ window.onload = () => {
                 const errorPayload = await response.json().catch(() => ({}));
                 // Remove optimistic message
                 messagesContainer.querySelector(`[data-temp-id="${tempId}"]`)?.remove();
-                alert(errorPayload.message || 'No se pudo enviar el mensaje');
+                window.showAppAlert(errorPayload.message || 'No se pudo enviar el mensaje', 'error', 'Error');
                 input.value = contenido;
                 return;
             }

@@ -155,13 +155,13 @@
                                 <span class="contact-action-btn contact-action-btn--blocked" title="Bloqueado por el otro usuario">🔒</span>
                             @endif
                             
-                            <form method="POST" action="{{ route('chat.contactos.destroy', $contacto['model']) }}" style="margin: 0;" onsubmit="return confirm('¿Seguro que quieres eliminar este contacto?');">
+                            <form method="POST" action="{{ route('chat.contactos.destroy', $contacto['model']) }}" style="margin: 0;" data-swal-confirm data-swal-confirm-title="Eliminar contacto" data-swal-confirm-message="¿Seguro que quieres eliminar este contacto?">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="contact-action-btn contact-action-btn--delete" title="Eliminar">🗑️</button>
                             </form>
 
-                            <form method="POST" action="{{ route('reportes.usuarios.store', $contacto['contacto_id']) }}" style="margin: 0;" onsubmit="return confirm('¿Enviar reporte de este perfil al administrador?');">
+                            <form method="POST" action="{{ route('reportes.usuarios.store', $contacto['contacto_id']) }}" style="margin: 0;" data-swal-confirm data-swal-confirm-title="Enviar reporte" data-swal-confirm-message="¿Enviar reporte de este perfil al administrador?">
                                 @csrf
                                 <input type="hidden" name="reason" value="conducta_inapropiada">
                                 <input type="hidden" name="details" value="Reporte enviado desde chat.">
