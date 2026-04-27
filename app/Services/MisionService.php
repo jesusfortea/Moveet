@@ -108,6 +108,10 @@ class MisionService
                 ->pluck('misiones.id');
 
             $user->misiones()->detach($ids);
+            
+            // Al renovar las semanales, actualizamos el ciclo para que tengan 7 días desde ahora
+            $user->weekly_mission_cycle_end = Carbon::now()->addDays(7);
+            $user->save();
         }
 
         $this->assignDailyAndWeeklyMissions($user);
