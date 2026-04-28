@@ -8,14 +8,15 @@
 
 @section('content')
 <div class="usuario-page">
-    <div class="inventario-topbar">
+    {{-- Header: back + button on same row, title below --}}
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px;">
         <a class="volver-link" href="{{ route('usuario.index') }}">&lt; Volver</a>
-        <h1 class="usuario-page-title usuario-page-title--center">Notificaciones</h1>
-        <form action="{{ route('usuario.notificaciones.read_all') }}" method="POST">
+        <form action="{{ route('usuario.notificaciones.read_all') }}" method="POST" style="margin: 0;">
             @csrf
-            <button type="submit" class="btn-main">Marcar todas leídas</button>
+            <button type="submit" class="btn-main" style="height: 40px; padding: 0 18px; font-size: 0.82rem; width: auto; white-space: nowrap;">Marcar todas leídas</button>
         </form>
     </div>
+    <h1 class="usuario-page-title" style="text-align: center; margin-bottom: 24px;">Notificaciones</h1>
 
     @if (session('status'))
         <div class="usuario-alert">{{ session('status') }}</div>

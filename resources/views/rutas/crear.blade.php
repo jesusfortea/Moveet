@@ -2,6 +2,33 @@
 
 @section('title', 'Crear ruta · Moveet')
 
+@push('styles')
+<style>
+    @media (max-width: 768px) {
+        #ruta-form > div {
+            grid-template-columns: 1fr !important;
+        }
+        #ruta-form > div > div:last-child {
+            position: static !important;
+        }
+        #route-map {
+            height: 300px !important;
+        }
+    }
+    @media (max-width: 480px) {
+        #ruta-form {
+            padding: 14px !important;
+        }
+        #ruta-form div[style*="grid-template-columns: repeat(2"] {
+            grid-template-columns: 1fr !important;
+        }
+        #ruta-form div[style*="display: flex"][style*="gap: 8px"] {
+            flex-wrap: wrap;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 @php
     $oldGeojson = old('ruta_geojson');

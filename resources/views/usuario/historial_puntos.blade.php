@@ -153,12 +153,36 @@
         margin-top: 4px;
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 600px) {
         .hist-stats-grid {
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
+        .hist-stat-card {
+            padding: 12px 8px;
+        }
+        .hist-stat-card .label {
+            font-size: 0.7rem;
         }
         .hist-stat-card .amount {
-            font-size: 16px;
+            font-size: 1.2rem;
+        }
+        .hist-filter-bar {
+            gap: 8px;
+        }
+        .hist-chip {
+            padding: 8px 14px;
+            font-size: 0.82rem;
+        }
+        .hist-item {
+            padding: 12px 14px;
+            gap: 10px;
+        }
+        .hist-item-body .motivo {
+            font-size: 0.95rem;
+        }
+        .historial-wrapper {
+            padding: 24px 14px;
         }
     }
 </style>

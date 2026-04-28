@@ -68,7 +68,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
-                <div class="absolute top-[80%] left-1/2 -translate-x-1/2 min-w-[170px] bg-[#EEF2F1] shadow-lg rounded-xl border border-gray-200/40 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 flex flex-col py-2 z-50">
+                <div class="absolute top-[80%] left-1/2 -translate-x-1/2 min-w-[170px] bg-[#EEF2F1] shadow-lg rounded-xl border border-gray-200/40 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 flex flex-col py-2 z-[4500]">
                     <a href="{{ route('eventos') }}" class="px-5 py-2.5 hover:bg-[#C5D8D6] transition-colors whitespace-nowrap">Evento</a>
                     <a href="{{ route('rutas.index') }}" class="px-5 py-2.5 hover:bg-[#C5D8D6] transition-colors whitespace-nowrap">Rutas</a>
                     @if($navUser?->premium)
@@ -85,7 +85,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
-                <div class="absolute top-[80%] left-1/2 -translate-x-1/2 min-w-[170px] bg-[#EEF2F1] shadow-lg rounded-xl border border-gray-200/40 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 flex flex-col py-2 z-50">
+                <div class="absolute top-[80%] left-1/2 -translate-x-1/2 min-w-[170px] bg-[#EEF2F1] shadow-lg rounded-xl border border-gray-200/40 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 flex flex-col py-2 z-[4500]">
                     <a href="{{ route('tienda.index') }}" class="px-5 py-2.5 hover:bg-[#C5D8D6] transition-colors whitespace-nowrap">Tienda</a>
                     <a href="{{ route('pase.paseo') }}" class="px-5 py-2.5 hover:bg-[#C5D8D6] transition-colors whitespace-nowrap">Pase de paseo</a>
                     <a href="{{ route('usuario.inventario') }}" class="px-5 py-2.5 hover:bg-[#C5D8D6] transition-colors whitespace-nowrap">Recompensas</a>
@@ -100,7 +100,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
-                <div class="absolute top-[80%] left-1/2 -translate-x-1/2 min-w-[170px] bg-[#EEF2F1] shadow-lg rounded-xl border border-gray-200/40 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 flex flex-col py-2 z-50">
+                <div class="absolute top-[80%] left-1/2 -translate-x-1/2 min-w-[170px] bg-[#EEF2F1] shadow-lg rounded-xl border border-gray-200/40 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 flex flex-col py-2 z-[4500]">
                     <a href="{{ route('chat.index') }}" class="px-5 py-2.5 hover:bg-[#C5D8D6] transition-colors whitespace-nowrap">Chat</a>
                     <a href="{{ route('preguntas.index') }}" class="px-5 py-2.5 hover:bg-[#C5D8D6] transition-colors whitespace-nowrap"><i class="fas fa-star mr-1"></i> Reseñas</a>
                 </div>
@@ -114,7 +114,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
-                <div class="absolute top-[80%] right-0 min-w-[180px] bg-[#EEF2F1] shadow-lg rounded-xl border border-gray-200/40 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 flex flex-col py-2 z-50">
+                <div class="absolute top-[80%] right-0 min-w-[180px] bg-[#EEF2F1] shadow-lg rounded-xl border border-gray-200/40 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 flex flex-col py-2 z-[4500]">
                     <a href="{{ route('usuario.historial_puntos') }}" class="px-5 py-2.5 hover:bg-[#C5D8D6] transition-colors whitespace-nowrap">Historial</a>
                     <a href="{{ route('usuario.notificaciones') }}" class="px-5 py-2.5 hover:bg-[#C5D8D6] transition-colors whitespace-nowrap">Notificaciones</a>
                     <a href="{{ route('atencion.create') }}" class="px-5 py-2.5 hover:bg-[#C5D8D6] transition-colors whitespace-nowrap">Atención al usuario</a>
@@ -132,9 +132,9 @@
     </div>
 </nav>
 
-<div id="mobile-nav-backdrop" class="md:hidden fixed inset-0 bg-black/20 z-40 hidden"></div>
+<div id="mobile-nav-backdrop" class="md:hidden fixed inset-0 bg-black/20 z-[4000] hidden"></div>
 
-<aside id="mobile-nav-panel" class="md:hidden fixed top-[15vh] left-0 w-[240px] max-w-[75vw] h-[calc(100vh-15vh)] bg-[#9bb0ae] z-50 shadow-xl -translate-x-full transition-transform duration-200 ease-out overflow-y-auto">
+<aside id="mobile-nav-panel" class="md:hidden fixed top-[15vh] left-0 w-[240px] max-w-[75vw] h-[calc(100vh-15vh)] bg-[#9bb0ae] z-[5000] shadow-xl -translate-x-full transition-transform duration-200 ease-out overflow-y-auto">
     <div class="min-h-full flex flex-col justify-between p-4 text-[#1E2A28]">
         <div>
             @if ($navUser)
