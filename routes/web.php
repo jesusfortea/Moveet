@@ -2,34 +2,35 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminEventoController;
-use App\Http\Controllers\AdminRecompensaController;
-use App\Http\Controllers\AdminMisionController;
-use App\Http\Controllers\AdminTiendaController;
-use App\Http\Controllers\AdminPaseDePaseoController;
 use App\Http\Controllers\AdminLugarController;
+use App\Http\Controllers\AdminMisionController;
+use App\Http\Controllers\AdminPaseDePaseoController;
+use App\Http\Controllers\AdminRecompensaController;
+use App\Http\Controllers\AdminTiendaController;
+use App\Http\Controllers\AtencionUsuarioController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChatController;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EventoController;
+use App\Http\Controllers\HistorialPuntosController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PagoController;
+use App\Http\Controllers\PasswordRecoveryController;
 use App\Http\Controllers\PaseDePaseoController;
+use App\Http\Controllers\PreguntaController;
+use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\RutaUsuarioController;
 use App\Http\Controllers\SuscripcionController;
 use App\Http\Controllers\TiendaController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\PagoController;
-use App\Http\Controllers\RutaUsuarioController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HistorialPuntosController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\PasswordRecoveryController;
-use App\Http\Controllers\ReporteController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
-// Root: si hay sesión, home; si no, login.
 Route::get('/', function () {
     return auth()->check()
         ? redirect()->route('home')
-        : redirect()->route('login');
+        : view('landing');
 });
 
 Route::middleware('guest')->group(function () {
@@ -61,12 +62,17 @@ Route::middleware(['auth', 'not_blocked'])->group(function () {
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/atencion-al-usuario', [AtencionUsuarioController::class, 'create'])->name('atencion.create');
+Route::post('/atencion-al-usuario', [AtencionUsuarioController::class, 'store'])->name('atencion.store');
+
+Route::get('/preguntas', [PreguntaController::class, 'index'])->name('preguntas.index');
+Route::get('/preguntas/crear', [PreguntaController::class, 'create'])->middleware('auth')->name('preguntas.create');
+Route::get('/preguntas/{pregunta}', [PreguntaController::class, 'show'])->name('preguntas.show');
 
 Route::middleware(['auth', 'not_blocked'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::post('/misiones/{mision}/completar', [HomeController::class, 'completarMision']);
 
-    // Pasarela de pago (PayPal Sandbox)
     Route::get('/pago/cambiar-misiones', [PagoController::class, 'mostrarPasarela'])->name('pago.pasarela');
     Route::post('/pago/paypal/capturar-misiones', [PagoController::class, 'capturarPayPalMisiones'])->name('pago.paypal.capturar.misiones');
     Route::get('/pago/exito/{factura}', [PagoController::class, 'exito'])->name('pago.exito');
@@ -108,6 +114,9 @@ Route::middleware(['auth', 'not_blocked'])->group(function () {
         return redirect()->route('chat.index');
     })->name('chat.contactos.fallback');
     Route::post('/chat/contactos', [ChatController::class, 'storeContact'])->name('chat.contactos.store');
+    Route::post('/chat/contactos/qr/scan', [ChatController::class, 'scanQr'])->name('chat.qr.scan');
+    Route::get('/chat/accept-invitation/{code}', [ChatController::class, 'acceptInvitation'])->name('chat.accept-invitation');
+    Route::get('/chat/qr/{code}', [ChatController::class, 'acceptInvitation'])->name('chat.qr.accept');
     Route::delete('/chat/contactos/{contacto}', [ChatController::class, 'deleteContact'])->name('chat.contactos.destroy');
     Route::post('/chat/contactos/{contacto}/bloquear', [ChatController::class, 'blockContact'])->name('chat.contactos.block');
     Route::post('/chat/contactos/{contacto}/desbloquear', [ChatController::class, 'unblockContact'])->name('chat.contactos.unblock');
@@ -131,6 +140,14 @@ Route::middleware(['auth', 'not_blocked'])->group(function () {
     Route::post('/pase-paseo/reclamar/{recompensa}', [PaseDePaseoController::class, 'reclamar'])->name('pase.reclamar');
 
     Route::get('/suscripcion', [SuscripcionController::class, 'index'])->name('suscripcion');
+    Route::post('/suscripcion/tarjeta', [SuscripcionController::class, 'storeCard'])->name('suscripcion.tarjeta.store');
+    Route::post('/suscripcion/comprar', [SuscripcionController::class, 'subscribe'])->name('suscripcion.comprar');
+
+    Route::post('/preguntas', [PreguntaController::class, 'store'])->name('preguntas.store');
+    Route::get('/preguntas/{pregunta}/editar', [PreguntaController::class, 'edit'])->name('preguntas.edit');
+    Route::put('/preguntas/{pregunta}', [PreguntaController::class, 'update'])->name('preguntas.update');
+    Route::delete('/preguntas/{pregunta}', [PreguntaController::class, 'destroy'])->name('preguntas.destroy');
+    Route::post('/preguntas/{pregunta}/responder', [PreguntaController::class, 'responder'])->name('preguntas.responder');
 });
 
 Route::middleware(['auth', 'not_blocked', 'admin'])->prefix('admin')->group(function () {
@@ -172,7 +189,6 @@ Route::middleware(['auth', 'not_blocked', 'admin'])->prefix('admin')->group(func
     Route::get('/tienda', [AdminTiendaController::class, 'index'])->name('admin.tienda');
     Route::patch('/tienda', [AdminTiendaController::class, 'actualizar'])->name('admin.tienda.actualizar');
 
-    // Rutas de pase de paseo
     Route::get('/pase-paseo', [AdminPaseDePaseoController::class, 'index'])->name('admin.pase_paseo');
     Route::get('/pase-paseo/crear', [AdminPaseDePaseoController::class, 'crear'])->name('admin.pase_paseo.crear');
     Route::post('/pase-paseo', [AdminPaseDePaseoController::class, 'guardar'])->name('admin.pase_paseo.guardar');
@@ -180,8 +196,7 @@ Route::middleware(['auth', 'not_blocked', 'admin'])->prefix('admin')->group(func
     Route::put('/pase-paseo/{pasedepaseo}', [AdminPaseDePaseoController::class, 'actualizar'])->name('admin.pase_paseo.actualizar');
     Route::get('/pase-paseo/{pasedepaseo}/eliminar', [AdminPaseDePaseoController::class, 'eliminar'])->name('admin.pase_paseo.eliminar');
     Route::delete('/pase-paseo/{pasedepaseo}', [AdminPaseDePaseoController::class, 'confirmarEliminar'])->name('admin.pase_paseo.confirmar-eliminar');
-    
-    // Rutas de lugares
+
     Route::get('/lugares', [AdminLugarController::class, 'index'])->name('admin.lugares');
     Route::get('/lugares/crear', [AdminLugarController::class, 'crear'])->name('admin.lugares.crear');
     Route::post('/lugares', [AdminLugarController::class, 'guardar'])->name('admin.lugares.guardar');
@@ -190,6 +205,7 @@ Route::middleware(['auth', 'not_blocked', 'admin'])->prefix('admin')->group(func
     Route::get('/lugares/{lugar}/eliminar', [AdminLugarController::class, 'eliminar'])->name('admin.lugares.eliminar');
     Route::delete('/lugares/{lugar}', [AdminLugarController::class, 'confirmarEliminar'])->name('admin.lugares.confirmar-eliminar');
 
+    Route::get('/preguntas', [PreguntaController::class, 'adminPanel'])->name('admin.preguntas');
     Route::get('/historial-puntos', [HistorialPuntosController::class, 'adminIndex'])->name('admin.historial_puntos');
     Route::get('/reportes', [ReporteController::class, 'adminIndex'])->name('admin.reportes.index');
     Route::patch('/reportes/{reporte}', [ReporteController::class, 'adminResolve'])->name('admin.reportes.resolve');

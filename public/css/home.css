@@ -53,7 +53,7 @@ body {
     font-family: var(--font);
     background: var(--clr-bg);
     color: var(--clr-text);
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 nav {
@@ -473,6 +473,7 @@ nav {
     border: 2px solid transparent;
     border-radius: var(--radius-md);
     padding: 14px 16px;
+    margin: 20px 0px;
     display: flex;
     align-items: center;
     justify-content: space-between;

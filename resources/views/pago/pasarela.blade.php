@@ -70,10 +70,10 @@
         color: #1a202c;
     }
 
-    .sandbox-warning {
-        background: #fffaf0;
-        border: 1px solid #feebc8;
-        color: #c05621;
+    .secure-payment {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        color: #15803d;
         padding: 1rem;
         border-radius: 12px;
         font-size: 0.9rem;
@@ -99,23 +99,7 @@
         to { transform: rotate(360deg); }
     }
 
-    .btn-simulate {
-        background: #f1f5f9;
-        color: #475569;
-        border: 1px solid #cbd5e1;
-        padding: 0.6rem 1.2rem;
-        border-radius: 8px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-        margin-top: 0.5rem;
-    }
 
-    .btn-simulate:hover {
-        background: #e2e8f0;
-        color: #1e293b;
-    }
 </style>
 @endpush
 
@@ -139,19 +123,14 @@
             </div>
         </div>
 
-        <div class="sandbox-warning">
+        <div class="secure-payment">
             <strong>🔒 Pago Seguro</strong>
             Sus datos están encriptados y procesados de forma segura por PayPal.
         </div>
 
         <div id="paypal-button-container" style="margin-top: 2rem;"></div>
 
-        <div style="margin-top: 1.5rem; text-align: center; border-top: 1px solid #edf2f7; padding-top: 1.5rem;">
-            <p style="font-size: 0.75rem; color: #a0aec0; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">Opciones de Desarrollo</p>
-            <button type="button" id="btn-simulate-dev" class="btn-simulate">
-                ⚡ Simular Pago Exitoso (Sin PayPal)
-            </button>
-        </div>
+
 
         <div style="text-align: center; margin-top: 2rem;">
             <a href="{{ route('home') }}" style="color: #a0aec0; text-decoration: none; font-size: 0.9rem;">
@@ -222,12 +201,7 @@
         }).render('#paypal-button-container');
     }
 
-    document.getElementById('btn-simulate-dev').addEventListener('click', async function() {
-        const ok = await window.showAppConfirm('¿Deseas simular un pago exitoso sin pasar por PayPal?', 'Simulación de pago');
-        if (ok) {
-            processPaymentSuccess('SIMULATED_ORDER_ID');
-        }
-    });
+
 </script>
 @endpush
 @endsection
