@@ -1,8 +1,8 @@
-@extends('layouts.plantillaHome')
+@extends('layouts.plantillaLanding')
 
 @section('content')
 <div class="max-w-3xl mx-auto px-4 py-12">
-    <a href="{{ route('preguntas.index') }}" class="text-green-600 hover:text-green-700 mb-6 inline-block"><- Volver</a>
+    <a href="{{ route('preguntas.index') }}" class="text-moveet-primary hover:text-moveet-primaryDark mb-6 inline-block font-bold"><- Volver</a>
 
     @if ($message = Session::get('success'))
         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
@@ -59,7 +59,7 @@
                     <textarea name="respuesta" id="respuesta" rows="6" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500" placeholder="Anade una nota o respuesta visible para esta reseña..." required minlength="10" maxlength="3000">{{ old('respuesta') }}</textarea>
                     <p class="text-sm text-gray-500 mt-1">Minimo 10 caracteres, maximo 3000</p>
                 </div>
-                <button type="submit" class="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition">
+                <button type="submit" class="btn-moveet">
                     Publicar reseña
                 </button>
             </form>

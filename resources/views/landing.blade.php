@@ -8,7 +8,7 @@
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -17,14 +17,18 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#1E2A28',
-                        secondary: '#8FA8A6',
-                        accent: '#F59E0B',
-                        dark: '#111827',
+                        moveet: {
+                            primary: '#7fa8a8',
+                            primaryDark: '#6b9595',
+                            bg: '#f9f9f9',
+                            text: '#333',
+                            muted: '#666',
+                            border: '#ddd',
+                            accent: '#7fa8a8',
+                        }
                     },
                     fontFamily: {
                         sans: ['Outfit', 'sans-serif'],
-                        jakarta: ['Plus Jakarta Sans', 'sans-serif'],
                     }
                 }
             }
@@ -33,328 +37,341 @@
 
     <style>
         :root {
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --m-primary: #7fa8a8;
+            --m-primary-dark: #6b9595;
+            --m-bg: #f9f9f9;
+            --m-text: #333;
+            --m-muted: #666;
+            --m-border: #ddd;
+            --m-radius: 12px;
+            --m-btn-radius: 6px;
         }
 
         body {
-            background-color: #0F172A;
-            color: #F8FAFC;
+            background-color: var(--m-bg);
+            color: var(--m-text);
+            font-family: 'Outfit', sans-serif;
             overflow-x: hidden;
         }
 
-        .glass-nav {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--glass-border);
+        .landing-nav {
+            background: white;
+            border-bottom: 1px solid var(--m-border);
         }
 
-        .hero-gradient {
-            background: radial-gradient(circle at 50% -20%, #1e3a38 0%, #0f172a 70%);
+        .hero-section {
+            background: linear-gradient(135deg, #c8e6e6 0%, #a8d0d0 100%);
+            padding-top: 140px;
+            padding-bottom: 100px;
         }
 
-        .blob {
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: linear-gradient(135deg, #8FA8A6 0%, #1E2A28 100%);
-            filter: blur(100px);
-            border-radius: 50%;
-            z-index: -1;
-            opacity: 0.15;
-            animation: move 20s infinite alternate;
+        .btn-moveet {
+            background: var(--m-primary);
+            color: white;
+            padding: 12px 28px;
+            border-radius: var(--m-btn-radius);
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
         }
 
-        @keyframes move {
-            from { transform: translate(-10%, -10%); }
-            to { transform: translate(20%, 20%); }
+        .btn-moveet:hover {
+            background: var(--m-primary-dark);
+            transform: scale(0.98);
         }
 
-        .btn-glow:hover {
-            box-shadow: 0 0 20px rgba(143, 168, 166, 0.4);
+        .card-moveet {
+            background: white;
+            border-radius: var(--m-radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 32px;
+            border: 1px solid var(--m-border);
+            transition: all 0.3s ease;
         }
 
-        .feature-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .card-moveet:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
         }
 
-        .feature-card:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(143, 168, 166, 0.3);
-            transform: translateY(-10px);
+        .carousel-container {
+            position: relative;
+            padding: 40px 0;
+            background: white;
         }
 
-        .animate-float {
-            animation: float 6s ease-in-out infinite;
+        .carousel-track {
+            display: flex;
+            gap: 24px;
+            transition: transform 0.5s ease-in-out;
+            padding: 0 20px;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+        .carousel-item {
+            min-width: 300px;
+            max-width: 400px;
+            border-radius: var(--m-radius);
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--m-border);
         }
 
-        .text-gradient {
-            background: linear-gradient(135deg, #F8FAFC 0%, #8FA8A6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .section-title {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            color: #333;
+        }
+
+        .nav-link {
+            font-weight: 600;
+            color: #666;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--m-primary);
         }
     </style>
 </head>
-<body class="font-sans antialiased">
+<body>
 
-    <!-- Blobs Background -->
-    <div class="blob top-[-10%] left-[-10%]"></div>
-    <div class="blob bottom-[10%] right-[-10%]" style="background: linear-gradient(135deg, #1E2A28 0%, #8FA8A6 100%); animation-delay: -5s;"></div>
+    @include('layouts.navbar_landing')
 
-    <!-- Navbar -->
-    <nav class="glass-nav fixed top-0 w-full z-50 transition-all duration-300">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <div class="flex items-center gap-3">
-                    <img src="{{ asset('img/LogoUsarDiaDia.png') }}" class="h-10 w-auto" alt="Moveet">
-                    <span class="text-2xl font-bold tracking-tight text-white font-jakarta">Moveet</span>
-                </div>
-                
-                <div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-                    <a href="#features" class="hover:text-white transition-colors">Funcionalidades</a>
-                    <a href="{{ route('preguntas.index') }}" class="hover:text-white transition-colors">Reseñas</a>
-                    <a href="{{ route('atencion.create') }}" class="hover:text-white transition-colors">Soporte</a>
-                    <div class="h-4 w-px bg-slate-700"></div>
-                    <a href="{{ route('login') }}" class="text-white hover:opacity-80">Iniciar sesión</a>
-                    <a href="{{ route('register') }}" class="bg-secondary text-primary px-6 py-2.5 rounded-full font-bold btn-glow transition-all">
-                        Empezar gratis
-                    </a>
-                </div>
-
-                <!-- Mobile menu button -->
-                <div class="md:hidden">
-                    <button class="text-white p-2" id="mobile-menu-btn">
-                        <i class="fas fa-bars text-xl"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Mobile Nav -->
-    <div id="mobile-menu" class="fixed inset-0 bg-dark z-[60] hidden transition-all duration-300 transform translate-x-full">
-        <div class="flex flex-col p-8 gap-8">
-            <div class="flex justify-between items-center">
-                <span class="text-2xl font-bold text-white">Moveet</span>
-                <button id="close-menu" class="text-white text-2xl"><i class="fas fa-times"></i></button>
-            </div>
-            <a href="#features" class="text-2xl text-slate-300">Funcionalidades</a>
-            <a href="{{ route('preguntas.index') }}" class="text-2xl text-slate-300">Reseñas</a>
-            <a href="{{ route('atencion.create') }}" class="text-2xl text-slate-300">Soporte</a>
-            <div class="flex flex-col gap-4 mt-4">
-                <a href="{{ route('login') }}" class="w-full text-center border border-slate-700 py-4 rounded-xl text-white">Iniciar sesión</a>
-                <a href="{{ route('register') }}" class="w-full text-center bg-secondary py-4 rounded-xl text-primary font-bold">Registrarse</a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Hero Section -->
-    <section class="hero-gradient min-h-screen pt-32 pb-20 flex items-center">
+    <!-- Hero -->
+    <section class="hero-section">
         <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center">
-            <div class="text-center lg:text-left space-y-8">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/10 border border-secondary/20 text-secondary text-xs font-bold uppercase tracking-wider">
-                    <span class="relative flex h-2 w-2">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
-                    </span>
-                    Gamificación del mundo real
-                </div>
-                
-                <h1 class="text-5xl lg:text-7xl font-extrabold leading-[1.1] font-jakarta tracking-tight">
-                    El mundo es tu <br/>
-                    <span class="text-gradient">tablero de juego.</span>
+            <div>
+                <h1 class="section-title">
+                    El mundo es tu <br>
+                    <span style="color: #444;">tablero de juego.</span>
                 </h1>
-                
-                <p class="text-lg lg:text-xl text-slate-400 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                    Convierte cada paso en una aventura. Completa misiones basadas en tu ubicación, gana puntos reales y desbloquea recompensas en tu ciudad.
+                <p class="text-xl text-moveet-muted font-medium mb-10 max-w-lg leading-relaxed">
+                    Convierte cada paso en una misión. Explora tu ciudad, completa desafíos en tiempo real y canjea tu esfuerzo por recompensas increíbles.
                 </p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="{{ route('register') }}" class="btn-moveet py-4 px-10 text-lg">¡Quiero empezar ya!</a>
+                    <a href="#como-funciona" class="px-8 py-4 font-bold flex items-center gap-2 hover:bg-white/50 rounded-lg transition-all">
+                        Ver más <i class="fas fa-chevron-down text-xs"></i>
+                    </a>
+                </div>
                 
-                <div class="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start">
-                    <a href="{{ route('register') }}" class="w-full sm:w-auto bg-secondary text-primary px-10 py-4 rounded-2xl font-extrabold text-lg btn-glow transition-all flex items-center justify-center gap-2">
-                        Comenzar aventura <i class="fas fa-arrow-right text-sm"></i>
-                    </a>
-                    <a href="#features" class="w-full sm:w-auto bg-white/5 border border-white/10 hover:bg-white/10 px-10 py-4 rounded-2xl font-bold transition-all text-center">
-                        Ver cómo funciona
-                    </a>
-                </div>
-
-                <div class="pt-8 flex items-center justify-center lg:justify-start gap-4">
-                    <div class="flex -space-x-3">
-                        <img class="h-10 w-10 rounded-full border-2 border-dark" src="https://i.pravatar.cc/100?u=1" alt="">
-                        <img class="h-10 w-10 rounded-full border-2 border-dark" src="https://i.pravatar.cc/100?u=2" alt="">
-                        <img class="h-10 w-10 rounded-full border-2 border-dark" src="https://i.pravatar.cc/100?u=3" alt="">
+                <div class="mt-12 flex items-center gap-6">
+                    <div class="flex -space-x-4">
+                        <img class="w-12 h-12 rounded-full border-4 border-white" src="https://i.pravatar.cc/100?u=1">
+                        <img class="w-12 h-12 rounded-full border-4 border-white" src="https://i.pravatar.cc/100?u=2">
+                        <img class="w-12 h-12 rounded-full border-4 border-white" src="https://i.pravatar.cc/100?u=3">
                     </div>
-                    <div class="text-sm text-slate-400">
-                        <span class="text-white font-bold">+1,200</span> usuarios ya están jugando
-                    </div>
+                    <p class="text-sm font-bold text-moveet-muted">
+                        <span class="text-moveet-text">+1,500 exploradores</span> ya están jugando
+                    </p>
                 </div>
             </div>
-
-            <div class="relative lg:block">
-                <div class="relative z-10 animate-float">
-                    <img src="{{ asset('img/hero-landing.png') }}" alt="Moveet App" class="rounded-3xl shadow-2xl border border-white/10">
-                    
-                    <!-- Floating UI elements -->
-                    <div class="absolute -top-6 -left-6 bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 shadow-xl hidden sm:block">
-                        <div class="flex items-center gap-3">
-                            <div class="bg-accent p-2 rounded-lg">
-                                <i class="fas fa-trophy text-white"></i>
-                            </div>
-                            <div>
-                                <p class="text-[10px] uppercase font-bold text-slate-400">Logro desbloqueado</p>
-                                <p class="text-sm font-bold text-white">Explorador Urbano</p>
-                            </div>
-                        </div>
+            
+            <div class="relative">
+                <img src="{{ asset('img/hero-new.png') }}" class="rounded-xl shadow-2xl" alt="Moveet App">
+                <div class="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-xl flex items-center gap-3 border border-moveet-border">
+                    <div class="w-10 h-10 bg-moveet-primary rounded-md flex items-center justify-center text-white">
+                        <i class="fas fa-check"></i>
                     </div>
-
-                    <div class="absolute -bottom-10 -right-6 bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20 shadow-xl hidden sm:block">
-                        <div class="flex items-center gap-3">
-                            <div class="bg-secondary p-2 rounded-lg">
-                                <i class="fas fa-coins text-primary"></i>
-                            </div>
-                            <div>
-                                <p class="text-[10px] uppercase font-bold text-slate-400">Puntos ganados</p>
-                                <p class="text-sm font-bold text-white">+250 PTS</p>
-                            </div>
-                        </div>
+                    <div>
+                        <p class="text-[10px] font-black uppercase text-moveet-muted">Misión completada</p>
+                        <p class="text-sm font-black">+50 Puntos</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Stats -->
-    <section class="bg-dark/50 border-y border-white/5 py-12">
-        <div class="max-w-7xl mx-auto px-6 flex flex-wrap justify-center gap-12 lg:gap-24">
-            <div class="text-center">
-                <p class="text-3xl font-black text-white">100%</p>
-                <p class="text-xs uppercase tracking-widest text-slate-500 font-bold mt-1">Gratis</p>
+    <!-- Experience Grid -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 mb-12">
+            <h2 class="text-3xl font-bold">Vive la experiencia</h2>
+            <p class="text-moveet-muted font-medium">Así es como moveet transforma tu día a día.</p>
+        </div>
+        
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="carousel-item">
+                <img src="{{ asset('img/carousel-1.png') }}" class="w-full aspect-[4/3] object-cover">
+                <div class="p-6 bg-white">
+                    <h4 class="font-bold text-lg">Explora tu ciudad</h4>
+                    <p class="text-sm text-moveet-muted">Nuevas rutas cada día.</p>
+                </div>
             </div>
-            <div class="text-center">
-                <p class="text-3xl font-black text-white">50k+</p>
-                <p class="text-xs uppercase tracking-widest text-slate-500 font-bold mt-1">Puntos Canjeados</p>
+            <div class="carousel-item">
+                <img src="{{ asset('img/carousel-2.png') }}" class="w-full aspect-[4/3] object-cover">
+                <div class="p-6 bg-white">
+                    <h4 class="font-bold text-lg">Gana Premios</h4>
+                    <p class="text-sm text-moveet-muted">Canjea tus puntos por café, ropa o entradas.</p>
+                </div>
             </div>
-            <div class="text-center">
-                <p class="text-3xl font-black text-white">200+</p>
-                <p class="text-xs uppercase tracking-widest text-slate-500 font-bold mt-1">Misiones Activas</p>
+            <div class="carousel-item">
+                <img src="{{ asset('img/carousel-3.png') }}" class="w-full aspect-[4/3] object-cover">
+                <div class="p-6 bg-white">
+                    <h4 class="font-bold text-lg">Compite con amigos</h4>
+                    <p class="text-sm text-moveet-muted">Ranking global y chat integrado.</p>
+                </div>
             </div>
-            <div class="text-center">
-                <p class="text-3xl font-black text-white">24/7</p>
-                <p class="text-xs uppercase tracking-widest text-slate-500 font-bold mt-1">Diversión</p>
+            <div class="carousel-item">
+                <img src="{{ asset('img/hero-new.png') }}" class="w-full aspect-[4/3] object-cover">
+                <div class="p-6 bg-white">
+                    <h4 class="font-bold text-lg">Mejora tu Salud</h4>
+                    <p class="text-sm text-moveet-muted">Caminar nunca fue tan divertido.</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section id="features" class="py-32 relative overflow-hidden">
+    <!-- How it works -->
+    <section id="como-funciona" class="py-24 bg-white border-t border-moveet-border">
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="text-center max-w-3xl mx-auto mb-20 space-y-4">
-                <h2 class="text-secondary font-bold uppercase tracking-widest text-sm">Características</h2>
-                <p class="text-4xl lg:text-5xl font-black font-jakarta">Diseñado para moverte.</p>
-                <p class="text-slate-400 text-lg">Descubre por qué miles de personas han convertido su día a día en un videojuego.</p>
+            <div class="text-center mb-20">
+                <h2 class="section-title">Cómo funciona</h2>
+                <p class="text-moveet-muted font-medium text-lg">Tres pasos sencillos para empezar tu aventura.</p>
             </div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Feature 1 -->
-                <div class="feature-card p-8 rounded-3xl group">
-                    <div class="h-14 w-14 bg-secondary/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-secondary/20 transition-all">
-                        <i class="fas fa-bullseye text-2xl text-secondary"></i>
+            <div class="grid md:grid-cols-3 gap-12">
+                <div class="text-center space-y-6">
+                    <div class="w-20 h-20 bg-moveet-bg border border-moveet-border rounded-xl flex items-center justify-center text-3xl text-moveet-primary mx-auto">
+                        <i class="fas fa-map-marked-alt"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-4">Misiones Diarias</h3>
-                    <p class="text-slate-400 leading-relaxed">Objetivos dinámicos que cambian cada día. Camina, explora y gana experiencia para subir de nivel.</p>
+                    <h3 class="text-2xl font-bold">Elige tu ruta</h3>
+                    <p class="text-moveet-muted font-medium">Selecciona una misión en el mapa según tu ubicación y dificultad.</p>
                 </div>
-
-                <!-- Feature 2 -->
-                <div class="feature-card p-8 rounded-3xl group">
-                    <div class="h-14 w-14 bg-accent/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-accent/20 transition-all">
-                        <i class="fas fa-location-dot text-2xl text-accent"></i>
+                <div class="text-center space-y-6">
+                    <div class="w-20 h-20 bg-moveet-bg border border-moveet-border rounded-xl flex items-center justify-center text-3xl text-moveet-primary mx-auto">
+                        <i class="fas fa-shoe-prints"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-4">Eventos Globales</h3>
-                    <p class="text-slate-400 leading-relaxed">Participa en eventos especiales que ocurren en lugares reales. Compite con otros usuarios en tiempo real.</p>
+                    <h3 class="text-2xl font-bold">Camina y gana</h3>
+                    <p class="text-moveet-muted font-medium">Completa los puntos de control para ganar puntos y experiencia.</p>
                 </div>
-
-                <!-- Feature 3 -->
-                <div class="feature-card p-8 rounded-3xl group">
-                    <div class="h-14 w-14 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-500/20 transition-all">
-                        <i class="fas fa-gift text-2xl text-blue-400"></i>
+                <div class="text-center space-y-6">
+                    <div class="w-20 h-20 bg-moveet-primary rounded-xl flex items-center justify-center text-3xl text-white mx-auto">
+                        <i class="fas fa-gift"></i>
                     </div>
-                    <h3 class="text-xl font-bold mb-4">Premios Reales</h3>
-                    <p class="text-slate-400 leading-relaxed">Canjea tus puntos por artículos exclusivos, pases de paseo y beneficios en establecimientos asociados.</p>
-                </div>
-
-                <!-- Feature 4 -->
-                <div class="feature-card p-8 rounded-3xl group">
-                    <div class="h-14 w-14 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-500/20 transition-all">
-                        <i class="fas fa-comments text-2xl text-purple-400"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-4">Comunidad Social</h3>
-                    <p class="text-slate-400 leading-relaxed">Chatea con amigos, añade contactos mediante código QR y comparte tus logros con el mundo.</p>
-                </div>
-
-                <!-- Feature 5 -->
-                <div class="feature-card p-8 rounded-3xl group">
-                    <div class="h-14 w-14 bg-green-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-500/20 transition-all">
-                        <i class="fas fa-shield-halved text-2xl text-green-400"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-4">Anti-Cheat Avanzado</h3>
-                    <p class="text-slate-400 leading-relaxed">Disfruta de una competición justa. Validamos velocidad y ubicación en tiempo real mediante GPS.</p>
-                </div>
-
-                <!-- Feature 6 -->
-                <div class="feature-card p-8 rounded-3xl group">
-                    <div class="h-14 w-14 bg-red-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-red-500/20 transition-all">
-                        <i class="fas fa-bolt text-2xl text-red-400"></i>
-                    </div>
-                    <h3 class="text-xl font-bold mb-4">Pase de Paseo</h3>
-                    <p class="text-slate-400 leading-relaxed">Un sistema de progresión por niveles que recompensa tu lealtad con premios premium únicos.</p>
+                    <h3 class="text-2xl font-bold">Disfruta premios</h3>
+                    <p class="text-moveet-muted font-medium">Usa tus puntos en la tienda para conseguir recompensas reales.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer CTA -->
-    <section class="py-32 border-t border-white/5">
-        <div class="max-w-4xl mx-auto px-6 text-center space-y-10">
-            <h2 class="text-4xl lg:text-6xl font-black font-jakarta">Empieza tu viaje hoy.</h2>
-            <p class="text-xl text-slate-400">Únete a la revolución de la gamificación basada en ubicación. Es gratis y siempre lo será.</p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{{ route('register') }}" class="bg-secondary text-primary px-12 py-5 rounded-2xl font-black text-xl btn-glow transition-all">
-                    Crear cuenta gratis
-                </a>
-                <a href="{{ route('login') }}" class="bg-white/5 border border-white/10 hover:bg-white/10 px-12 py-5 rounded-2xl font-bold transition-all text-xl">
-                    Iniciar sesión
-                </a>
+    <!-- Features -->
+    <section id="ventajas" class="py-24 bg-moveet-bg border-t border-moveet-border">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="space-y-8">
+                    <h2 class="section-title">Diseñado para <br> <span style="color: var(--m-primary);">moverte.</span></h2>
+                    <p class="text-lg text-moveet-muted font-medium">Hemos creado una plataforma robusta, justa y social para que disfrutes al máximo.</p>
+                    
+                    <div class="grid sm:grid-cols-2 gap-6">
+                        <div class="card-moveet">
+                            <i class="fas fa-shield-alt text-2xl text-moveet-primary mb-4"></i>
+                            <h5 class="font-bold text-lg mb-2">Anti-Cheat</h5>
+                            <p class="text-xs text-moveet-muted font-bold uppercase tracking-wider">Seguridad Total</p>
+                        </div>
+                        <div class="card-moveet">
+                            <i class="fas fa-users text-2xl text-moveet-primary mb-4"></i>
+                            <h5 class="font-bold text-lg mb-2">Social</h5>
+                            <p class="text-xs text-moveet-muted font-bold uppercase tracking-wider">Amigos y Chat</p>
+                        </div>
+                        <div class="card-moveet">
+                            <i class="fas fa-bolt text-2xl text-moveet-primary mb-4"></i>
+                            <h5 class="font-bold text-lg mb-2">Potenciadores</h5>
+                            <p class="text-xs text-moveet-muted font-bold uppercase tracking-wider">Multiplica puntos</p>
+                        </div>
+                        <div class="card-moveet">
+                            <i class="fas fa-trophy text-2xl text-moveet-primary mb-4"></i>
+                            <h5 class="font-bold text-lg mb-2">Logros</h5>
+                            <p class="text-xs text-moveet-muted font-bold uppercase tracking-wider">Colecciona medallas</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid gap-6">
+                    <div class="card-moveet flex gap-6 items-center">
+                        <div class="w-16 h-16 bg-moveet-bg border border-moveet-border rounded-xl flex items-center justify-center text-2xl text-moveet-primary">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold">Pase de Paseo</h4>
+                            <p class="text-sm text-moveet-muted">Progresión por niveles con premios premium.</p>
+                        </div>
+                    </div>
+                    <div class="card-moveet flex gap-6 items-center">
+                        <div class="w-16 h-16 bg-moveet-bg border border-moveet-border rounded-xl flex items-center justify-center text-2xl text-moveet-primary">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold">Tienda Integrada</h4>
+                            <p class="text-sm text-moveet-muted">Canje instantáneo de puntos por productos.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-24 bg-white text-center">
+        <div class="max-w-4xl mx-auto px-6">
+            <h2 class="section-title mb-8">¿Estás listo para <br> tu primera misión?</h2>
+            <p class="text-xl text-moveet-muted font-medium mb-12">Únete a la comunidad y empieza a ganar premios por tus pasos hoy mismo.</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-6">
+                <a href="{{ route('register') }}" class="btn-moveet py-5 px-12 text-xl">Crear cuenta gratis</a>
+                <a href="{{ route('login') }}" class="py-5 px-12 text-xl font-bold border border-moveet-border rounded-md hover:bg-moveet-bg transition-all">Iniciar sesión</a>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="py-12 border-t border-white/5 text-center text-slate-500 text-sm">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="flex justify-center gap-8 mb-8 text-slate-400 text-lg">
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-discord"></i></a>
+    <footer class="py-16 bg-white border-t border-moveet-border">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 grid md:grid-cols-4 gap-12">
+            <div class="col-span-2">
+                <div class="flex items-center gap-3 mb-6">
+                    <img src="{{ asset('img/LogoUsarDiaDia.png') }}" class="h-8">
+                    <span class="text-xl font-black">Moveet</span>
+                </div>
+                <p class="text-moveet-muted font-medium max-w-sm">La plataforma que convierte tu actividad física en una aventura épica con recompensas reales.</p>
             </div>
-            <p>&copy; 2026 Moveet. Fabricado con <i class="fas fa-heart text-red-500"></i> para exploradores urbanos.</p>
-            <div class="flex justify-center gap-6 mt-4">
-                <a href="#" class="hover:text-white transition-colors">Privacidad</a>
-                <a href="#" class="hover:text-white transition-colors">Términos</a>
-                <a href="{{ route('atencion.create') }}" class="hover:text-white transition-colors">Contacto</a>
+            <div>
+                <h5 class="font-bold mb-6 uppercase text-xs tracking-widest">Legal</h5>
+                <ul class="space-y-4 text-sm font-bold text-moveet-muted">
+                    <li><a href="#" class="hover:text-moveet-text">Privacidad</a></li>
+                    <li><a href="#" class="hover:text-moveet-text">Términos</a></li>
+                    <li><a href="{{ route('atencion.create') }}" class="hover:text-moveet-text">Contacto</a></li>
+                </ul>
             </div>
+            <div>
+                <h5 class="font-bold mb-6 uppercase text-xs tracking-widest">Síguenos</h5>
+                <div class="flex gap-4">
+                    <a href="#" class="w-10 h-10 bg-moveet-bg border border-moveet-border rounded-md flex items-center justify-center hover:text-moveet-primary transition-all"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="w-10 h-10 bg-moveet-bg border border-moveet-border rounded-md flex items-center justify-center hover:text-moveet-primary transition-all"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="w-10 h-10 bg-moveet-bg border border-moveet-border rounded-md flex items-center justify-center hover:text-moveet-primary transition-all"><i class="fab fa-discord"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 mt-16 pt-8 border-t border-moveet-border text-center text-xs font-bold text-moveet-muted uppercase tracking-[0.2em]">
+            &copy; 2026 Moveet Team. Todos los derechos reservados.
         </div>
     </footer>
 
     <script>
-        // Smooth scroll
+        // Menu
+        const btn = document.getElementById('mobile-menu-btn');
+        const close = document.getElementById('close-menu');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.onclick = () => menu.classList.remove('hidden');
+        close.onclick = () => menu.classList.add('hidden');
+        menu.querySelectorAll('a').forEach(a => a.onclick = () => menu.classList.add('hidden'));
+
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -364,40 +381,6 @@
                 }
             });
         });
-
-        // Mobile Menu
-        const menuBtn = document.getElementById('mobile-menu-btn');
-        const closeBtn = document.getElementById('close-menu');
-        const mobileMenu = document.getElementById('mobile-menu');
-
-        menuBtn.onclick = () => {
-            mobileMenu.classList.remove('hidden');
-            setTimeout(() => {
-                mobileMenu.classList.remove('translate-x-full');
-            }, 10);
-        };
-
-        const hideMenu = () => {
-            mobileMenu.classList.add('translate-x-full');
-            setTimeout(() => {
-                mobileMenu.classList.add('hidden');
-            }, 300);
-        };
-
-        closeBtn.onclick = hideMenu;
-        mobileMenu.querySelectorAll('a').forEach(a => a.onclick = hideMenu);
-
-        // Navbar effect
-        window.onscroll = () => {
-            const nav = document.querySelector('nav');
-            if (window.scrollY > 50) {
-                nav.classList.add('py-4');
-                nav.classList.remove('py-6');
-            } else {
-                nav.classList.add('py-6');
-                nav.classList.remove('py-4');
-            }
-        };
     </script>
 </body>
 </html>

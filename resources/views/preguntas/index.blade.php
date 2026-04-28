@@ -1,4 +1,4 @@
-@extends('layouts.plantillaHome')
+@extends('layouts.plantillaLanding')
 
 @section('content')
 <div class="max-w-5xl mx-auto px-4 py-12">
@@ -13,7 +13,7 @@
 
     @auth
         <div class="mb-8">
-            <a href="{{ route('preguntas.create') }}" class="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition">
+            <a href="{{ route('preguntas.create') }}" class="btn-moveet">
                 + Escribir una reseña
             </a>
         </div>

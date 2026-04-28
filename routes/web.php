@@ -31,7 +31,7 @@ Route::get('/', function () {
     return auth()->check()
         ? redirect()->route('home')
         : view('landing');
-});
+})->name('landing');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'login'])->name('login');
