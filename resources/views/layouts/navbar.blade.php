@@ -21,10 +21,41 @@
                     @if ($navUser)
                         <a href="{{ route('usuario.index') }}" class="block font-bold truncate">{{ $navUser->name }}</a>
                         <div class="flex items-center gap-1.5">
-                            <p class="text-[12px] truncate">{{ $navUser->puntos }} puntos</p>
+                            <p class="text-[12px] truncate js-user-points">{{ $navUser->puntos }} puntos</p>
                             <a href="{{ route('tienda.puntos') }}" class="flex items-center justify-center w-4 h-4 bg-[#1E2A28] text-white rounded-full text-[10px] font-bold hover:bg-[#324542] transition-colors" title="Ir a la tienda">+</a>
                         </div>
-                        <p class="text-[12px] truncate">Nvl {{ $navUser->nivel }}</p>
+                        <div class="mt-1">
+                            <p class="text-[11px] font-bold text-[#1E2A28]">Nvl {{ $navUser->nivel }}</p>
+                            @php
+                                $levelService = app(\App\Services\LevelService::class);
+                                $currentExp = (int) $navUser->experiencia;
+                                $nextLevelExp = $levelService->experienceForLevel($navUser->nivel);
+                                $progress = min(100, max(0, ($currentExp / $nextLevelExp) * 100));
+                                
+                                $hasPointsBooster = $navUser->points_booster_until && $navUser->points_booster_until->isFuture();
+                                $hasExpBooster = $navUser->exp_booster_until && $navUser->exp_booster_until->isFuture();
+                            @endphp
+                            <div class="w-full bg-gray-200 rounded-full h-1 mt-0.5" title="{{ $currentExp }} / {{ $nextLevelExp }} exp">
+                                <div class="bg-[#1E2A28] h-1 rounded-full transition-all duration-500" style="width: {{ $progress }}%"></div>
+                            </div>
+                            
+                            @if($hasPointsBooster || $hasExpBooster)
+                                <div class="flex flex-col gap-1 mt-1">
+                                    @if($hasPointsBooster)
+                                        <div class="flex items-center gap-1 bg-yellow-400 text-[9px] px-1.5 py-0.5 rounded font-bold shadow-sm" title="Puntos x2 activo">
+                                            <span>PTS x2</span>
+                                            <span class="js-booster-timer opacity-80" data-until="{{ $navUser->points_booster_until->toISOString() }}">--:--</span>
+                                        </div>
+                                    @endif
+                                    @if($hasExpBooster)
+                                        <div class="flex items-center gap-1 bg-blue-400 text-white text-[9px] px-1.5 py-0.5 rounded font-bold shadow-sm" title="EXP boost activo">
+                                            <span>EXP UP</span>
+                                            <span class="js-booster-timer opacity-80" data-until="{{ $navUser->exp_booster_until->toISOString() }}">--:--</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
+                        </div>
                     @else
                         <a href="{{ route('login') }}" class="block font-bold">Iniciar sesión</a>
                         <p class="text-[12px]">Accede a tu cuenta</p>
@@ -140,10 +171,40 @@
             @if ($navUser)
                 <div class="flex flex-col items-center mb-5 pb-4 border-b border-black/10">
                     <div class="flex items-center gap-2 mb-1">
-                        <span class="font-bold text-lg">{{ $navUser->puntos }} puntos</span>
+                        <span class="font-bold text-lg js-user-points">{{ $navUser->puntos }} puntos</span>
                         <a href="{{ route('tienda.puntos') }}" class="flex items-center justify-center w-5 h-5 bg-[#1E2A28] text-white rounded-full text-[12px] font-bold">+</a>
                     </div>
-                    <span class="text-xs opacity-70">Nvl {{ $navUser->nivel }}</span>
+                    <div class="w-32 mt-1">
+                        <div class="flex justify-between text-[10px] font-bold mb-0.5">
+                            <span>Nvl {{ $navUser->nivel }}</span>
+                            @php
+                                $levelService = app(\App\Services\LevelService::class);
+                                $currentExp = (int) $navUser->experiencia;
+                                $nextLevelExp = $levelService->experienceForLevel($navUser->nivel);
+                                $progress = min(100, max(0, ($currentExp / $nextLevelExp) * 100));
+                            @endphp
+                            <span>{{ $currentExp }} / {{ $nextLevelExp }}</span>
+                        </div>
+                        <div class="w-full bg-black/10 rounded-full h-1.5">
+                            <div class="bg-[#1E2A28] h-1.5 rounded-full transition-all duration-500" style="width: {{ $progress }}%"></div>
+                        </div>
+                        @if($hasPointsBooster || $hasExpBooster)
+                            <div class="flex flex-col gap-1 mt-1 items-end">
+                                @if($hasPointsBooster)
+                                    <div class="bg-yellow-400 text-[8px] px-1.5 py-0.5 rounded font-bold flex items-center gap-1 shadow-sm">
+                                        <span>PTS x2</span>
+                                        <span class="js-booster-timer opacity-80" data-until="{{ $navUser->points_booster_until->toISOString() }}">--:--</span>
+                                    </div>
+                                @endif
+                                @if($hasExpBooster)
+                                    <div class="bg-blue-400 text-white text-[8px] px-1.5 py-0.5 rounded font-bold flex items-center gap-1 shadow-sm">
+                                        <span>EXP UP</span>
+                                        <span class="js-booster-timer opacity-80" data-until="{{ $navUser->exp_booster_until->toISOString() }}">--:--</span>
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
+                    </div>
                 </div>
             @endif
             
@@ -232,5 +293,39 @@
         panel.querySelectorAll('a').forEach(function (link) {
             link.onclick = closeMenu;
         });
+
+        // Lógica de temporizadores de boosters
+        function updateBoosterTimers() {
+            const timers = document.querySelectorAll('.js-booster-timer');
+            const now = new Date();
+
+            timers.forEach(timer => {
+                const until = new Date(timer.dataset.until);
+                const diff = until - now;
+
+                if (diff <= 0) {
+                    timer.closest('div').style.display = 'none';
+                    return;
+                }
+
+                const h = Math.floor(diff / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+
+                let timeStr = "";
+                if (h > 0) {
+                    timeStr = `${h}h ${m}m`;
+                } else if (m > 0) {
+                    timeStr = `${m}m ${s}s`;
+                } else {
+                    timeStr = `${s}s`;
+                }
+
+                timer.textContent = timeStr;
+            });
+        }
+
+        setInterval(updateBoosterTimers, 1000);
+        updateBoosterTimers();
     });
 </script>

@@ -12,6 +12,7 @@ use App\Services\MisionService;
 use App\Services\PointsHistoryService;
 use App\Services\ReferralService;
 use App\Services\StreakService;
+use App\Services\LevelService;
 use Carbon\Carbon;
 
 class HomeController extends Controller
@@ -23,6 +24,7 @@ class HomeController extends Controller
         private AchievementService $achievementService,
         private ReferralService $referralService,
         private MisionService $misionService,
+        private LevelService $levelService,
     )
     {
     }
@@ -161,7 +163,23 @@ class HomeController extends Controller
         }
 
         DB::transaction(function () use ($user, $mision) {
-            $user->increment('puntos', $mision->puntos);
+            $puntos = (int) $mision->puntos;
+            $exp = (int) ($puntos * 0.5); // La experiencia base es el 50% de los puntos
+
+            // Aplicar boosters
+            if ($user->points_booster_until && now()->lessThanOrEqualTo($user->points_booster_until)) {
+                $puntos *= 2;
+            }
+
+            if ($user->exp_booster_until && now()->lessThanOrEqualTo($user->exp_booster_until)) {
+                $exp *= 2;
+            }
+
+            $user->increment('puntos', $puntos);
+            
+            // Subir nivel
+            $this->levelService->addExperience($user, $exp);
+
             $user->misiones()->updateExistingPivot($mision->id, [
                 'completada' => true,
                 'fecha_completado' => Carbon::now(),
@@ -199,6 +217,26 @@ class HomeController extends Controller
             'puntos' => $user->puntos,
             'streak' => $user->current_streak,
         ]);
+    }
+
+    public function renovarMisionesGratis(Request $request): RedirectResponse
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        if ($user->free_mission_changes <= 0) {
+            return redirect()->route('pago.pasarela')->with('status', 'No tienes cambios gratuitos disponibles.');
+        }
+
+        DB::transaction(function () use ($user) {
+            $user->decrement('free_mission_changes');
+            $this->misionService->renovarMisiones($user, 'todas');
+        });
+
+        return redirect()->route('home')->with('status', '¡Misiones renovadas gratuitamente!');
     }
 
     /**

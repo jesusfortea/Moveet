@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Inventario;
 use App\Models\Logro;
 use App\Models\TarjetaBancaria;
 use App\Models\User;
@@ -11,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
@@ -139,13 +141,20 @@ class UserController extends Controller
 
         $user->loadMissing(['inventario.recompensa']);
 
-        $inventario = $user->inventario
+        $disponibles = $user->inventario
+            ->whereNull('usado_at')
             ->sortByDesc('obtenida_at')
+            ->values();
+
+        $usados = $user->inventario
+            ->whereNotNull('usado_at')
+            ->sortByDesc('usado_at')
             ->values();
 
         return view('usuario.inventario', [
             'usuario' => $user,
-            'inventario' => $inventario,
+            'disponibles' => $disponibles,
+            'usados' => $usados,
         ]);
     }
 
@@ -295,5 +304,68 @@ class UserController extends Controller
         return redirect()
             ->route('usuario.index')
             ->with('status', 'Tarjeta eliminada correctamente.');
+    }
+
+    public function usarRecompensa(Inventario $item): RedirectResponse
+    {
+        $user = $this->resolveUser();
+
+        if (!$user || $item->user_id !== $user->id) {
+            abort(403);
+        }
+
+        if ($item->usado_at) {
+            return back()->with('status', 'Esta recompensa ya ha sido utilizada.');
+        }
+
+        $recompensa = $item->recompensa;
+        $slug = \Illuminate\Support\Str::slug($recompensa?->nombre ?? '');
+
+        // Evitar solapamiento de boosters del mismo tipo
+        if (str_contains($slug, 'potenciador-de-puntos')) {
+            if ($user->points_booster_until && $user->points_booster_until->isFuture()) {
+                return back()->with('status', 'Ya tienes un potenciador de puntos activo.');
+            }
+        }
+
+        if (str_contains($slug, 'potenciador-de-exp') || str_contains($slug, 'potenciador-de-energia')) {
+            if ($user->exp_booster_until && $user->exp_booster_until->isFuture()) {
+                return back()->with('status', 'Ya tienes un potenciador de experiencia activo.');
+            }
+        }
+
+        DB::transaction(function () use ($user, $item, $slug, $recompensa) {
+            $item->update(['usado_at' => now()]);
+
+            // Aplicar efectos según el tipo de recompensa
+            switch (true) {
+                case str_contains($slug, 'potenciador-de-puntos-x2'):
+                    $user->points_booster_until = now()->addHours(2);
+                    break;
+                case str_contains($slug, 'potenciador-de-puntos'):
+                    $user->points_booster_until = now()->addMinutes(30);
+                    break;
+                case str_contains($slug, 'potenciador-de-exp'):
+                    $user->exp_booster_until = now()->addHours(1);
+                    break;
+                case str_contains($slug, 'potenciador-de-energia'):
+                    $user->exp_booster_until = now()->addMinutes(45);
+                    break;
+                case str_contains($slug, 'cambiazo-gratis'):
+                    $user->increment('free_mission_changes');
+                    break;
+                case str_contains($slug, 'monedas-x'):
+                    // Extraer cantidad del nombre (ej: "Monedas x100" -> 100)
+                    preg_match('/x(\d+)/i', $recompensa->nombre, $matches);
+                    $cantidad = isset($matches[1]) ? (int)$matches[1] : 50;
+                    $user->increment('puntos', $cantidad);
+                    break;
+            }
+
+            $user->save();
+        });
+
+        $nombre = $recompensa?->nombre ?? 'Recompensa';
+        return back()->with('status', "¡Has utilizado \"{$nombre}\" correctamente!");
     }
 }

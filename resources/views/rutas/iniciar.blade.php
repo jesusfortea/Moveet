@@ -373,7 +373,7 @@
 
         {{-- Nota anti-cheat --}}
         <div style="background: #f0f2f1; border-radius: 10px; padding: 12px 14px; font-size: 12px; color: #516260;">
-            <strong>🛡️ Sistema anti-trampas activo:</strong> La velocidad y ubicación GPS se validan en tiempo real. Si se detecta una velocidad superior a 50 km/h, la verificación será bloqueada automáticamente.
+            <strong>🛡️ Sistema anti-trampas activo:</strong> La velocidad y ubicación GPS se validan en tiempo real. Si se detecta una velocidad superior a 35 km/h, la verificación será bloqueada automáticamente.
         </div>
 
     </div>{{-- fin ruta-info-panel --}}
@@ -382,7 +382,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const MAX_WALKING_SPEED_KMH = 50;
+    const MAX_WALKING_SPEED_KMH = 35;
     const MAX_GPS_ACCURACY_METERS = 80;
 
     const token = @json($attempt->verification_token);

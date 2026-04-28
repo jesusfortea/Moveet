@@ -71,11 +71,22 @@
             </div>
 
             {{-- Botón cambiar misiones --}}
-            <button class="change-missions-btn" id="change-missions-btn" title="Cambiar misiones por 0,99€">
-                <span class="btn-icon">↻</span>
-                <span>Cambiar misiones</span>
-                <span class="btn-price">0,99 €</span>
-            </button>
+            @if(auth()->user()->free_mission_changes > 0)
+                <form action="{{ route('misiones.renovar_gratis') }}" method="POST" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="change-missions-btn" style="background: #1E2A28; color: white;" title="Tienes {{ auth()->user()->free_mission_changes }} cambios gratuitos">
+                        <span class="btn-icon">↻</span>
+                        <span>¡Cambiazo GRATIS!</span>
+                        <span class="btn-price" style="background: #C5D8D6; color: #1E2A28;">{{ auth()->user()->free_mission_changes }} disp.</span>
+                    </button>
+                </form>
+            @else
+                <button class="change-missions-btn" id="change-missions-btn" title="Cambiar misiones por 0,99€" onclick="window.location.href='{{ route('pago.pasarela') }}'">
+                    <span class="btn-icon">↻</span>
+                    <span>Cambiar misiones</span>
+                    <span class="btn-price">0,99 €</span>
+                </button>
+            @endif
 
         </div>
 

@@ -7,8 +7,8 @@ use App\Models\User;
 
 class AntiCheatService
 {
-    // Velocidad máxima permitida para caminar: 50 km/h es sospechoso para caminata
-    const MAX_WALKING_SPEED_KMH = 50;
+    // Velocidad máxima permitida para caminar: 35 km/h es sospechoso para caminata
+    const MAX_WALKING_SPEED_KMH = 35;
     
     // Radio de precisión GPS aceptable: 50 metros
     const GPS_ACCURACY_THRESHOLD = 50;

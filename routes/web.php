@@ -72,6 +72,7 @@ Route::get('/preguntas/{pregunta}', [PreguntaController::class, 'show'])->name('
 Route::middleware(['auth', 'not_blocked'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::post('/misiones/{mision}/completar', [HomeController::class, 'completarMision']);
+    Route::post('/misiones/renovar-gratis', [HomeController::class, 'renovarMisionesGratis'])->name('misiones.renovar_gratis');
 
     Route::get('/pago/cambiar-misiones', [PagoController::class, 'mostrarPasarela'])->name('pago.pasarela');
     Route::post('/pago/paypal/capturar-misiones', [PagoController::class, 'capturarPayPalMisiones'])->name('pago.paypal.capturar.misiones');
@@ -90,6 +91,7 @@ Route::middleware(['auth', 'not_blocked'])->group(function () {
     Route::post('/usuario/tarjeta', [UserController::class, 'storeCard'])->name('usuario.tarjeta.store');
     Route::delete('/usuario/tarjeta', [UserController::class, 'destroyCard'])->name('usuario.tarjeta.destroy');
     Route::get('/usuario/inventario', [UserController::class, 'inventario'])->name('usuario.inventario');
+    Route::post('/usuario/inventario/{item}/usar', [UserController::class, 'usarRecompensa'])->name('usuario.inventario.usar');
     Route::get('/usuario/logros', [UserController::class, 'logros'])->name('usuario.logros');
     Route::get('/usuario/referidos', [UserController::class, 'referidos'])->name('usuario.referidos');
     Route::post('/usuario/racha/congelador/comprar', [UserController::class, 'buyStreakFreeze'])->name('usuario.streak.freeze.buy');

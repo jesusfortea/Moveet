@@ -615,6 +615,67 @@ html, body {
     box-shadow: 0 12px 28px rgba(239, 68, 68, 0.4);
 }
 
+.inventario-item {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.inventario-item:hover:not(.inventario-item--used) {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+.inventario-item--used {
+    filter: grayscale(0.4);
+    opacity: 0.85;
+}
+
+.badge-used {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #f3f4f6;
+    color: #4b5563;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.mb-8 { margin-bottom: 2rem; }
+
+.btn-simple-outline {
+    background: transparent;
+    border: 2px solid #1E2A28;
+    color: #1E2A28;
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-simple-outline:hover {
+    background: #1E2A28;
+    color: white;
+}
+.text-gray-500 { color: #6b7280; }
+.text-gray-400 { color: #9ca3af; }
+
+.inventario-panel--used {
+    background: #f9fafb;
+    border: 1px dashed #e5e7eb;
+}
+
+.recompensa-visual--small {
+    width: 60px;
+    height: 60px;
+}
+
+.recompensa-visual--small img {
+    max-width: 40px;
+}
+
 .logros-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
