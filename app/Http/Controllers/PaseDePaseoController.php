@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PaseDePaseo;
+use App\Models\PuntosHistorial;
 use App\Models\Recompensa;
 use App\Models\User;
 use App\Services\PointsHistoryService;
@@ -42,6 +43,20 @@ class PaseDePaseoController extends Controller
             ->where('tipo', 'pase_de_paseo')
             ->pluck('recompensas.id')
             ->toArray();
+
+        $recompensasReclamadasPorPuntos = PuntosHistorial::query()
+            ->where('user_id', $user->id)
+            ->where('tipo', 'reward')
+            ->where('related_model', Recompensa::class)
+            ->whereNotNull('related_model_id')
+            ->pluck('related_model_id')
+            ->map(fn ($id) => (int) $id)
+            ->toArray();
+
+        $recompensasReclamadas = array_values(array_unique(array_merge(
+            $recompensasReclamadas,
+            $recompensasReclamadasPorPuntos,
+        )));
 
         // Agrupar recompensas por nivel
         $niveles = [];
@@ -98,35 +113,46 @@ class PaseDePaseoController extends Controller
             return response()->json(['message' => 'Esta recompensa requiere suscripción premium.'], 403);
         }
 
-        // 4. Validar que no se haya reclamado ya
-        $yaReclamada = $user->recompensas()
-            ->where('recompensas.id', $recompensa->id)
-            ->exists();
+        $puntosGanados = max(0, (int) $recompensa->puntos_necesarios);
+        $esRecompensaDePuntos = $puntosGanados > 0;
+
+        $yaReclamada = $esRecompensaDePuntos
+            ? PuntosHistorial::query()
+                ->where('user_id', $user->id)
+                ->where('tipo', 'reward')
+                ->where('related_model', Recompensa::class)
+                ->where('related_model_id', $recompensa->id)
+                ->exists()
+            : $user->recompensas()
+                ->where('recompensas.id', $recompensa->id)
+                ->exists();
 
         if ($yaReclamada) {
             return response()->json(['message' => 'Ya has reclamado esta recompensa.'], 409);
         }
 
-        $puntosGanados = max(0, (int) $recompensa->puntos_necesarios);
-
-        DB::transaction(function () use ($user, $recompensa, $puntosGanados) {
-            // 5. Añadir al inventario
-            $user->recompensas()->attach($recompensa->id, [
-                'origen' => 'pase_de_paseo',
-                'obtenida_at' => Carbon::now(),
-            ]);
-
-            // 6. Otorgar puntos y guardar historial
-            if ($puntosGanados > 0) {
+        DB::transaction(function () use ($user, $recompensa, $puntosGanados, $esRecompensaDePuntos) {
+            if ($esRecompensaDePuntos) {
                 $user->increment('puntos', $puntosGanados);
 
                 $this->pointsHistoryService->log(
                     $user,
                     'reward',
                     $puntosGanados,
-                    'Recompensa del Pase de paseo: ' . $recompensa->nombre
+                    'Recompensa del Pase de paseo: ' . $recompensa->nombre,
+                    null,
+                    Recompensa::class,
+                    $recompensa->id
                 );
+
+                return;
             }
+
+            // Recompensas no monetarias: se guardan en inventario para poder usarlas después.
+            $user->recompensas()->attach($recompensa->id, [
+                'origen' => 'pase_de_paseo',
+                'obtenida_at' => Carbon::now(),
+            ]);
         });
 
         $user->refresh();

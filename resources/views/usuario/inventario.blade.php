@@ -43,11 +43,13 @@
                         @endif
                     </div>
 
-                    <p>{{ $item->recompensa?->nombre ?? 'Recompensa desbloqueada' }}</p>
+                    <div class="item-text-content">
+                        <p>{{ $item->recompensa?->nombre ?? 'Recompensa desbloqueada' }}</p>
 
-                    <div class="inventario-meta">
-                        <span>{{ $item->origen ? ucfirst($item->origen) : 'Origen desconocido' }}</span>
-                        <span>{{ optional($item->obtenida_at)->format('d/m/Y') }}</span>
+                        <div class="inventario-meta">
+                            <span>{{ $item->origen ? ucfirst($item->origen) : 'Origen desconocido' }}</span>
+                            <span>{{ optional($item->obtenida_at)->format('d/m/Y') }}</span>
+                        </div>
                     </div>
 
                     <button type="button" class="btn-main btn-small" disabled>Usar</button>

@@ -6,9 +6,9 @@
     --bp-paid-bg: #C19A6B;
     --bp-paid-text: #B8860B;
     --bp-free-bg: #CFD8D7;
-    --bp-free-text: #7A9190;
+    --bp-free-text: #6D827F;
     --bp-track-black: #111111;
-    --bp-success: #56C470;
+    --bp-success: #22C55E;
 }
 
 .battlepass-wrapper {
@@ -167,7 +167,7 @@
 .reward-name {
     font-size: 1rem;
     font-weight: 700;
-    color: #7A9190;
+    color: #6D827F;
 }
 
 .free-slot .reward-name {

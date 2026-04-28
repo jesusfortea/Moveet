@@ -1,8 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-    --chat-bg: #EEF2F1;
-    --chat-panel: #D9E4E3;
+    --chat-bg: #F0F4F4;
+    --chat-panel: #FFFFFF;
     --chat-panel-dk: #8FA8A6;
     --chat-surface: #FFFFFF;
     --chat-text: #1E2A28;
@@ -18,7 +18,7 @@ body {
     margin: 0;
     padding: 0;
     min-height: 100%;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Outfit', sans-serif;
     background: var(--chat-bg);
     color: var(--chat-text);
 }
@@ -215,7 +215,7 @@ body {
     gap: 8px;
     align-items: center;
     background: #f7f9f9;
-    border: 1px solid rgba(30, 42, 40, .12);
+    border: 1px solid rgba(91, 124, 122, .12);
     border-radius: 10px;
     padding: 8px;
 }
@@ -229,7 +229,7 @@ body {
     align-items: center;
     justify-content: center;
     background: #f0f3f3;
-    color: #6B8F8D;
+    color: #5B7C7A;
     font-weight: 800;
 }
 
@@ -322,7 +322,7 @@ body {
     background: #fff;
     border: 1px solid rgba(30, 42, 40, .18);
     border-radius: 10px;
-    box-shadow: 0 8px 22px rgba(30, 42, 40, .16);
+    box-shadow: 0 8px 22px rgba(91, 124, 122, .16);
     display: grid;
     gap: 6px;
     z-index: 20;
@@ -386,7 +386,7 @@ body {
     justify-content: center;
     overflow: hidden;
     font-weight: 800;
-    color: #6B8F8D;
+    color: #5B7C7A;
     flex-shrink: 0;
 }
 
@@ -506,7 +506,7 @@ body {
 }
 
 .contact-action-btn--blocked {
-    background: #eef2f1;
+    background: #F0F4F4;
     border-color: #d8dfde;
     cursor: default;
 }

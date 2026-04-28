@@ -32,36 +32,37 @@
         <div style="display: grid; gap: 10px; margin-top: 4px;">
             @forelse($notifications as $item)
                 <div class="tarjeta-row" style="
-                    display: grid;
-                    grid-template-columns: 1fr;
-                    background: {{ $item->read_at ? '#f3f6f5' : '#e9f6ee' }};
-                    border-color: {{ $item->read_at ? '#5f6f6d' : '#86c9a0' }};
-                    border-radius: 4px;
-                    gap: 6px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: stretch;
+                    background: {{ $item->read_at ? 'var(--usr-surface)' : '#ecfdf5' }};
+                    border-color: {{ $item->read_at ? 'var(--usr-border)' : '#34d399' }};
+                    border-radius: 16px;
+                    gap: 12px;
                 ">
                     <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;">
-                        <strong style="font-size: .95rem;">{{ $item->title }}</strong>
-                        <small style="color: #7a9190; font-size: .78rem;">{{ $item->created_at?->diffForHumans() }}</small>
+                        <strong style="font-size: 1.1rem; color: {{ $item->read_at ? 'var(--usr-text)' : '#064e3b' }};">{{ $item->title }}</strong>
+                        <small style="color: var(--usr-text-muted); font-size: 0.85rem; font-weight: 600;">{{ $item->created_at?->diffForHumans() }}</small>
                     </div>
 
                     @if($item->body)
-                        <p style="margin: 0; font-size: .88rem; color: #41514f; font-weight: 400;">{{ $item->body }}</p>
+                        <p style="margin: 0; font-size: 0.95rem; color: var(--usr-text-muted); font-weight: 500; line-height: 1.4;">{{ $item->body }}</p>
                     @endif
 
-                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 8px;">
                         @if($item->action_url)
-                            <a href="{{ $item->action_url }}" class="btn-link" style="font-size: .85rem;">Abrir &rarr;</a>
+                            <a href="{{ $item->action_url }}" class="btn-link" style="background: rgba(34, 197, 94, 0.1); padding: 8px 20px;">Abrir &rarr;</a>
                         @endif
                         @if(!$item->read_at)
                             <form action="{{ route('usuario.notificaciones.read_one', $item) }}" method="POST" style="margin: 0;">
                                 @csrf
-                                <button type="submit" class="btn-link" style="font-size: .85rem;">Marcar como leída</button>
+                                <button type="submit" class="btn-link">Marcar como leída</button>
                             </form>
                         @endif
                     </div>
                 </div>
             @empty
-                <p class="panel-empty panel-empty--center" style="padding: 24px 0;">Todavía no tienes notificaciones.</p>
+                <p class="panel-empty panel-empty--center">Todavía no tienes notificaciones.</p>
             @endforelse
         </div>
     </section>

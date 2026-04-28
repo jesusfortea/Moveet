@@ -3,12 +3,12 @@
    ════════════════════════════════════════════════════════════════ */
 
 /* ── Google Fonts ── */
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
 /* ── Tipografía base ─────────────────────────────────────────── */
 html,
 body {
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Outfit', sans-serif;
     color: #1E2A28;
 }
 
@@ -33,7 +33,7 @@ body {
     justify-content: center;
     flex: 1;
     /* padding: 2.5rem 1.5rem; */
-    background: #EEF2F1;
+    background: #F0F4F4;
     width: 100%;
 }
 
@@ -61,7 +61,7 @@ body {
 .shop-card {
     position: relative;
     background: #FFFFFF;
-    border: 1px solid #D5E0DF;
+    border: 1px solid #E2EAEA;
     border-radius: 12px;
     padding: 1.5rem 1.25rem 1.25rem;
     display: flex;
@@ -69,7 +69,7 @@ body {
     align-items: center;
     gap: .75rem;
     text-align: center;
-    box-shadow: 0 2px 8px rgba(30, 42, 40, .07);
+    box-shadow: 0 2px 8px rgba(91, 124, 122, .08);
 }
 
 /* ── Card destacada ──────────────────────────────────────────── */
@@ -100,7 +100,7 @@ body {
     font-size: .85rem;
     font-weight: 600;
     color: #1E2A28;
-    background: #EEF2F1;
+    background: #F0F4F4;
     padding: .2rem .65rem;
     border-radius: 999px;
 }
@@ -163,7 +163,7 @@ body {
 }
 
 .shop-btn:hover {
-    background: #6B8F8D;
+    background: #5B7C7A;
     transform: translateY(-1px);
 }
 

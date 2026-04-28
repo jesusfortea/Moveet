@@ -81,7 +81,7 @@
 
 
             <article class="panel-card inventario-card">
-                <div class="panel-header panel-header-stack">
+                <div class="panel-header">
                     <h2>Inventario</h2>
                     <a class="btn-link" href="{{ route('usuario.inventario') }}">Ver todos &gt;</a>
                 </div>
@@ -110,7 +110,7 @@
             </article>
 
             <article class="panel-card">
-                <div class="panel-header panel-header-stack">
+                <div class="panel-header">
                     <h2>Logros</h2>
                     <a class="btn-link" href="{{ route('usuario.logros') }}">Ver todos &gt;</a>
                 </div>
@@ -131,7 +131,7 @@
             </article>
 
             <article class="panel-card">
-                <div class="panel-header panel-header-stack">
+                <div class="panel-header">
                     <h2>Referidos</h2>
                     <a class="btn-link" href="{{ route('usuario.referidos') }}">Ver detalle &gt;</a>
                 </div>

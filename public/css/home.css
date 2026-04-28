@@ -3,37 +3,37 @@
    ═══════════════════════════════════════════════════════════════════ */
 
 /* ── Google Fonts ── */
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
 /* ── Variables ─────────────────────────────────────────────────────── */
 :root {
     --nav-h: 15vh;
 
     --clr-primary: #8FA8A6;
-    --clr-primary-dk: #6B8F8D;
-    --clr-primary-lt: #C5D8D6;
-    --clr-accent: #56C470;
+    --clr-primary-dk: #5B7C7A;
+    --clr-primary-lt: #B8CCCB;
+    --clr-accent: #22C55E;
     --clr-accent-lt: #E8F8EC;
-    --clr-accent-dk: #3DA855;
+    --clr-accent-dk: #16A34A;
     --clr-danger: #E06060;
     --clr-gold: #F4A62A;
 
-    --clr-bg: #EEF2F1;
+    --clr-bg: #F0F4F4;
     --clr-surface: #FFFFFF;
     --clr-text: #1E2A28;
-    --clr-muted: #7A9190;
-    --clr-border: #D5E0DF;
+    --clr-muted: #6D827F;
+    --clr-border: #E2EAEA;
 
     --radius-sm: 8px;
     --radius-md: 14px;
     --radius-lg: 20px;
     --radius-pill: 100px;
 
-    --shadow-sm: 0 2px 8px rgba(30, 42, 40, .07);
-    --shadow-md: 0 4px 20px rgba(30, 42, 40, .12);
-    --shadow-lg: 0 8px 32px rgba(30, 42, 40, .16);
+    --shadow-sm: 0 2px 8px rgba(91, 124, 122, .08);
+    --shadow-md: 0 4px 20px rgba(91, 124, 122, .12);
+    --shadow-lg: 0 8px 32px rgba(91, 124, 122, .16);
 
-    --font: 'Nunito', sans-serif;
+    --font: 'Outfit', sans-serif;
 
     --ease-out: cubic-bezier(.22, .61, .36, 1);
 }
@@ -69,7 +69,7 @@ nav {
     height: calc(100vh - var(--nav-h));
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow-y: auto;
 }
 
 .home-layout {
@@ -771,7 +771,7 @@ nav {
 .mission-toast__icon {
     width: 2rem;
     height: 2rem;
-    background: #56C470;
+    background: #22C55E;
     border-radius: 50%;
     display: flex;
     align-items: center;

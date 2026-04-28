@@ -17,7 +17,7 @@
         </div>
 
         @if($logrosCatalogo->count() > 0)
-            <div class="inventario-grid inventario-grid--full">
+            <div class="logros-grid">
                 @foreach($logrosCatalogo as $logro)
                     @php
                         $desbloqueado = $logrosDesbloqueados->get($logro->id);
@@ -30,17 +30,19 @@
                             <span>{{ $logro->icono }}</span>
                         </div>
 
-                        <p>{{ $logro->nombre }}</p>
+                        <div class="item-text-content">
+                            <p>{{ $logro->nombre }}</p>
 
-                        <div class="inventario-meta">
-                            <span>{{ $logro->descripcion }}</span>
-                            @if($desbloqueado)
-                                <span>Estado: Desbloqueado</span>
-                                <span>Fecha: {{ optional($desbloqueado->pivot->achieved_at)->format('d/m/Y H:i') ?? 'N/A' }}</span>
-                            @else
-                                <span>Estado: Bloqueado</span>
-                                <span>Completa sus requisitos para desbloquearlo.</span>
-                            @endif
+                            <div class="inventario-meta">
+                                <span>{{ $logro->descripcion }}</span>
+                                @if($desbloqueado)
+                                    <span>Estado: Desbloqueado</span>
+                                    <span>Fecha: {{ optional($desbloqueado->pivot->achieved_at)->format('d/m/Y H:i') ?? 'N/A' }}</span>
+                                @else
+                                    <span>Estado: Bloqueado</span>
+                                    <span>Completa sus requisitos para desbloquearlo.</span>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 @endforeach
