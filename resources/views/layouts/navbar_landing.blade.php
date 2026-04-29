@@ -11,7 +11,11 @@
             <a href="{{ route('preguntas.index') }}" class="nav-link {{ request()->routeIs('preguntas.index') ? 'text-moveet-primary' : '' }}">Reseñas</a>
             <div class="h-6 w-px bg-moveet-border"></div>
             @auth
-                <a href="{{ route('home') }}" class="font-bold text-moveet-text hover:text-moveet-primary">Panel de Control</a>
+                @if(auth()->user()->is_admin)
+                    <a href="{{ route('admin.dashboard') }}" class="font-bold text-moveet-text hover:text-moveet-primary">Panel Admin</a>
+                @else
+                    <a href="{{ route('home') }}" class="font-bold text-moveet-text hover:text-moveet-primary">Panel de Control</a>
+                @endif
             @else
                 <a href="{{ route('login') }}" class="font-bold text-moveet-text hover:text-moveet-primary">Iniciar sesión</a>
                 <a href="{{ route('register') }}" class="btn-moveet text-sm py-3 px-6">Empezar gratis</a>
@@ -34,7 +38,11 @@
         <a href="{{ route('preguntas.index') }}" class="text-2xl font-bold">Reseñas</a>
         <hr>
         @auth
-            <a href="{{ route('home') }}" class="text-2xl font-bold">Panel de Control</a>
+            @if(auth()->user()->is_admin)
+                <a href="{{ route('admin.dashboard') }}" class="text-2xl font-bold">Panel Admin</a>
+            @else
+                <a href="{{ route('home') }}" class="text-2xl font-bold">Panel de Control</a>
+            @endif
         @else
             <a href="{{ route('login') }}" class="text-2xl font-bold">Iniciar sesión</a>
             <a href="{{ route('register') }}" class="btn-moveet text-center py-4">Registrarse</a>

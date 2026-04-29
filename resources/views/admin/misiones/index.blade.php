@@ -7,7 +7,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
             <h1 style="font-size: 2rem; font-weight: bold; margin: 0;">MISIONES</h1>
             <a href="{{ route('admin.misiones.crear') }}" style="background: #8FA8A6; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 600; transition: all 0.2s;" onmouseover="this.style.background='#7a9a98'" onmouseout="this.style.background='#8FA8A6'">
-                CREAR MISIÃ“N
+                CREAR MISIÓN
             </a>
         </div>
 
@@ -25,7 +25,7 @@
                     <thead>
                         <tr style="background: #8FA8A6; color: white;">
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">Nombre</th>
-                            <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">DescripciÃ³n</th>
+                            <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">Descripción</th>
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">Evento</th>
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: center; font-weight: 600;">Metros</th>
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: center; font-weight: 600;">Puntos</th>
@@ -43,7 +43,7 @@
                                 <td data-label="Puntos" style="border: 1px solid #ddd; padding: 12px; text-align: center;">{{ $mision->puntos }}</td>
                                 <td data-label="Premium" style="border: 1px solid #ddd; padding: 12px; text-align: center;">
                                     @if($mision->premium)
-                                        <span style="background: #ffc107; color: #000; padding: 4px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">SÃ</span>
+                                        <span style="background: #ffc107; color: #000; padding: 4px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">Sí</span>
                                     @else
                                         <span style="background: #e0e0e0; color: #666; padding: 4px 8px; border-radius: 3px; font-size: 11px;">NO</span>
                                     @endif

@@ -34,7 +34,7 @@
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">Correo</th>
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">Fecha de nacimiento</th>
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">DNI</th>
-                            <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">TelÃ©fono</th>
+                            <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">Teléfono</th>
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: center; font-weight: 600;">Premium</th>
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: center; font-weight: 600;">Estado</th>
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: center; font-weight: 600;">Acciones</th>
@@ -52,7 +52,7 @@
                                 <td data-label="Telefono" style="border: 1px solid #ddd; padding: 12px;">{{ $usuario->telefono }}</td>
                                 <td data-label="Premium" style="border: 1px solid #ddd; padding: 12px; text-align: center;">
                                     @if($usuario->premium)
-                                        <span style="background: #d4edda; color: #155724; padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;">SÃ­</span>
+                                        <span style="background: #d4edda; color: #155724; padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;">Sí</span>
                                     @else
                                         <span style="background: #f3f3f3; color: #666; padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;">No</span>
                                     @endif
@@ -69,7 +69,7 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     @if(auth()->id() !== $usuario->id)
-                                        <form method="POST" action="{{ route('admin.usuarios.toggle-bloqueo', $usuario) }}" style="display: inline-block; margin-right: 12px;" data-swal-confirm data-swal-confirm-title="Confirmar bloqueo" data-swal-confirm-message="{{ $usuario->is_blocked ? 'Â¿Seguro que quieres desbloquear a este usuario?' : 'Â¿Seguro que quieres bloquear a este usuario?' }}">
+                                        <form method="POST" action="{{ route('admin.usuarios.toggle-bloqueo', $usuario) }}" style="display: inline-block; margin-right: 12px;" data-swal-confirm data-swal-confirm-title="Confirmar bloqueo" data-swal-confirm-message="{{ $usuario->is_blocked ? '¿Seguro que quieres desbloquear a este usuario?' : '¿Seguro que quieres bloquear a este usuario?' }}">
                                             @csrf
                                             @method('PATCH')
                                             <button type="submit" style="border: none; background: transparent; color: {{ $usuario->is_blocked ? '#0f5132' : '#842029' }}; cursor: pointer;" title="{{ $usuario->is_blocked ? 'Desbloquear usuario' : 'Bloquear usuario' }}">

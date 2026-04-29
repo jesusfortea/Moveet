@@ -1,8 +1,8 @@
-@extends('layouts.plantillaLanding')
+@extends(($isAdminView ?? false) ? 'layouts.admin' : 'layouts.plantillaLanding')
 
 @section('content')
 <div class="max-w-3xl mx-auto px-4 py-12">
-    <a href="{{ route('preguntas.index') }}" class="text-moveet-primary hover:text-moveet-primaryDark mb-6 inline-block font-bold"><- Volver</a>
+    <a href="{{ ($isAdminView ?? false) ? route('admin.preguntas') : route('preguntas.index') }}" class="text-moveet-primary hover:text-moveet-primaryDark mb-6 inline-block font-bold"><- Volver</a>
 
     @if ($message = Session::get('success'))
         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">

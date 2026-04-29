@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="max-w-5xl mx-auto px-4 py-12">
-    <h1 class="text-3xl font-bold mb-2">Resñas de la comunidad</h1>
+    <h1 class="text-3xl font-bold mb-2">Reseñas de la comunidad</h1>
     <p class="text-gray-600 mb-8">Lee opiniones reales y comparte tu experiencia con Moveet.</p>
 
     @if ($message = Session::get('success'))
