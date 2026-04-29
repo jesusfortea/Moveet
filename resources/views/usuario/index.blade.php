@@ -109,6 +109,8 @@
                 </div>
             </article>
 
+            {{-- apartado de facturas de articulos eliminado por solicitud --}}
+
             <article class="panel-card">
                 <div class="panel-header">
                     <h2>Logros</h2>

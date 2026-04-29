@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Factura;
 use App\Models\Inventario;
 use App\Models\Logro;
 use App\Models\TarjetaBancaria;
@@ -59,6 +60,7 @@ class UserController extends Controller
         $referidosPremiados = $user->referidos()
             ->whereNotNull('rewarded_at')
             ->count();
+
 
         return view('usuario.index', [
             'usuario' => $user,
