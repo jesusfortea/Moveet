@@ -31,7 +31,7 @@
 </head>
 <body>
 
-    @include('layouts.navbar')
+    @include('layouts.navbar_landing')
 
     <main class="page-content">
         @yield('content')

@@ -1,6 +1,6 @@
-@extends('layouts.plantillaHome')
+@extends('layouts.plantillaLanding')
 
-@section('title', 'Atenci&oacute;n al usuario · Moveet')
+@section('title', 'Atenci&oacute;n al usuario &middot; Moveet')
 
 @section('content')
 <div class="w-full px-4 py-8 md:px-6 md:py-10">
