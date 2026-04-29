@@ -6,6 +6,7 @@ use App\Models\Factura;
 use App\Models\User;
 use App\Mail\FacturaPagoMail;
 use App\Services\MisionService;
+use App\Services\PointsHistoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -15,6 +16,7 @@ class PagoController extends Controller
 {
     public function __construct(
         private MisionService $misionService,
+        private PointsHistoryService $pointsHistoryService,
     ) {}
 
     public function mostrarPasarela(Request $request)
@@ -48,6 +50,16 @@ class PagoController extends Controller
 
         // 2. Renovar misiones usando MisionService (DI correcta)
         $this->misionService->renovarMisiones($user, 'todas');
+
+        $this->pointsHistoryService->log(
+            $user,
+            'spent',
+            0,
+            'Pago PayPal: Renovacion de misiones',
+            null,
+            Factura::class,
+            $factura->id
+        );
 
         // 3. Generar PDF
         $pdf = Pdf::loadView('pdf.factura', [

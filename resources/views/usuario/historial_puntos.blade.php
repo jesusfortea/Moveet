@@ -216,16 +216,17 @@
     </div>
 
     {{-- ── Filtro chips ── --}}
-    <div class="hist-filter-bar">
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+        <div class="hist-filter-bar" style="margin-bottom: 0; flex: 1;">
         <a href="{{ route('usuario.historial_puntos') }}" class="hist-chip {{ !request('tipo') ? 'active' : '' }}">Todos</a>
         @php
             $chipLabels = [
-                'mission' => '✅ Misiones',
-                'earned' => '🏃 Actividad',
-                'reward' => '🎁 Recompensas',
-                'referral' => '👥 Referidos',
-                'store' => '🛒 Tienda',
-                'spent' => '💸 Gastados',
+                'mission' => 'Misiones',
+                'earned' => 'Actividad',
+                'reward' => 'Recompensas',
+                'referral' => 'Referidos',
+                'store' => 'Tienda',
+                'spent' => 'Gastados',
             ];
         @endphp
         @foreach($tipos as $t)
@@ -233,6 +234,11 @@
                 {{ $chipLabels[$t] ?? ucfirst(str_replace('_', ' ', $t)) }}
             </a>
         @endforeach
+        </div>
+        <a href="{{ route('usuario.historial_puntos.descargar', request()->query()) }}"
+           style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; border-radius: 999px; border: 2px solid var(--usr-border); background: var(--usr-surface); color: var(--usr-text); font-weight: 800; text-decoration: none; white-space: nowrap;">
+            Descargar CSV
+        </a>
     </div>
 
     {{-- ── Lista de movimientos ── --}}
@@ -240,20 +246,28 @@
         @forelse($historial as $registro)
             @php
                 $isSpent = in_array($registro->tipo, ['spent', 'store']) || (int) $registro->cantidad < 0;
+                $isStoreEarned = $registro->tipo === 'earned'
+                    && ($registro->motivo && (
+                        str_starts_with($registro->motivo, 'Compra PayPal de pack de puntos:')
+                        || str_starts_with($registro->motivo, 'Compra de pack de puntos:')
+                    ));
 
-                $icon = match($registro->tipo) {
-                    'mission' => '✅',
-                    'earned' => '🏃',
-                    'reward' => '🎁',
-                    'referral' => '👥',
-                    'store', 'spent' => '🛒',
-                    'admin_adjustment' => '🔧',
-                    default => '💰',
+                $displayTipo = $isStoreEarned ? 'store' : $registro->tipo;
+
+                $icon = match($displayTipo) {
+                    'mission' => 'M',
+                    'earned' => 'A',
+                    'reward' => 'R',
+                    'referral' => 'R',
+                    'store' => 'T',
+                    'spent' => 'G',
+                    'admin_adjustment' => 'A',
+                    default => 'P',
                 };
 
                 $iconBg = $isSpent ? '#fee2e2' : '#e9f6ee';
 
-                $badgeBg = match($registro->tipo) {
+                $badgeBg = match($displayTipo) {
                     'mission' => '#d1fae5',
                     'earned' => '#dcfce7',
                     'reward' => '#fef3c7',
@@ -264,7 +278,7 @@
 
                 $badgeColor = $isSpent ? '#991b1b' : '#166534';
 
-                $badgeLabel = match($registro->tipo) {
+                $badgeLabel = match($displayTipo) {
                     'mission' => 'Misión',
                     'earned' => 'Actividad',
                     'reward' => 'Recompensa',
@@ -286,13 +300,17 @@
                         {{ $isSpent ? '-' : '+' }}{{ number_format(abs((int) $registro->cantidad)) }}
                     </div>
                     <div class="badge" style="background: {{ $badgeBg }}; color: {{ $badgeColor }};">{{ $badgeLabel }}</div>
+                    @if($registro->related_model === \App\Models\Factura::class && $registro->related_model_id)
+                        <a href="{{ route('pago.descargar', $registro->related_model_id) }}" style="display: inline-block; margin-top: 6px; font-size: 11px; font-weight: 700; color: #1E2A28; text-decoration: none;">
+                            Descargar factura
+                        </a>
+                    @endif
                 </div>
             </div>
         @empty
             <div style="text-align: center; padding: 48px 20px; background: white; border: 1px dashed #d8e3e0; border-radius: 14px;">
-                <div style="font-size: 40px; margin-bottom: 10px;">📊</div>
                 <div style="font-weight: 700; color: #1E2A28; margin-bottom: 6px;">Sin movimientos</div>
-                <div style="color: #7a9190; font-size: 13px;">¡Completa misiones y rutas para ganar puntos!</div>
+                <div style="color: #7a9190; font-size: 13px;">Completa misiones y rutas para ganar puntos.</div>
             </div>
         @endforelse
     </div>

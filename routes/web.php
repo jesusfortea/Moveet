@@ -96,6 +96,7 @@ Route::middleware(['auth', 'not_blocked'])->group(function () {
     Route::get('/usuario/referidos', [UserController::class, 'referidos'])->name('usuario.referidos');
     Route::post('/usuario/racha/congelador/comprar', [UserController::class, 'buyStreakFreeze'])->name('usuario.streak.freeze.buy');
     Route::get('/usuario/historial-puntos', [HistorialPuntosController::class, 'userIndex'])->name('usuario.historial_puntos');
+    Route::get('/usuario/historial-puntos/descargar', [HistorialPuntosController::class, 'userDownload'])->name('usuario.historial_puntos.descargar');
     Route::get('/usuario/notificaciones', [NotificationController::class, 'index'])->name('usuario.notificaciones');
     Route::post('/usuario/notificaciones/marcar-todas', [NotificationController::class, 'markAllAsRead'])->name('usuario.notificaciones.read_all');
     Route::post('/usuario/notificaciones/{notification}/leer', [NotificationController::class, 'markAsRead'])->name('usuario.notificaciones.read_one');

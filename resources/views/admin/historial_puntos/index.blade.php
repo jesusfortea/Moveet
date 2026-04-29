@@ -15,7 +15,6 @@
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 28px;">
         <div style="background: white; border: 1px solid #d8e3e0; border-radius: 12px; padding: 18px;">
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
-                <span style="font-size: 20px;">🟢</span>
                 <div style="font-size: 11px; color: #516260; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;">Puntos Ganados</div>
             </div>
             <div style="font-size: 26px; font-weight: 900; color: #2e7d32;">{{ number_format($estadisticas['total_ganados']) }}</div>
@@ -24,7 +23,6 @@
 
         <div style="background: white; border: 1px solid #d8e3e0; border-radius: 12px; padding: 18px;">
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
-                <span style="font-size: 20px;">🔴</span>
                 <div style="font-size: 11px; color: #516260; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;">Puntos Gastados</div>
             </div>
             <div style="font-size: 26px; font-weight: 900; color: #c62828;">{{ number_format($estadisticas['total_gastados']) }}</div>
@@ -33,7 +31,6 @@
 
         <div style="background: white; border: 1px solid #d8e3e0; border-radius: 12px; padding: 18px;">
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
-                <span style="font-size: 20px;">🎁</span>
                 <div style="font-size: 11px; color: #516260; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;">Recompensas Otorgadas</div>
             </div>
             <div style="font-size: 26px; font-weight: 900; color: #e65100;">{{ number_format($estadisticas['total_recompensas']) }}</div>
@@ -44,12 +41,12 @@
     {{-- ── Top 5 Ganadores ── --}}
     @if($estadisticas['top_ganadores']->isNotEmpty())
     <div style="background: white; border: 1px solid #d8e3e0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-        <h3 style="margin: 0 0 16px; color: #1E2A28; font-size: 15px; font-weight: 800;">🏆 Top 5 Usuarios por Puntos Ganados</h3>
+        <h3 style="margin: 0 0 16px; color: #1E2A28; font-size: 15px; font-weight: 800;">Top 5 Usuarios por Puntos Ganados</h3>
         <div style="display: grid; gap: 8px;">
             @foreach($estadisticas['top_ganadores'] as $i => $record)
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: {{ $loop->first ? '#fff4db' : '#f7f9f8' }}; border-radius: 8px; border: 1px solid {{ $loop->first ? '#f59e0b' : '#e8eceb' }};">
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 18px; width: 28px; text-align: center;">{{ $loop->first ? '🥇' : ($loop->index === 1 ? '🥈' : ($loop->index === 2 ? '🥉' : '🏅')) }}</span>
+                    <span style="font-size: 12px; width: 28px; text-align: center; font-weight: 800;">#{{ $loop->iteration }}</span>
                     <div>
                         <div style="font-weight: 700; color: #1E2A28;">{{ $record->usuario->name ?? '—' }}</div>
                         <a href="{{ route('admin.historial_puntos', ['user_id' => $record->user_id]) }}" style="font-size: 11px; color: #8FA8A6; text-decoration: none;">Ver historial →</a>
@@ -64,7 +61,7 @@
 
     {{-- ── Filtros ── --}}
     <form method="GET" style="background: white; border: 1px solid #d8e3e0; border-radius: 12px; padding: 18px; margin-bottom: 24px;">
-        <div style="font-size: 13px; font-weight: 800; color: #1E2A28; margin-bottom: 12px;">🔍 Filtros</div>
+        <div style="font-size: 13px; font-weight: 800; color: #1E2A28; margin-bottom: 12px;">Filtros</div>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
             <div>
                 <label style="display: block; font-size: 11px; font-weight: 700; margin-bottom: 6px; color: #516260; text-transform: uppercase;">Usuario</label>
@@ -82,13 +79,13 @@
                     @foreach($tipos as $t)
                         @php
                             $tipoLabel = match($t) {
-                                'earned' => '🟢 Ganados (actividad)',
-                                'spent' => '🔴 Gastados (tienda)',
-                                'reward' => '🎁 Recompensa (bonus creator)',
-                                'mission' => '✅ Misión completada',
-                                'store' => '🛒 Compra tienda',
-                                'referral' => '👥 Referido',
-                                'admin_adjustment' => '🔧 Ajuste admin',
+                                'earned' => 'Ganados (actividad)',
+                                'spent' => 'Gastados (tienda)',
+                                'reward' => 'Recompensa (bonus creator)',
+                                'mission' => 'Mision completada',
+                                'store' => 'Compra tienda',
+                                'referral' => 'Referido',
+                                'admin_adjustment' => 'Ajuste admin',
                                 default => ucfirst(str_replace('_', ' ', $t))
                             };
                         @endphp
@@ -134,8 +131,14 @@
                         @php
                             $isSpent = in_array($registro->tipo, ['spent', 'store']) || (int) $registro->cantidad < 0;
                             $isSuspect = str_contains($registro->motivo ?? '', '🚨');
+                            $isStoreEarned = $registro->tipo === 'earned'
+                                && ($registro->motivo && (
+                                    str_starts_with($registro->motivo, 'Compra PayPal de pack de puntos:')
+                                    || str_starts_with($registro->motivo, 'Compra de pack de puntos:')
+                                ));
+                            $displayTipo = $isStoreEarned ? 'store' : $registro->tipo;
 
-                            $tipoBadgeColor = match($registro->tipo) {
+                            $tipoBadgeColor = match($displayTipo) {
                                 'earned' => '#dcfce7:#166534',
                                 'mission' => '#d1fae5:#065f46',
                                 'reward' => '#fef3c7:#92400e',
@@ -146,14 +149,14 @@
                             };
                             [$bg, $fg] = explode(':', $tipoBadgeColor);
 
-                            $tipoLabel = match($registro->tipo) {
-                                'earned' => '🟢 Actividad',
-                                'mission' => '✅ Misión',
-                                'reward' => '🎁 Bonus',
-                                'referral' => '👥 Referido',
-                                'spent' => '🔴 Gasto',
-                                'store' => '🛒 Tienda',
-                                'admin_adjustment' => '🔧 Admin',
+                            $tipoLabel = match($displayTipo) {
+                                'earned' => 'Actividad',
+                                'mission' => 'Mision',
+                                'reward' => 'Bonus',
+                                'referral' => 'Referido',
+                                'spent' => 'Gasto',
+                                'store' => 'Tienda',
+                                'admin_adjustment' => 'Admin',
                                 default => ucfirst(str_replace('_', ' ', $registro->tipo)),
                             };
                         @endphp
@@ -182,7 +185,7 @@
                             <td style="padding: 12px 14px; font-size: 12px; color: #7a9190;">
                                 @if($registro->velocidad_maxima)
                                     <span style="background: {{ $registro->velocidad_maxima > 50 ? '#fee2e2' : '#f0f2f1' }}; color: {{ $registro->velocidad_maxima > 50 ? '#c62828' : '#516260' }}; padding: 2px 6px; border-radius: 4px; font-weight: 700;">
-                                        {{ round($registro->velocidad_maxima, 1) }} km/h {{ $registro->velocidad_maxima > 50 ? '⚠️' : '' }}
+                                        {{ round($registro->velocidad_maxima, 1) }} km/h
                                     </span>
                                 @else
                                     <span style="color: #c9d4d2;">—</span>
@@ -196,7 +199,6 @@
                     @empty
                         <tr>
                             <td colspan="6" style="padding: 40px; text-align: center; color: #7a9190;">
-                                <div style="font-size: 32px; margin-bottom: 8px;">📊</div>
                                 No hay registros con los filtros seleccionados.
                             </td>
                         </tr>
