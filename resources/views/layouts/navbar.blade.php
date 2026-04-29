@@ -6,7 +6,9 @@
     <div class="h-full px-3 md:px-5 flex items-center justify-between gap-4">
 
         <div class="hidden md:flex items-center gap-3 min-w-0 w-[36%]">
-            <img class="h-[12vh] max-h-[86px] min-h-16 w-auto" src="{{ asset('img/LogoUsarDiaDia.png') }}" alt="Logo Moveet">
+            <a href="{{ route('landing') }}">
+                <img class="h-[12vh] max-h-[86px] min-h-16 w-auto" src="{{ asset('img/LogoUsarDiaDia.png') }}" alt="Logo Moveet">
+            </a>
 
             <div class="flex items-center gap-3 min-w-0">
                 <a href="{{ $navUser ? route('usuario.index') : route('login') }}" class="bg-white border border-gray-200 rounded-full w-16 h-16 min-w-16 min-h-16 overflow-hidden flex items-center justify-center">

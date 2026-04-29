@@ -1,9 +1,9 @@
 <nav class="landing-nav fixed top-0 w-full z-50 py-4 bg-white border-b border-moveet-border">
     <div class="max-w-7xl mx-auto px-6 lg:px-8 flex justify-between items-center">
-        <div class="flex items-center gap-3">
+        <a href="{{ route('landing') }}" class="flex items-center gap-3">
             <img src="{{ asset('img/LogoUsarDiaDia.png') }}" class="h-10" alt="Moveet">
             <span class="text-2xl font-black text-moveet-text">Moveet</span>
-        </div>
+        </a>
         
         <div class="hidden md:flex items-center gap-8">
             <a href="{{ route('landing') }}#como-funciona" class="nav-link">Cómo funciona</a>
@@ -25,7 +25,7 @@
 <!-- Mobile Menu -->
 <div id="mobile-menu" class="fixed inset-0 bg-white z-[60] hidden flex-col p-8">
     <div class="flex justify-between items-center mb-10">
-        <span class="text-2xl font-black">Moveet</span>
+        <a href="{{ route('landing') }}" class="text-2xl font-black">Moveet</a>
         <button id="close-menu" class="text-3xl"><i class="fas fa-times"></i></button>
     </div>
     <div class="flex flex-col gap-6">
