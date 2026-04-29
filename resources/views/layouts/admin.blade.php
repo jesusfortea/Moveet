@@ -393,7 +393,7 @@
             ['label' => 'Usuarios', 'route' => 'admin.usuarios', 'keywords' => 'clientes cuentas personas'],
             ['label' => 'Misiones', 'route' => 'admin.misiones', 'keywords' => 'retos tareas'],
             ['label' => 'Eventos', 'route' => 'admin.eventos', 'keywords' => 'actividades calendario'],
-            ['label' => 'Reseñas de usuarios', 'route' => 'admin.preguntas', 'keywords' => 'preguntas faq opiniones comentarios valoraciones resenas reseñas'],
+            ['label' => 'Reseñas de usuarios', 'route' => 'admin.preguntas', 'keywords' => 'preguntas faq opiniones comentarios valoraciones reseñas'],
             ['label' => 'Pase de paseo', 'route' => 'admin.pase_paseo', 'keywords' => 'pases paseo'],
             ['label' => 'Lugares', 'route' => 'admin.lugares', 'keywords' => 'sitios ubicaciones'],
             ['label' => 'Recompensas', 'route' => 'admin.recompensas', 'keywords' => 'premios regalos'],

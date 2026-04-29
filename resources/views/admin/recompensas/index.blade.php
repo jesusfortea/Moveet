@@ -30,7 +30,7 @@
                     <thead>
                         <tr style="background: #8FA8A6; color: white;">
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">Nombre</th>
-                            <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">DescripciÃ³n</th>
+                            <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">Descripción</th>
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">Tipo</th>
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: center; font-weight: 600;">Premium</th>
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: center; font-weight: 600;">Visible tienda</th>
@@ -46,7 +46,7 @@
                                 <td data-label="Tipo" style="border: 1px solid #ddd; padding: 12px; text-transform: capitalize;">{{ str_replace('_', ' ', $recompensa->tipo) }}</td>
                                 <td data-label="Premium" style="border: 1px solid #ddd; padding: 12px; text-align: center;">
                                     @if($recompensa->premium)
-                                        <span style="background: #ffc107; color: #000; padding: 4px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">SÃ</span>
+                                        <span style="background: #ffc107; color: #000; padding: 4px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">Sí</span>
                                     @else
                                         <span style="background: #e0e0e0; color: #666; padding: 4px 8px; border-radius: 3px; font-size: 11px;">NO</span>
                                     @endif

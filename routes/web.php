@@ -28,9 +28,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return auth()->check()
-        ? redirect()->route('home')
-        : view('landing');
+    if (auth()->check()) {
+        return auth()->user()->is_admin 
+            ? redirect()->route('admin.dashboard')
+            : redirect()->route('home');
+    }
+    return view('landing');
 })->name('landing');
 
 Route::middleware('guest')->group(function () {
@@ -62,14 +65,14 @@ Route::middleware(['auth', 'not_blocked'])->group(function () {
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-Route::get('/atencion-al-usuario', [AtencionUsuarioController::class, 'create'])->name('atencion.create');
+Route::get('/atencion-al-usuario', [AtencionUsuarioController::class, 'create'])->middleware('user_only')->name('atencion.create');
 Route::post('/atencion-al-usuario', [AtencionUsuarioController::class, 'store'])->name('atencion.store');
 
 Route::get('/preguntas', [PreguntaController::class, 'index'])->name('preguntas.index');
-Route::get('/preguntas/crear', [PreguntaController::class, 'create'])->middleware('auth')->name('preguntas.create');
+Route::get('/preguntas/crear', [PreguntaController::class, 'create'])->middleware(['auth', 'user_only'])->name('preguntas.create');
 Route::get('/preguntas/{pregunta}', [PreguntaController::class, 'show'])->name('preguntas.show');
 
-Route::middleware(['auth', 'not_blocked'])->group(function () {
+Route::middleware(['auth', 'not_blocked', 'user_only'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::post('/misiones/{mision}/completar', [HomeController::class, 'completarMision']);
     Route::post('/misiones/renovar-gratis', [HomeController::class, 'renovarMisionesGratis'])->name('misiones.renovar_gratis');
@@ -146,6 +149,10 @@ Route::middleware(['auth', 'not_blocked'])->group(function () {
     Route::post('/suscripcion/tarjeta', [SuscripcionController::class, 'storeCard'])->name('suscripcion.tarjeta.store');
     Route::post('/suscripcion/comprar', [SuscripcionController::class, 'subscribe'])->name('suscripcion.comprar');
 
+});
+
+// Rutas compartidas (Usuario/Admin) para Preguntas
+Route::middleware(['auth', 'not_blocked'])->group(function () {
     Route::post('/preguntas', [PreguntaController::class, 'store'])->name('preguntas.store');
     Route::get('/preguntas/{pregunta}/editar', [PreguntaController::class, 'edit'])->name('preguntas.edit');
     Route::put('/preguntas/{pregunta}', [PreguntaController::class, 'update'])->name('preguntas.update');
@@ -209,6 +216,7 @@ Route::middleware(['auth', 'not_blocked', 'admin'])->prefix('admin')->group(func
     Route::delete('/lugares/{lugar}', [AdminLugarController::class, 'confirmarEliminar'])->name('admin.lugares.confirmar-eliminar');
 
     Route::get('/preguntas', [PreguntaController::class, 'adminPanel'])->name('admin.preguntas');
+    Route::get('/preguntas/{pregunta}', [PreguntaController::class, 'show'])->name('admin.preguntas.show');
     Route::get('/historial-puntos', [HistorialPuntosController::class, 'adminIndex'])->name('admin.historial_puntos');
     Route::get('/reportes', [ReporteController::class, 'adminIndex'])->name('admin.reportes.index');
     Route::patch('/reportes/{reporte}', [ReporteController::class, 'adminResolve'])->name('admin.reportes.resolve');

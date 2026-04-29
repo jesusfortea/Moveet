@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Resenas de usuarios - Admin')
+@section('title', 'Reseñas de usuarios - Admin')
 
 @push('styles')
 <style>
@@ -192,7 +192,7 @@
 <div style="padding: 0;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
         <div>
-            <h1 style="font-size: 2rem; font-weight: bold; margin: 0; color: #1E2A28;">RESENAS DE USUARIOS</h1>
+            <h1 style="font-size: 2rem; font-weight: bold; margin: 0; color: #1E2A28;">RESEÑAS DE USUARIOS</h1>
             <p style="margin: 8px 0 0; color: #516260; font-size: 14px;">Revisa, publica y modera las opiniones enviadas por los usuarios.</p>
         </div>
     </div>
@@ -238,11 +238,11 @@
                         </div>
 
                         <div class="reviews-admin-actions">
-                            <a href="{{ route('preguntas.show', $pregunta) }}" class="reviews-admin-link">
+                            <a href="{{ route('admin.preguntas.show', $pregunta) }}" class="reviews-admin-link">
                                 <i class="fas fa-eye"></i>
                                 Revisar
                             </a>
-                            <form action="{{ route('preguntas.destroy', $pregunta) }}" method="POST" onsubmit="return confirm('Estas seguro de que deseas eliminar esta resena?');">
+                            <form action="{{ route('preguntas.destroy', $pregunta) }}" method="POST" onsubmit="return confirm('Estas seguro de que deseas eliminar esta reseña?');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="reviews-admin-delete">
@@ -265,7 +265,7 @@
                 <div style="font-size: 42px; margin-bottom: 10px; color: #8FA8A6;">
                     <i class="fas fa-check-circle"></i>
                 </div>
-                <p style="margin: 0; font-size: 16px; font-weight: 700; color: #1E2A28;">No hay resenas pendientes.</p>
+                <p style="margin: 0; font-size: 16px; font-weight: 700; color: #1E2A28;">No hay reseñas pendientes.</p>
                 <p style="margin: 8px 0 0;">Todo esta al dia.</p>
             </div>
         @endif
@@ -290,7 +290,7 @@
                             </span>
                         </div>
 
-                        <div style="margin-bottom: 10px; font-size: 12px; font-weight: 700; color: #516260;">Resena</div>
+                        <div style="margin-bottom: 10px; font-size: 12px; font-weight: 700; color: #516260;">Reseña</div>
                         <div class="reviews-admin-copy">
                             {{ Str::limit($pregunta->contenido, 200) }}
                         </div>
@@ -307,11 +307,11 @@
                         @endif
 
                         <div class="reviews-admin-actions">
-                            <a href="{{ route('preguntas.show', $pregunta) }}" class="reviews-admin-link">
+                            <a href="{{ route('admin.preguntas.show', $pregunta) }}" class="reviews-admin-link">
                                 <i class="fas fa-eye"></i>
                                 Ver detalle
                             </a>
-                            <form action="{{ route('preguntas.destroy', $pregunta) }}" method="POST" onsubmit="return confirm('Estas seguro de que deseas eliminar esta resena?');">
+                            <form action="{{ route('preguntas.destroy', $pregunta) }}" method="POST" onsubmit="return confirm('Estas seguro de que deseas eliminar esta reseña?');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="reviews-admin-delete">
@@ -334,7 +334,7 @@
                 <div style="font-size: 42px; margin-bottom: 10px; color: #b6c5c2;">
                     <i class="fas fa-inbox"></i>
                 </div>
-                <p style="margin: 0; font-size: 16px; font-weight: 700; color: #1E2A28;">No hay resenas publicadas todavia.</p>
+                <p style="margin: 0; font-size: 16px; font-weight: 700; color: #1E2A28;">No hay reseñas publicadas todavia.</p>
             </div>
         @endif
     </div>

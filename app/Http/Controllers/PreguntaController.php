@@ -59,8 +59,10 @@ class PreguntaController extends Controller
 
     public function show(Pregunta $pregunta): View
     {
+        $isAdminView = request()->routeIs('admin.*');
         return view('preguntas.show', [
             'pregunta' => $pregunta,
+            'isAdminView' => $isAdminView,
         ]);
     }
 
