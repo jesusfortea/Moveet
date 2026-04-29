@@ -153,6 +153,10 @@
         <div class="login-link">
             ¿Ya tienes cuenta? <a href="{{ route('login') }}">Inicia sesión aquí</a>
         </div>
+
+        <div class="login-link">
+            <a href="{{ route('landing') }}">Volver al inicio</a>
+        </div>
     </div>
     <script src="{{ asset('js/register.js') }}"></script>
 </body>

@@ -70,6 +70,10 @@
         <div class="register-link">
             ¿No tienes cuenta? <a href="{{ route('register') }}">Regístrate aquí</a>
         </div>
+
+        <div class="register-link">
+            <a href="{{ route('landing') }}">Volver al inicio</a>
+        </div>
     </div>
     <script src="{{ asset('js/login.js') }}"></script>
 </body>
