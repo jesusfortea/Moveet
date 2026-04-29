@@ -25,12 +25,12 @@
         @if($recompensas->isEmpty())
             <p style="text-align: center; color: #999; padding: 40px;">No hay recompensas registradas.</p>
         @else
-            <div style="overflow-x: auto;">
+            <div class="admin-responsive-table" style="overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse;">
                     <thead>
                         <tr style="background: #8FA8A6; color: white;">
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">Nombre</th>
-                            <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">Descripción</th>
+                            <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">DescripciÃ³n</th>
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">Tipo</th>
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: center; font-weight: 600;">Premium</th>
                             <th style="border: 1px solid #ddd; padding: 12px; text-align: center; font-weight: 600;">Visible tienda</th>
@@ -41,25 +41,25 @@
                     <tbody>
                         @foreach($recompensas as $recompensa)
                             <tr style="border-bottom: 1px solid #ddd;">
-                                <td style="border: 1px solid #ddd; padding: 12px;">{{ $recompensa->nombre }}</td>
-                                <td style="border: 1px solid #ddd; padding: 12px;">{{ Str::limit($recompensa->descripcion, 40, '...') }}</td>
-                                <td style="border: 1px solid #ddd; padding: 12px; text-transform: capitalize;">{{ str_replace('_', ' ', $recompensa->tipo) }}</td>
-                                <td style="border: 1px solid #ddd; padding: 12px; text-align: center;">
+                                <td data-label="Nombre" style="border: 1px solid #ddd; padding: 12px;">{{ $recompensa->nombre }}</td>
+                                <td data-label="Descripcion" style="border: 1px solid #ddd; padding: 12px;">{{ Str::limit($recompensa->descripcion, 40, '...') }}</td>
+                                <td data-label="Tipo" style="border: 1px solid #ddd; padding: 12px; text-transform: capitalize;">{{ str_replace('_', ' ', $recompensa->tipo) }}</td>
+                                <td data-label="Premium" style="border: 1px solid #ddd; padding: 12px; text-align: center;">
                                     @if($recompensa->premium)
-                                        <span style="background: #ffc107; color: #000; padding: 4px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">SÍ</span>
+                                        <span style="background: #ffc107; color: #000; padding: 4px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">SÃ</span>
                                     @else
                                         <span style="background: #e0e0e0; color: #666; padding: 4px 8px; border-radius: 3px; font-size: 11px;">NO</span>
                                     @endif
                                 </td>
-                                <td style="border: 1px solid #ddd; padding: 12px; text-align: center;">
+                                <td data-label="Visible tienda" style="border: 1px solid #ddd; padding: 12px; text-align: center;">
                                     @if($recompensa->visible_en_tienda)
                                         <span style="background: #d4edda; color: #155724; padding: 4px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;">VISIBLE</span>
                                     @else
                                         <span style="background: #f3f3f3; color: #666; padding: 4px 8px; border-radius: 3px; font-size: 11px;">OCULTA</span>
                                     @endif
                                 </td>
-                                <td style="border: 1px solid #ddd; padding: 12px; text-align: center;">{{ $recompensa->puntos_necesarios }}</td>
-                                <td style="border: 1px solid #ddd; padding: 12px; text-align: center; white-space: nowrap;">
+                                <td data-label="Puntos" style="border: 1px solid #ddd; padding: 12px; text-align: center;">{{ $recompensa->puntos_necesarios }}</td>
+                                <td data-label="Acciones" style="border: 1px solid #ddd; padding: 12px; text-align: center; white-space: nowrap;">
                                     <a href="{{ route('admin.recompensas.editar', $recompensa) }}" style="color: #0066cc; text-decoration: none; margin-right: 12px;">
                                         <i class="fas fa-edit"></i>
                                     </a>

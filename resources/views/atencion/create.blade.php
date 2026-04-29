@@ -1,38 +1,44 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atenci&oacute;n al usuario - Moveet</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="min-h-screen bg-[#eef4f3] text-[#1E2A28]">
-    <div class="mx-auto flex min-h-screen max-w-6xl items-center px-4 py-10 md:px-6">
-        <div class="grid w-full gap-6 lg:grid-cols-[1fr_minmax(0,1.2fr)]">
-            <section class="rounded-3xl bg-[#8FA8A6] px-7 py-8 text-white shadow-lg md:px-10 md:py-12">
-                <a href="{{ url('/') }}" class="inline-flex items-center text-sm font-semibold text-white/90 hover:text-white">
-                    &larr; Volver a Moveet
-                </a>
+@extends('layouts.plantillaHome')
 
-                <p class="mt-8 text-sm font-semibold uppercase tracking-[0.2em] text-white/80">Atenci&oacute;n al usuario</p>
-                <h1 class="mt-3 text-4xl font-black leading-tight">Cu&eacute;ntanos tu duda y te respondemos por correo.</h1>
-                <p class="mt-5 max-w-xl text-base leading-7 text-white/90">
+@section('title', 'Atenci&oacute;n al usuario · Moveet')
+
+@section('content')
+<div class="w-full px-4 py-8 md:px-6 md:py-10">
+    <div class="mx-auto max-w-6xl">
+        <div class="mb-6">
+            <a href="{{ auth()->check() ? route('home') : url('/') }}" class="inline-flex items-center text-sm font-semibold text-[#6B8F8D] transition hover:text-[#1E2A28]">
+                &larr; Volver a Moveet
+            </a>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-[1.05fr_minmax(0,1.35fr)] lg:items-start">
+            <section class="rounded-2xl border border-[#d5e0df] bg-gradient-to-br from-[#8FA8A6] via-[#7f9d9a] to-[#6d8b88] p-6 text-white shadow-lg md:p-8">
+                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-white/80">Atenci&oacute;n al usuario</p>
+                <h1 class="mt-3 text-3xl font-bold leading-tight md:text-4xl">Cu&eacute;ntanos tu duda y te respondemos por correo.</h1>
+                <p class="mt-4 max-w-xl text-base leading-7 text-white/90">
                     Si tienes una pregunta, un problema o necesitas ayuda con tu cuenta, escr&iacute;benos aqu&iacute;.
                     El mensaje llegar&aacute; a <strong>moveetrun@gmail.com</strong> y podremos responderte directamente.
                 </p>
 
-                <div class="mt-8 space-y-3 text-sm text-white/90">
-                    <div class="rounded-2xl bg-white/10 px-4 py-3">Explica el problema con el mayor detalle posible.</div>
-                    @if ($isAuthenticated)
-                        <div class="rounded-2xl bg-white/10 px-4 py-3">Usaremos el correo de tu cuenta para responderte directamente.</div>
-                    @else
-                        <div class="rounded-2xl bg-white/10 px-4 py-3">Aseg&uacute;rate de poner bien tu correo para que podamos contestarte.</div>
-                    @endif
-                    <div class="rounded-2xl bg-white/10 px-4 py-3">Te responderemos desde el equipo de Moveet lo antes posible.</div>
+                <div class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                    <div class="rounded-2xl bg-white/10 p-4 shadow-sm ring-1 ring-white/15">
+                        <p class="text-sm font-semibold">Explica el problema con detalle</p>
+                        <p class="mt-1 text-sm text-white/80">Cuanto m&aacute;s contexto nos des, m&aacute;s r&aacute;pido podremos ayudarte.</p>
+                    </div>
+                    <div class="rounded-2xl bg-white/10 p-4 shadow-sm ring-1 ring-white/15">
+                        <p class="text-sm font-semibold">{{ $isAuthenticated ? 'Usaremos tu correo de cuenta' : 'Revisa bien tu correo' }}</p>
+                        <p class="mt-1 text-sm text-white/80">
+                            {{ $isAuthenticated ? 'Te responderemos directamente al email vinculado a tu perfil.' : 'As&iacute; podremos contestarte sin perder el hilo de la consulta.' }}
+                        </p>
+                    </div>
+                    <div class="rounded-2xl bg-white/10 p-4 shadow-sm ring-1 ring-white/15 sm:col-span-2 lg:col-span-1">
+                        <p class="text-sm font-semibold">Respuesta del equipo Moveet</p>
+                        <p class="mt-1 text-sm text-white/80">Revisaremos tu mensaje lo antes posible.</p>
+                    </div>
                 </div>
             </section>
 
-            <section class="rounded-3xl bg-white px-6 py-7 shadow-lg ring-1 ring-[#d5e0df] md:px-8 md:py-8">
+            <section class="rounded-2xl bg-white p-6 shadow-lg ring-1 ring-[#d5e0df] md:p-8">
                 @if (session('success'))
                     <div class="mb-6 rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
                         {{ session('success') }}
@@ -113,15 +119,23 @@
                         >{{ old('mensaje') }}</textarea>
                     </div>
 
-                    <button
-                        type="submit"
-                        class="inline-flex items-center justify-center rounded-xl bg-[#8FA8A6] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#7a9a98]"
-                    >
-                        Enviar consulta
-                    </button>
+                    <div class="flex flex-col gap-3 sm:flex-row">
+                        <button
+                            type="submit"
+                            class="inline-flex items-center justify-center rounded-xl bg-[#8FA8A6] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#7a9a98]"
+                        >
+                            Enviar consulta
+                        </button>
+                        <a
+                            href="{{ auth()->check() ? route('home') : url('/') }}"
+                            class="inline-flex items-center justify-center rounded-xl bg-gray-200 px-6 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-300"
+                        >
+                            Cancelar
+                        </a>
+                    </div>
                 </form>
             </section>
         </div>
     </div>
-</body>
-</html>
+</div>
+@endsection

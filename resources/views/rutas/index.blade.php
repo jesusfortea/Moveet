@@ -1,6 +1,6 @@
 @extends('layouts.plantillaHome')
 
-@section('title', 'Rutas de la comunidad · Moveet')
+@section('title', 'Rutas de la comunidad &middot; Moveet')
 
 @push('styles')
 <style>
@@ -267,7 +267,7 @@
                     <div style="background: white; border: 1px solid #dbe4e2; border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
                         <div>
                             <strong>{{ $ruta->titulo }}</strong>
-                            <div style="font-size: 12px; color: #5d6f6d; margin-top: 4px;">Completadas: {{ $ruta->completadas_count }} · Rating: {{ number_format($ruta->rating_promedio, 2) }} ({{ $ruta->rating_count }}) · Puntos pasivos: {{ $ruta->puntos_generados }}</div>
+                            <div style="font-size: 12px; color: #5d6f6d; margin-top: 4px;">Completadas: {{ $ruta->completadas_count }} &middot; Rating: {{ number_format($ruta->rating_promedio, 2) }} ({{ $ruta->rating_count }}) &middot; Puntos pasivos: {{ $ruta->puntos_generados }}</div>
                         </div>
                         <a href="{{ route('rutas.editar', $ruta) }}" style="background: white; border: 1px solid #8FA8A6; color: #8FA8A6; padding: 8px 10px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: 800; align-self: center;">Editar</a>
                     </div>
@@ -282,7 +282,7 @@
                 <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
                     <div>
                         <h3 style="margin: 0; font-size: 1.1rem; color: #1E2A28;">{{ $ruta->titulo }}</h3>
-                        <p style="margin: 6px 0 0 0; color: #5d6f6d; font-size: 13px;">Creada por {{ $ruta->creador->name ?? 'Usuario' }} · {{ ucfirst($ruta->dificultad) }} · {{ number_format($ruta->distancia_metros) }} m</p>
+                        <p style="margin: 6px 0 0 0; color: #5d6f6d; font-size: 13px;">Creada por {{ $ruta->creador->name ?? 'Usuario' }} &middot; {{ ucfirst($ruta->dificultad) }} &middot; {{ number_format($ruta->distancia_metros) }} m</p>
                     </div>
                     <div style="font-weight: 700; color: #1E2A28;">+{{ $ruta->puntos_recompensa }} ptos</div>
                 </div>
@@ -292,7 +292,7 @@
                 @endif
 
                 <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 8px;">
-                    <div style="font-size: 13px; color: #5d6f6d;">Rating {{ number_format($ruta->rating_promedio, 2) }} ({{ $ruta->rating_count }}) · Completadas {{ $ruta->completadas_count }}</div>
+                    <div style="font-size: 13px; color: #5d6f6d;">Rating {{ number_format($ruta->rating_promedio, 2) }} ({{ $ruta->rating_count }}) &middot; Completadas {{ $ruta->completadas_count }}</div>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                         @if(in_array($ruta->id, $misCompletadas))
                             <span style="background: #e9f6ee; border: 1px solid #b6ddc3; color: #1e613b; padding: 8px 10px; border-radius: 8px; font-size: 12px; font-weight: 700;">Completada</span>

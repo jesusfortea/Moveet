@@ -21,12 +21,12 @@
                 @csrf
                 @method('PATCH')
 
-                <div style="overflow-x: auto;">
+                <div class="admin-responsive-table" style="overflow-x: auto;">
                     <table style="width: 100%; border-collapse: collapse;">
                         <thead>
                             <tr style="background: #8FA8A6; color: white;">
                                 <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">Producto</th>
-                                <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">Descripción</th>
+                                <th style="border: 1px solid #ddd; padding: 12px; text-align: left; font-weight: 600;">DescripciÃ³n</th>
                                 <th style="border: 1px solid #ddd; padding: 12px; text-align: center; font-weight: 600;">Puntos</th>
                                 <th style="border: 1px solid #ddd; padding: 12px; text-align: center; font-weight: 600;">Nivel</th>
                                 <th style="border: 1px solid #ddd; padding: 12px; text-align: center; font-weight: 600;">Visible</th>
@@ -35,12 +35,12 @@
                         <tbody>
                             @foreach($productos as $producto)
                                 <tr style="border-bottom: 1px solid #ddd;">
-                                    <td style="border: 1px solid #ddd; padding: 12px;">{{ $producto->nombre }}</td>
-                                    <td style="border: 1px solid #ddd; padding: 12px;">{{ Str::limit($producto->descripcion, 50, '...') }}</td>
-                                    <td style="border: 1px solid #ddd; padding: 12px; text-align: center;">{{ $producto->puntos_necesarios }}</td>
-                                    <td style="border: 1px solid #ddd; padding: 12px; text-align: center;">{{ $producto->nivel_necesario }}</td>
-                                    <td style="border: 1px solid #ddd; padding: 12px; text-align: center;">
-                                        <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600;">
+                                    <td data-label="Producto" style="border: 1px solid #ddd; padding: 12px;">{{ $producto->nombre }}</td>
+                                    <td data-label="Descripcion" style="border: 1px solid #ddd; padding: 12px;">{{ Str::limit($producto->descripcion, 50, '...') }}</td>
+                                    <td data-label="Puntos" style="border: 1px solid #ddd; padding: 12px; text-align: center;">{{ $producto->puntos_necesarios }}</td>
+                                    <td data-label="Nivel" style="border: 1px solid #ddd; padding: 12px; text-align: center;">{{ $producto->nivel_necesario }}</td>
+                                    <td data-label="Visible" style="border: 1px solid #ddd; padding: 12px; text-align: center;">
+                                        <label style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; flex-wrap: wrap; justify-content: center;">
                                             <input type="checkbox" name="visible_en_tienda[]" value="{{ $producto->id }}" {{ $producto->visible_en_tienda ? 'checked' : '' }}>
                                             <span>{{ $producto->visible_en_tienda ? 'Visible' : 'Oculto' }}</span>
                                         </label>

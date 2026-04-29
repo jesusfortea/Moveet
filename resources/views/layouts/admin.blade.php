@@ -37,6 +37,21 @@
             min-height: 78px;
         }
 
+        .admin-navbar-menu-toggle {
+            display: none;
+            width: 42px;
+            height: 42px;
+            border: 0;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.18);
+            color: white;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex: 0 0 auto;
+        }
+
         .admin-navbar-logo img {
             height: 54px;
             width: auto;
@@ -135,6 +150,14 @@
             overflow: hidden;
         }
 
+        .admin-sidebar.is-open {
+            display: block;
+        }
+
+        .admin-sidebar-backdrop {
+            display: none;
+        }
+
         .admin-sidebar-scroll {
             height: 100%;
             overflow-y: auto;
@@ -227,6 +250,139 @@
             justify-content: center;
         }
 
+        @media (max-width: 900px) {
+            body {
+                overflow: auto;
+            }
+
+            .admin-page {
+                grid-template-rows: auto 1fr auto;
+            }
+
+            .admin-navbar {
+                flex-wrap: wrap;
+                align-items: center;
+                padding: 12px 16px;
+            }
+
+            .admin-navbar-menu-toggle {
+                display: inline-flex;
+            }
+
+            .admin-navbar-logo {
+                order: 1;
+            }
+
+            .admin-navbar-user {
+                order: 2;
+                margin-left: auto;
+            }
+
+            .admin-navbar-search {
+                order: 3;
+                flex: 1 0 100%;
+                justify-content: stretch;
+            }
+
+            .admin-search-shell {
+                max-width: none;
+            }
+
+            .admin-navbar-info {
+                display: none;
+            }
+
+            .admin-main {
+                grid-template-columns: 1fr;
+                overflow: visible;
+            }
+
+            .admin-sidebar {
+                display: block;
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: min(280px, 84vw);
+                border: 0;
+                z-index: 70;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+                transform: translateX(-100%);
+                transition: transform 0.22s ease;
+            }
+
+            .admin-sidebar-scroll {
+                flex-direction: column;
+                flex-wrap: nowrap;
+                overflow-x: hidden;
+                overflow-y: auto;
+                padding: 92px 16px 20px;
+            }
+
+            .admin-sidebar-item {
+                flex: 0 0 auto;
+                min-width: 0;
+                text-align: left;
+                padding: 13px 14px;
+            }
+
+            .admin-sidebar.is-open {
+                transform: translateX(0);
+            }
+
+            .admin-sidebar-backdrop {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.28);
+                z-index: 60;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.2s ease;
+            }
+
+            .admin-sidebar-backdrop.is-visible {
+                display: block;
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            .admin-content {
+                overflow: visible;
+                padding: 16px;
+            }
+
+            body.admin-menu-open {
+                overflow: hidden;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .admin-navbar {
+                gap: 10px;
+            }
+
+            .admin-navbar-logo img {
+                height: 46px;
+            }
+
+            .admin-navbar-user {
+                gap: 8px;
+            }
+
+            .admin-navbar-avatar {
+                width: 36px;
+                height: 36px;
+            }
+
+            .admin-navbar-logout {
+                padding: 0;
+            }
+
+            .admin-content {
+                padding: 14px;
+            }
+        }
+
         @stack('page-styles')
     </style>
     @stack('styles')
@@ -252,6 +408,16 @@
 
     <div class="admin-page">
         <nav class="admin-navbar">
+            <button
+                type="button"
+                class="admin-navbar-menu-toggle"
+                id="admin-menu-toggle"
+                aria-expanded="false"
+                aria-controls="admin-sidebar"
+                aria-label="Mostrar menu del panel"
+            >
+                <i class="fas fa-bars"></i>
+            </button>
             <div class="admin-navbar-logo">
                 <a href="{{ route('admin.dashboard') }}">
                     <img src="{{ asset('img/LogoUsarDiaDia.png') }}" alt="Logo Moveet">
@@ -279,7 +445,8 @@
         </nav>
 
         <div class="admin-main">
-            <aside class="admin-sidebar">
+            <div class="admin-sidebar-backdrop" id="admin-sidebar-backdrop"></div>
+            <aside class="admin-sidebar" id="admin-sidebar">
                 <div class="admin-sidebar-scroll">
                     @foreach ($adminLinks as $link)
                         @php
@@ -366,9 +533,63 @@
                 const searchInput = document.getElementById('admin-menu-search');
                 const links = Array.from(document.querySelectorAll('.admin-menu-link'));
                 const emptyState = document.getElementById('admin-menu-empty');
+                const menuToggle = document.getElementById('admin-menu-toggle');
+                const sidebar = document.getElementById('admin-sidebar');
+                const sidebarBackdrop = document.getElementById('admin-sidebar-backdrop');
 
                 if (!searchInput || !links.length || !emptyState) {
                     return;
+                }
+
+                if (menuToggle && sidebar) {
+                    const closeSidebar = function () {
+                        sidebar.classList.remove('is-open');
+                        sidebarBackdrop && sidebarBackdrop.classList.remove('is-visible');
+                        document.body.classList.remove('admin-menu-open');
+                        menuToggle.setAttribute('aria-expanded', 'false');
+                    };
+
+                    const openSidebar = function () {
+                        sidebar.classList.add('is-open');
+                        sidebarBackdrop && sidebarBackdrop.classList.add('is-visible');
+                        document.body.classList.add('admin-menu-open');
+                        menuToggle.setAttribute('aria-expanded', 'true');
+                    };
+
+                    menuToggle.addEventListener('click', function () {
+                        if (sidebar.classList.contains('is-open')) {
+                            closeSidebar();
+                            return;
+                        }
+
+                        openSidebar();
+                    });
+
+                    if (sidebarBackdrop) {
+                        sidebarBackdrop.addEventListener('click', closeSidebar);
+                    }
+
+                    links.forEach(function (link) {
+                        link.addEventListener('click', function () {
+                            if (window.innerWidth <= 900) {
+                                closeSidebar();
+                            }
+                        });
+                    });
+
+                    const closeSidebarOnMobile = function () {
+                        if (window.innerWidth > 900) {
+                            closeSidebar();
+                        }
+                    };
+
+                    window.addEventListener('resize', closeSidebarOnMobile);
+
+                    window.addEventListener('keydown', function (event) {
+                        if (event.key === 'Escape' && sidebar.classList.contains('is-open')) {
+                            closeSidebar();
+                        }
+                    });
                 }
 
                 const normalize = (value) => value
