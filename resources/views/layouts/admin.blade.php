@@ -19,7 +19,6 @@
             padding: 0;
             background: #f5f5f5;
             font-family: 'Nunito', sans-serif;
-            overflow: hidden;
         }
 
         .admin-page {
@@ -126,13 +125,11 @@
             display: grid;
             grid-template-columns: 184px 1fr;
             min-height: 0;
-            overflow: hidden;
         }
 
         .admin-sidebar {
             background: #c5d8d6;
             min-height: 0;
-            overflow: hidden;
         }
 
         .admin-sidebar-scroll {

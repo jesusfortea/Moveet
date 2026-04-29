@@ -113,7 +113,7 @@
     </form>
 
     {{-- ── Tabla ── --}}
-    <div style="background: white; border: 1px solid #d8e3e0; border-radius: 12px; overflow: hidden;">
+    <div style="background: white; border: 1px solid #d8e3e0; border-radius: 12px;">
         <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse; min-width: 700px;">
                 <thead>

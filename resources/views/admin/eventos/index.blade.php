@@ -19,7 +19,7 @@
             @endif
 
             @if ($eventos->count() > 0)
-                <div style="background: white; border-radius: 6px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <div style="background: white; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                     <table style="width: 100%; border-collapse: collapse;">
                         <thead>
                             <tr style="background: #8FA8A6; color: white;">
