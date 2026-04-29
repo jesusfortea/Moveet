@@ -24,18 +24,21 @@ body {
     font-family: 'Nunito', sans-serif;
     background: var(--usr-bg);
     color: var(--usr-text);
+    overflow: auto;
 }
 
 .page-content {
     padding-top: 0;
-    min-height: 100vh;
-    overflow-y: auto;
+    height: auto;
+    min-height: calc(100vh - var(--nav-h));
+    overflow: auto;
 }
 
 .usuario-page {
     max-width: 1120px;
     margin: 0 auto;
     padding: 18px 18px 34px;
+    min-height: calc(100vh - var(--nav-h));
 }
 
 .usuario-page-title {

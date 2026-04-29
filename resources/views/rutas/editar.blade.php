@@ -1,6 +1,6 @@
 @extends('layouts.plantillaHome')
 
-@section('title', 'Editar ruta · Moveet')
+@section('title', 'Editar ruta &middot; Moveet')
 
 @section('content')
 <div style="max-width: 980px; margin: 0 auto; padding: 24px 18px;">

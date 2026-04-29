@@ -1,6 +1,6 @@
 @extends('layouts.plantillaHome')
 
-@section('title', 'Crear ruta · Moveet')
+@section('title', 'Crear ruta &middot; Moveet')
 
 @section('content')
 @php
@@ -76,10 +76,10 @@
                     <div style="display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
                         <div>
                             <h2 style="margin: 0; font-size: 1rem; color: #1E2A28;">Editor de ruta</h2>
-                            <p style="margin: 4px 0 0; color: #5e6f6d; font-size: 13px;">Haz clic para añadir puntos. Puedes moverlos arrastrando.</p>
+                            <p style="margin: 4px 0 0; color: #5e6f6d; font-size: 13px;">Haz clic para a&ntilde;adir puntos. Puedes moverlos arrastrando.</p>
                         </div>
                         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                            <button type="button" id="route-location-btn" style="background: white; color: #1E2A28; border: 1px solid #c8d4d1; border-radius: 10px; padding: 9px 12px; font-weight: 700; cursor: pointer;">Mi ubicación</button>
+                            <button type="button" id="route-location-btn" style="background: white; color: #1E2A28; border: 1px solid #c8d4d1; border-radius: 10px; padding: 9px 12px; font-weight: 700; cursor: pointer;">Mi ubicaci&oacute;n</button>
                             <button type="button" id="route-undo-btn" style="background: white; color: #1E2A28; border: 1px solid #c8d4d1; border-radius: 10px; padding: 9px 12px; font-weight: 700; cursor: pointer;">Deshacer</button>
                             <button type="button" id="route-clear-btn" style="background: white; color: #b00020; border: 1px solid #efc2c8; border-radius: 10px; padding: 9px 12px; font-weight: 700; cursor: pointer;">Limpiar</button>
                         </div>
@@ -87,7 +87,7 @@
 
                     <div id="route-map" style="height: 420px; border-radius: 14px; overflow: hidden; border: 1px solid #c8d4d1;"></div>
                     <div style="display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-top: 10px; font-size: 13px; color: #516260;">
-                        <span id="route-status">Añade al menos 2 puntos para generar la ruta.</span>
+                        <span id="route-status">A&ntilde;ade al menos 2 puntos para generar la ruta.</span>
                         <span id="route-distance">Distancia aproximada: 0 m</span>
                     </div>
 

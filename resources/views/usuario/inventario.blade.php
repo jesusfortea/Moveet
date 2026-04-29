@@ -1,6 +1,6 @@
 @extends('layouts.plantillaHome')
 
-@section('title', 'Inventario · Moveet')
+@section('title', 'Inventario &middot; Moveet')
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/usuario.css') }}">
