@@ -57,7 +57,7 @@
                 };
             @endphp
 
-            <article style="background: white; border: 1px solid #d8e3e0; border-radius: 12px; overflow: hidden;">
+            <article style="background: white; border: 1px solid #d8e3e0; border-radius: 12px;">
                 {{-- Header del reporte --}}
                 <div style="background: #f7f9f8; border-bottom: 1px solid #e8eceb; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
                     <div style="display: flex; align-items: center; gap: 10px;">

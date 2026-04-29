@@ -80,6 +80,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'blocked_at' => 'datetime',
         'points_booster_until' => 'datetime',
         'exp_booster_until' => 'datetime',
+        'premium_until' => 'datetime',
     ];
 
     public function getPremiumAttribute($value)
