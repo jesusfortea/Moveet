@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use App\Models\Mision;
 use App\Models\User;
 use App\Services\AchievementService;
 use App\Services\AntiCheatService;
+use App\Services\MisionService;
 use App\Services\PointsHistoryService;
 use App\Services\ReferralService;
 use App\Services\StreakService;
+use App\Services\LevelService;
 use Carbon\Carbon;
 
 class HomeController extends Controller
@@ -22,6 +23,8 @@ class HomeController extends Controller
         private PointsHistoryService $pointsHistoryService,
         private AchievementService $achievementService,
         private ReferralService $referralService,
+        private MisionService $misionService,
+        private LevelService $levelService,
     )
     {
     }
@@ -53,7 +56,7 @@ class HomeController extends Controller
         }
         $user->save();
 
-        $this->assignDailyAndWeeklyMissions($user);
+        $this->misionService->assignDailyAndWeeklyMissions($user);
 
         $weeklyReset = $user->weekly_mission_cycle_end;
 
@@ -160,7 +163,23 @@ class HomeController extends Controller
         }
 
         DB::transaction(function () use ($user, $mision) {
-            $user->increment('puntos', $mision->puntos);
+            $puntos = (int) $mision->puntos;
+            $exp = (int) ($puntos * 0.5); // La experiencia base es el 50% de los puntos
+
+            // Aplicar boosters
+            if ($user->points_booster_until && now()->lessThanOrEqualTo($user->points_booster_until)) {
+                $puntos *= 2;
+            }
+
+            if ($user->exp_booster_until && now()->lessThanOrEqualTo($user->exp_booster_until)) {
+                $exp *= 2;
+            }
+
+            $user->increment('puntos', $puntos);
+            
+            // Subir nivel
+            $this->levelService->addExperience($user, $exp);
+
             $user->misiones()->updateExistingPivot($mision->id, [
                 'completada' => true,
                 'fecha_completado' => Carbon::now(),
@@ -200,101 +219,32 @@ class HomeController extends Controller
         ]);
     }
 
-    private function assignWeeklyMissions(User $user): void
+    public function renovarMisionesGratis(Request $request): RedirectResponse
     {
-        $now = Carbon::now();
-        $weeklyLimit = $user->weekly_mission_cycle_end;
+        $user = Auth::user();
 
-        $weeklyActiveIds = $user->misiones()
-            ->where('misiones.semanal', true)
-            ->where('misiones.evento_id', null)
-            ->wherePivot('fecha_limite', '>', $now)
-            ->pluck('misiones.id')
-            ->all();
-
-        if (count($weeklyActiveIds) == 0) {
-            $weeklyCandidates = Mision::where('semanal', true)
-                ->where('evento_id', null)
-                ->whereNotIn('id', $weeklyActiveIds)
-                ->inRandomOrder()
-                ->limit(3)
-                ->get();
-
-            foreach ($weeklyCandidates as $mision) {
-                $user->misiones()->attach($mision->id, [
-                    'completada' => false,
-                    'fecha_asignacion' => $now,
-                    'fecha_limite' => $weeklyLimit,
-                ]);
-            }
-        }
-    }
-
-    private function assignDailyAndWeeklyMissions(User $user): void
-    {
-        $now = Carbon::now();
-
-        // Asignar misiones diarias si no hay activas
-        $dailyActiveIds = $user->misiones()
-            ->where('misiones.semanal', false)
-            ->where('misiones.evento_id', null)
-            ->wherePivot('fecha_limite', '>', $now)
-            ->pluck('misiones.id')
-            ->all();
-
-        if (count($dailyActiveIds) < 3) {
-            $dailyCandidates = Mision::where('semanal', false)
-                ->where('evento_id', null)
-                ->whereNotIn('id', $dailyActiveIds)
-                ->inRandomOrder()
-                ->limit(3 - count($dailyActiveIds))
-                ->get();
-
-            $dailyLimit = Carbon::now()->addDay();
-
-            foreach ($dailyCandidates as $mision) {
-                $user->misiones()->attach($mision->id, [
-                    'completada' => false,
-                    'fecha_asignacion' => $now,
-                    'fecha_limite' => $dailyLimit,
-                ]);
-            }
+        if (!$user) {
+            return redirect()->route('login');
         }
 
-        // Asignar misiones semanales si es necesario
-        $this->assignWeeklyMissions($user);
+        if ($user->free_mission_changes <= 0) {
+            return redirect()->route('pago.pasarela')->with('status', 'No tienes cambios gratuitos disponibles.');
+        }
+
+        DB::transaction(function () use ($user) {
+            $user->decrement('free_mission_changes');
+            $this->misionService->renovarMisiones($user, 'todas');
+        });
+
+        return redirect()->route('home')->with('status', '¡Misiones renovadas gratuitamente!');
     }
 
     /**
      * Elimina las misiones activas no completadas y asigna nuevas.
+     * Ahora delega al MisionService para que pueda ser usado desde otros controladores.
      */
-    public function renovarMisiones(User $user, $tipo = 'todas'): void
+    public function renovarMisiones(User $user, string $tipo = 'todas'): void
     {
-        $now = Carbon::now();
-
-        if ($tipo === 'todas' || $tipo === 'diarias') {
-            $uncompletedDaily = $user->misiones()
-                ->where('misiones.semanal', false)
-                ->where('misiones.evento_id', null)
-                ->wherePivot('completada', false)
-                ->wherePivot('fecha_limite', '>', $now)
-                ->pluck('misiones.id');
-
-            $user->misiones()->detach($uncompletedDaily);
-        }
-
-        if ($tipo === 'todas' || $tipo === 'semanales') {
-            $uncompletedWeekly = $user->misiones()
-                ->where('misiones.semanal', true)
-                ->where('misiones.evento_id', null)
-                ->wherePivot('completada', false)
-                ->wherePivot('fecha_limite', '>', $now)
-                ->pluck('misiones.id');
-
-            $user->misiones()->detach($uncompletedWeekly);
-        }
-
-        // Re-asignar para cubrir los huecos dejados
-        $this->assignDailyAndWeeklyMissions($user);
+        $this->misionService->renovarMisiones($user, $tipo);
     }
 }

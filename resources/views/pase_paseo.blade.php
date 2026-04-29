@@ -3,13 +3,26 @@
 @section('title', 'Pase de Paseo · Moveet')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/home.css') }}">
 <link rel="stylesheet" href="{{ asset('css/pase_paseo.css') }}">
 @endpush
 
 @push('scripts')
+<script>
+    // El pase de paseo gestiona su propio scroll horizontal.
+    // Inyectamos estilos al final del DOM para ganar la cascada CSS.
+    (function () {
+        var style = document.createElement('style');
+        style.textContent = [
+            'html, body { overflow: hidden !important; }',
+            '.page-content { overflow: hidden !important; height: calc(100vh - 15vh) !important; padding: 0 !important; display: block !important; }',
+            '.battlepass-wrapper { height: calc(100vh - 15vh) !important; overflow: hidden !important; }'
+        ].join(' ');
+        document.head.appendChild(style);
+    })();
+</script>
 <script src="{{ asset('js/pase_paseo.js') }}"></script>
 @endpush
+
 
 @section('content')
 <div class="battlepass-wrapper">

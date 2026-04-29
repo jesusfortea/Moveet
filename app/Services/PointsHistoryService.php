@@ -13,6 +13,8 @@ class PointsHistoryService
         int $cantidad,
         string $motivo,
         ?int $relatedUserId = null,
+        ?string $relatedModel = null,
+        ?int $relatedModelId = null,
         ?float $velocidadMaxima = null,
         ?float $distanciaRegistrada = null
     ): void {
@@ -22,6 +24,8 @@ class PointsHistoryService
             'cantidad' => $cantidad,
             'motivo' => $motivo,
             'related_user_id' => $relatedUserId,
+            'related_model' => $relatedModel,
+            'related_model_id' => $relatedModelId,
             'velocidad_maxima' => $velocidadMaxima,
             'distancia_registrada' => $distanciaRegistrada,
             'ip_address' => request()?->ip(),

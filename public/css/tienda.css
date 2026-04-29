@@ -1,8 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-    --store-bg: #e8efee;
-    --store-panel: #d4e3e1;
+    --store-bg: #F0F4F4;
+    --store-panel: #FFFFFF;
     --store-card: #f7fbfa;
     --store-ink: #1f2f2d;
     --store-accent: #6d8f8c;
@@ -13,7 +13,7 @@
     max-width: 1180px;
     margin: 0 auto;
     padding: 16px;
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Outfit', sans-serif;
     color: var(--store-ink);
 }
 

@@ -106,11 +106,8 @@
                     <div class="logo">MOVEET</div>
                 </td>
                 <td class="company-info">
-                    <strong>Moveet App, S.L.</strong><br>
-                    Carrer de la Innovació, 12<br>
-                    08001 Barcelona, España<br>
-                    CIF: B-12345678<br>
-                    contacto@moveet.app
+                    <strong>Moveet</strong><br>
+                    moveetrun@gmail.com
                 </td>
             </tr>
         </table>
@@ -163,8 +160,8 @@
     </table>
 
     <div class="footer">
-        Esta factura ha sido generada en un entorno de pruebas (Sandbox) y no tiene validez fiscal real.<br>
-        Gracias por usar Moveet.
+        Gracias por usar Moveet.<br>
+        moveetrun@gmail.com
     </div>
 
 </body>

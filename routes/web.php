@@ -31,7 +31,7 @@ Route::get('/', function () {
     return auth()->check()
         ? redirect()->route('home')
         : view('landing');
-});
+})->name('landing');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'login'])->name('login');
@@ -72,6 +72,7 @@ Route::get('/preguntas/{pregunta}', [PreguntaController::class, 'show'])->name('
 Route::middleware(['auth', 'not_blocked'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
     Route::post('/misiones/{mision}/completar', [HomeController::class, 'completarMision']);
+    Route::post('/misiones/renovar-gratis', [HomeController::class, 'renovarMisionesGratis'])->name('misiones.renovar_gratis');
 
     Route::get('/pago/cambiar-misiones', [PagoController::class, 'mostrarPasarela'])->name('pago.pasarela');
     Route::post('/pago/paypal/capturar-misiones', [PagoController::class, 'capturarPayPalMisiones'])->name('pago.paypal.capturar.misiones');
@@ -90,10 +91,12 @@ Route::middleware(['auth', 'not_blocked'])->group(function () {
     Route::post('/usuario/tarjeta', [UserController::class, 'storeCard'])->name('usuario.tarjeta.store');
     Route::delete('/usuario/tarjeta', [UserController::class, 'destroyCard'])->name('usuario.tarjeta.destroy');
     Route::get('/usuario/inventario', [UserController::class, 'inventario'])->name('usuario.inventario');
+    Route::post('/usuario/inventario/{item}/usar', [UserController::class, 'usarRecompensa'])->name('usuario.inventario.usar');
     Route::get('/usuario/logros', [UserController::class, 'logros'])->name('usuario.logros');
     Route::get('/usuario/referidos', [UserController::class, 'referidos'])->name('usuario.referidos');
     Route::post('/usuario/racha/congelador/comprar', [UserController::class, 'buyStreakFreeze'])->name('usuario.streak.freeze.buy');
     Route::get('/usuario/historial-puntos', [HistorialPuntosController::class, 'userIndex'])->name('usuario.historial_puntos');
+    Route::get('/usuario/historial-puntos/descargar', [HistorialPuntosController::class, 'userDownload'])->name('usuario.historial_puntos.descargar');
     Route::get('/usuario/notificaciones', [NotificationController::class, 'index'])->name('usuario.notificaciones');
     Route::post('/usuario/notificaciones/marcar-todas', [NotificationController::class, 'markAllAsRead'])->name('usuario.notificaciones.read_all');
     Route::post('/usuario/notificaciones/{notification}/leer', [NotificationController::class, 'markAsRead'])->name('usuario.notificaciones.read_one');

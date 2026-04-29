@@ -25,8 +25,12 @@ class User extends Authenticatable implements MustVerifyEmail
         'phone',
         'premium',
         'premium_until',
+        'points_booster_until',
+        'exp_booster_until',
+        'free_mission_changes',
         'nivel',
         'puntos',
+        'experiencia',
         'ruta_imagen',
         'birth_date',
         'is_admin',
@@ -48,11 +52,13 @@ class User extends Authenticatable implements MustVerifyEmail
 
     protected $attributes = [
         'puntos' => 0,
+        'experiencia' => 0,
         'nivel' => 1,
         'premium' => false,
         'current_streak' => 0,
         'longest_streak' => 0,
         'streak_freezes' => 0,
+        'free_mission_changes' => 0,
     ];
 
     protected $hidden = [
@@ -72,6 +78,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'streak_last_activity_date' => 'date',
         'last_location_timestamp' => 'datetime',
         'blocked_at' => 'datetime',
+        'points_booster_until' => 'datetime',
+        'exp_booster_until' => 'datetime',
     ];
 
     public function getPremiumAttribute($value)

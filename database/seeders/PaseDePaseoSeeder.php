@@ -65,7 +65,7 @@ class PaseDePaseoSeeder extends Seeder
                 'nombre' => '50 Puntos Extra',
                 'descripcion' => 'Recibe 50 puntos para gastar en la tienda.',
                 'premium' => false,
-                'puntos_necesarios' => 0,
+                'puntos_necesarios' => 50,
                 'nivel_necesario' => 4,
                 'ruta_imagen' => 'img/recompensas/item_points.png',
                 'tipo' => 'pase_de_paseo',

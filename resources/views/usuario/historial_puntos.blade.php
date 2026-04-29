@@ -3,97 +3,112 @@
 @section('title', 'Mi Historial de Puntos · Moveet')
 
 @push('styles')
+<link rel="stylesheet" href="{{ asset('css/usuario.css') }}">
 <style>
     .historial-wrapper {
-        max-width: 680px;
+        max-width: 800px;
         margin: 0 auto;
-        padding: 20px 16px 40px;
+        padding: 40px 24px;
     }
 
     .hist-stats-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-        margin-bottom: 20px;
+        gap: 16px;
+        margin-bottom: 24px;
     }
 
     .hist-stat-card {
-        border-radius: 14px;
-        padding: 14px 12px;
+        background: var(--usr-surface);
+        border-radius: 20px;
+        padding: 20px;
         text-align: center;
+        border: 1px solid var(--usr-border);
+        box-shadow: var(--usr-shadow);
+        transition: transform 0.2s ease;
+    }
+
+    .hist-stat-card:hover {
+        transform: translateY(-4px);
     }
 
     .hist-stat-card .label {
-        font-size: 10px;
+        font-size: 0.85rem;
         font-weight: 800;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
-        margin-bottom: 6px;
+        letter-spacing: 0.05em;
+        margin-bottom: 8px;
     }
 
     .hist-stat-card .amount {
-        font-size: 20px;
+        font-size: 1.8rem;
         font-weight: 900;
         line-height: 1;
     }
 
     .hist-filter-bar {
         display: flex;
-        gap: 8px;
+        gap: 12px;
         flex-wrap: nowrap;
         overflow-x: auto;
-        padding-bottom: 4px;
-        margin-bottom: 16px;
+        padding-bottom: 8px;
+        margin-bottom: 24px;
         scrollbar-width: none;
     }
 
     .hist-filter-bar::-webkit-scrollbar { display: none; }
 
     .hist-chip {
-        display: inline-block;
-        padding: 6px 14px;
+        display: inline-flex;
+        align-items: center;
+        padding: 10px 20px;
         border-radius: 999px;
-        font-size: 12px;
-        font-weight: 700;
+        font-size: 0.95rem;
+        font-weight: 800;
         white-space: nowrap;
         text-decoration: none;
-        border: 2px solid transparent;
-        background: white;
-        color: #516260;
-        border-color: #d8e3e0;
-        transition: all 0.15s;
+        background: var(--usr-surface);
+        color: var(--usr-text-muted);
+        border: 2px solid var(--usr-border);
+        transition: all 0.2s ease;
+    }
+
+    .hist-chip:hover {
+        border-color: var(--usr-primary);
+        color: var(--usr-text);
     }
 
     .hist-chip.active {
-        background: #8FA8A6;
+        background: var(--usr-primary);
         color: white;
-        border-color: #8FA8A6;
+        border-color: var(--usr-primary);
     }
 
     .hist-item {
-        background: white;
-        border: 1px solid #d8e3e0;
-        border-radius: 14px;
-        padding: 14px 16px;
+        background: var(--usr-surface);
+        border: 1px solid var(--usr-border);
+        border-radius: 20px;
+        padding: 16px 20px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 12px;
-        transition: box-shadow 0.2s;
+        gap: 16px;
+        transition: transform 0.2s ease;
     }
 
     .hist-item:hover {
-        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        transform: translateX(4px);
+        border-color: var(--usr-primary);
     }
 
     .hist-item-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
+        width: 48px;
+        height: 48px;
+        border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
+        font-size: 24px;
         flex-shrink: 0;
     }
 
@@ -103,18 +118,19 @@
     }
 
     .hist-item-body .motivo {
-        font-weight: 700;
-        font-size: 14px;
-        color: #1E2A28;
+        font-weight: 800;
+        font-size: 1.1rem;
+        color: var(--usr-text);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
 
     .hist-item-body .fecha {
-        font-size: 12px;
-        color: #7a9190;
-        margin-top: 2px;
+        font-size: 0.85rem;
+        color: var(--usr-text-muted);
+        font-weight: 600;
+        margin-top: 4px;
     }
 
     .hist-item-amount {
@@ -137,22 +153,50 @@
         margin-top: 4px;
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 600px) {
         .hist-stats-grid {
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
+        .hist-stat-card {
+            padding: 12px 8px;
+        }
+        .hist-stat-card .label {
+            font-size: 0.7rem;
         }
         .hist-stat-card .amount {
-            font-size: 16px;
+            font-size: 1.2rem;
+        }
+        .hist-filter-bar {
+            gap: 8px;
+        }
+        .hist-chip {
+            padding: 8px 14px;
+            font-size: 0.82rem;
+        }
+        .hist-item {
+            padding: 12px 14px;
+            gap: 10px;
+        }
+        .hist-item-body .motivo {
+            font-size: 0.95rem;
+        }
+        .historial-wrapper {
+            padding: 24px 14px;
         }
     }
 </style>
 @endpush
 
 @section('content')
-<div class="historial-wrapper">
-    <div style="margin-bottom: 20px;">
-        <h1 style="font-size: 1.7rem; font-weight: 900; color: #1E2A28; margin: 0;">Mi Historial</h1>
-        <p style="color: #516260; font-size: 13px; margin: 4px 0 0;">Todos tus movimientos de puntos en Moveet.</p>
+<div class="usuario-page">
+    <div class="inventario-topbar">
+        <a class="volver-link" href="{{ route('usuario.index') }}">&lt; Volver al perfil</a>
+    </div>
+
+    <div style="margin-bottom: 32px; text-align: center;">
+        <h1 class="usuario-page-title" style="margin: 0;">Mi Historial</h1>
+        <p style="color: var(--usr-text-muted); font-size: 1rem; font-weight: 600; margin: 8px 0 0;">Todos tus movimientos de puntos en Moveet.</p>
     </div>
 
     {{-- ── Estadísticas ── --}}
@@ -172,16 +216,17 @@
     </div>
 
     {{-- ── Filtro chips ── --}}
-    <div class="hist-filter-bar">
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+        <div class="hist-filter-bar" style="margin-bottom: 0; flex: 1;">
         <a href="{{ route('usuario.historial_puntos') }}" class="hist-chip {{ !request('tipo') ? 'active' : '' }}">Todos</a>
         @php
             $chipLabels = [
-                'mission' => '✅ Misiones',
-                'earned' => '🏃 Actividad',
-                'reward' => '🎁 Recompensas',
-                'referral' => '👥 Referidos',
-                'store' => '🛒 Tienda',
-                'spent' => '💸 Gastados',
+                'mission' => 'Misiones',
+                'earned' => 'Actividad',
+                'reward' => 'Recompensas',
+                'referral' => 'Referidos',
+                'store' => 'Tienda',
+                'spent' => 'Gastados',
             ];
         @endphp
         @foreach($tipos as $t)
@@ -189,6 +234,11 @@
                 {{ $chipLabels[$t] ?? ucfirst(str_replace('_', ' ', $t)) }}
             </a>
         @endforeach
+        </div>
+        <a href="{{ route('usuario.historial_puntos.descargar', request()->query()) }}"
+           style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; border-radius: 999px; border: 2px solid var(--usr-border); background: var(--usr-surface); color: var(--usr-text); font-weight: 800; text-decoration: none; white-space: nowrap;">
+            Descargar CSV
+        </a>
     </div>
 
     {{-- ── Lista de movimientos ── --}}
@@ -196,20 +246,28 @@
         @forelse($historial as $registro)
             @php
                 $isSpent = in_array($registro->tipo, ['spent', 'store']) || (int) $registro->cantidad < 0;
+                $isStoreEarned = $registro->tipo === 'earned'
+                    && ($registro->motivo && (
+                        str_starts_with($registro->motivo, 'Compra PayPal de pack de puntos:')
+                        || str_starts_with($registro->motivo, 'Compra de pack de puntos:')
+                    ));
 
-                $icon = match($registro->tipo) {
-                    'mission' => '✅',
-                    'earned' => '🏃',
-                    'reward' => '🎁',
-                    'referral' => '👥',
-                    'store', 'spent' => '🛒',
-                    'admin_adjustment' => '🔧',
-                    default => '💰',
+                $displayTipo = $isStoreEarned ? 'store' : $registro->tipo;
+
+                $icon = match($displayTipo) {
+                    'mission' => 'M',
+                    'earned' => 'A',
+                    'reward' => 'R',
+                    'referral' => 'R',
+                    'store' => 'T',
+                    'spent' => 'G',
+                    'admin_adjustment' => 'A',
+                    default => 'P',
                 };
 
                 $iconBg = $isSpent ? '#fee2e2' : '#e9f6ee';
 
-                $badgeBg = match($registro->tipo) {
+                $badgeBg = match($displayTipo) {
                     'mission' => '#d1fae5',
                     'earned' => '#dcfce7',
                     'reward' => '#fef3c7',
@@ -220,7 +278,7 @@
 
                 $badgeColor = $isSpent ? '#991b1b' : '#166534';
 
-                $badgeLabel = match($registro->tipo) {
+                $badgeLabel = match($displayTipo) {
                     'mission' => 'Misión',
                     'earned' => 'Actividad',
                     'reward' => 'Recompensa',
@@ -242,13 +300,17 @@
                         {{ $isSpent ? '-' : '+' }}{{ number_format(abs((int) $registro->cantidad)) }}
                     </div>
                     <div class="badge" style="background: {{ $badgeBg }}; color: {{ $badgeColor }};">{{ $badgeLabel }}</div>
+                    @if($registro->related_model === \App\Models\Factura::class && $registro->related_model_id)
+                        <a href="{{ route('pago.descargar', $registro->related_model_id) }}" style="display: inline-block; margin-top: 6px; font-size: 11px; font-weight: 700; color: #1E2A28; text-decoration: none;">
+                            Descargar factura
+                        </a>
+                    @endif
                 </div>
             </div>
         @empty
             <div style="text-align: center; padding: 48px 20px; background: white; border: 1px dashed #d8e3e0; border-radius: 14px;">
-                <div style="font-size: 40px; margin-bottom: 10px;">📊</div>
                 <div style="font-weight: 700; color: #1E2A28; margin-bottom: 6px;">Sin movimientos</div>
-                <div style="color: #7a9190; font-size: 13px;">¡Completa misiones y rutas para ganar puntos!</div>
+                <div style="color: #7a9190; font-size: 13px;">Completa misiones y rutas para ganar puntos.</div>
             </div>
         @endforelse
     </div>

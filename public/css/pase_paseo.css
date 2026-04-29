@@ -6,9 +6,9 @@
     --bp-paid-bg: #C19A6B;
     --bp-paid-text: #B8860B;
     --bp-free-bg: #CFD8D7;
-    --bp-free-text: #7A9190;
+    --bp-free-text: #6D827F;
     --bp-track-black: #111111;
-    --bp-success: #56C470;
+    --bp-success: #22C55E;
 }
 
 .battlepass-wrapper {
@@ -16,6 +16,7 @@
     height: calc(100vh - var(--nav-h));
     background: #fff;
     overflow: hidden;
+    position: relative;
 }
 
 .battlepass-track-container {
@@ -23,6 +24,21 @@
     height: 100%;
     overflow-x: auto;
     overflow-y: hidden;
+    scroll-behavior: smooth;
+    /* Custom scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: #8FA8A6 #eef4f3;
+}
+
+.battlepass-track-container::-webkit-scrollbar {
+    height: 8px;
+}
+.battlepass-track-container::-webkit-scrollbar-track {
+    background: #eef4f3;
+}
+.battlepass-track-container::-webkit-scrollbar-thumb {
+    background: #8FA8A6;
+    border-radius: 999px;
 }
 
 .battlepass-track {
@@ -39,8 +55,8 @@
     display: grid;
     grid-template-rows: 1fr 60px 1fr;
     flex-shrink: 0;
-    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
-    z-index: 100;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+    z-index: 200;
     background: #fff;
 }
 
@@ -167,7 +183,7 @@
 .reward-name {
     font-size: 1rem;
     font-weight: 700;
-    color: #7A9190;
+    color: #6D827F;
 }
 
 .free-slot .reward-name {
@@ -226,7 +242,7 @@
     transform: scale(1.15);
 }
 
-/* Responsive */
+/* Responsive height */
 @media (max-height: 650px) {
     .reward-card img {
         width: 70px;
@@ -240,5 +256,29 @@
     .battlepass-sidebar,
     .level-column {
         grid-template-rows: 1fr 50px 1fr;
+    }
+}
+
+/* Responsive width - mobile */
+@media (max-width: 600px) {
+    .battlepass-sidebar {
+        width: 80px;
+    }
+    .label-section span {
+        font-size: 1rem;
+    }
+    .level-column {
+        width: 150px;
+    }
+    .reward-card img {
+        width: 70px;
+        height: 70px;
+    }
+    .reward-name {
+        font-size: 0.75rem;
+    }
+    .subscribe-btn {
+        font-size: 0.7rem;
+        padding: 5px 10px;
     }
 }

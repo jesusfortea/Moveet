@@ -56,6 +56,13 @@
                         card.appendChild(badge);
 
                         const puntosGanados = Number(data.puntos_ganados || 0);
+                        const puntosActuales = Number(data.puntos_actuales || 0);
+
+                        // Actualizar puntos en la interfaz (navbar)
+                        document.querySelectorAll('.js-user-points').forEach(el => {
+                            el.innerText = `${puntosActuales} puntos`;
+                        });
+
                         const msg = puntosGanados > 0
                             ? `Has reclamado ${rewardNombre} y ganado ${puntosGanados} puntos.`
                             : `Has reclamado ${rewardNombre}.`;

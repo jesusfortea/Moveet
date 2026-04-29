@@ -72,7 +72,7 @@
         </div>
         <div class="footer">
             &copy; {{ date('Y') }} Moveet. Todos los derechos reservados.<br>
-            Este es un recibo generado en entorno Sandbox.
+            moveetrun@gmail.com
         </div>
     </div>
 </body>

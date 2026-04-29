@@ -15,6 +15,7 @@ use Illuminate\View\View;
 use App\Services\AchievementService;
 use App\Services\NotificationService;
 use App\Services\PointsHistoryService;
+use App\Services\LevelService;
 
 class RutaUsuarioController extends Controller
 {
@@ -25,6 +26,7 @@ class RutaUsuarioController extends Controller
         private PointsHistoryService $pointsHistoryService,
         private NotificationService $notificationService,
         private AchievementService $achievementService,
+        private LevelService $levelService,
     ) {
     }
 
@@ -249,8 +251,21 @@ class RutaUsuarioController extends Controller
             if (!$completionExists) {
                 DB::transaction(function () use ($user, $ruta) {
                     $points = (int) $ruta->puntos_recompensa;
+                    $exp = (int) ($points * 0.5);
+
+                    // Aplicar boosters
+                    if ($user->points_booster_until && now()->lessThanOrEqualTo($user->points_booster_until)) {
+                        $points *= 2;
+                    }
+
+                    if ($user->exp_booster_until && now()->lessThanOrEqualTo($user->exp_booster_until)) {
+                        $exp *= 2;
+                    }
 
                     $user->increment('puntos', $points);
+                    
+                    // Subir nivel
+                    $this->levelService->addExperience($user, $exp);
 
                     RutaUsuarioCompletion::create([
                         'ruta_usuario_id' => $ruta->id,

@@ -5,14 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\Factura;
 use App\Models\User;
 use App\Mail\FacturaPagoMail;
+use App\Services\MisionService;
+use App\Services\PointsHistoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Str;
 
 class PagoController extends Controller
 {
+    public function __construct(
+        private MisionService $misionService,
+        private PointsHistoryService $pointsHistoryService,
+    ) {}
+
     public function mostrarPasarela(Request $request)
     {
         $producto = [
@@ -42,9 +48,18 @@ class PagoController extends Controller
             'ultimos_digitos' => 'PAYP', // Identificador de método
         ]);
 
-        // 2. Renovar misiones llamando al HomeController
-        $homeController = new HomeController();
-        $homeController->renovarMisiones($user, 'todas');
+        // 2. Renovar misiones usando MisionService (DI correcta)
+        $this->misionService->renovarMisiones($user, 'todas');
+
+        $this->pointsHistoryService->log(
+            $user,
+            'spent',
+            0,
+            'Pago PayPal: Renovacion de misiones',
+            null,
+            Factura::class,
+            $factura->id
+        );
 
         // 3. Generar PDF
         $pdf = Pdf::loadView('pdf.factura', [
@@ -60,8 +75,8 @@ class PagoController extends Controller
         }
 
         return response()->json([
-            'status' => 'success',
-            'message' => 'Pago realizado con éxito',
+            'status'   => 'success',
+            'message'  => 'Pago realizado con éxito',
             'redirect' => route('pago.exito', ['factura' => $factura->id])
         ]);
     }

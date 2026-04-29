@@ -221,7 +221,10 @@ class TiendaController extends Controller
             $user,
             'earned',
             (int) $pack->puntos,
-            'Compra PayPal de pack de puntos: ' . $pack->nombre
+            'Compra PayPal de pack de puntos: ' . $pack->nombre,
+            null,
+            Factura::class,
+            $factura->id
         );
 
         $this->notificationService->notify(
@@ -291,7 +294,10 @@ class TiendaController extends Controller
             $user,
             'spent',
             0,
-            'Compra PayPal de articulo: ' . $articulo->nombre
+            'Compra PayPal de articulo: ' . $articulo->nombre,
+            null,
+            Factura::class,
+            $factura->id
         );
 
         $this->notificationService->notify(

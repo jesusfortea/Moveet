@@ -3,383 +3,375 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moveet - Gamificación basada en Ubicación</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Moveet - El Mundo es tu Tablero</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        moveet: {
+                            primary: '#7fa8a8',
+                            primaryDark: '#6b9595',
+                            bg: '#f9f9f9',
+                            text: '#333',
+                            muted: '#666',
+                            border: '#ddd',
+                            accent: '#7fa8a8',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --m-primary: #7fa8a8;
+            --m-primary-dark: #6b9595;
+            --m-bg: #f9f9f9;
+            --m-text: #333;
+            --m-muted: #666;
+            --m-border: #ddd;
+            --m-radius: 12px;
+            --m-btn-radius: 6px;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #8FA8A6 0%, #6b8987 100%);
-            min-height: 100vh;
+            background-color: var(--m-bg);
+            color: var(--m-text);
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
         }
 
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem 5%;
-            background: rgba(143, 168, 166, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 2px solid rgba(107, 137, 135, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        .landing-nav {
+            background: white;
+            border-bottom: 1px solid var(--m-border);
         }
 
-        .navbar-brand {
-            font-size: 1.8rem;
-            font-weight: 700;
+        .hero-section {
+            background: linear-gradient(135deg, #c8e6e6 0%, #a8d0d0 100%);
+            padding-top: 140px;
+            padding-bottom: 100px;
+        }
+
+        .btn-moveet {
+            background: var(--m-primary);
             color: white;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .navbar-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .navbar-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: opacity 0.3s;
-        }
-
-        .navbar-links a:hover {
-            opacity: 0.8;
-        }
-
-        .btn-primary {
-            background: #d0dbd9;
-            color: #333;
-            padding: 0.75rem 1.5rem;
-            border-radius: 6px;
+            padding: 12px 28px;
+            border-radius: var(--m-btn-radius);
             font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s;
-            border: 2px solid #d0dbd9;
-        }
-
-        .btn-primary:hover {
-            background: #9db3b0;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .hero {
-            display: flex;
+            transition: all 0.3s ease;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-height: calc(100vh - 80px);
-            padding: 3rem 5%;
-            text-align: center;
-            color: white;
-        }
-
-        .hero-content {
-            max-width: 700px;
-            animation: slideUp 0.8s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-            line-height: 1.2;
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            opacity: 0.95;
-            line-height: 1.6;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border: 2px solid white;
-            border-radius: 6px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s;
+            border: none;
             cursor: pointer;
         }
 
-        .btn-secondary:hover {
-            background: #d0dbd9;
-            color: #333;
-            border-color: #d0dbd9;
+        .btn-moveet:hover {
+            background: var(--m-primary-dark);
+            transform: scale(0.98);
         }
 
-        .features {
-            background: #eef4f3;
-            padding: 4rem 5%;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-
-        .feature-card {
+        .card-moveet {
             background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            text-align: center;
-            transition: all 0.3s;
-            border: 2px solid #d0dbd9;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border-radius: var(--m-radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 32px;
+            border: 1px solid var(--m-border);
+            transition: all 0.3s ease;
         }
 
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(143, 168, 166, 0.2);
-            border-color: #9db3b0;
+        .card-moveet:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
         }
 
-        .feature-icon {
+        .carousel-container {
+            position: relative;
+            padding: 40px 0;
+            background: white;
+        }
+
+        .carousel-track {
+            display: flex;
+            gap: 24px;
+            transition: transform 0.5s ease-in-out;
+            padding: 0 20px;
+        }
+
+        .carousel-item {
+            min-width: 300px;
+            max-width: 400px;
+            border-radius: var(--m-radius);
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--m-border);
+        }
+
+        .section-title {
             font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .feature-card h3 {
-            font-size: 1.3rem;
-            margin-bottom: 0.5rem;
-            color: #333;
-            font-weight: 600;
-        }
-
-        .feature-card p {
-            color: #666;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        .cta-section {
-            background: linear-gradient(135deg, #8FA8A6 0%, #6b8987 100%);
-            padding: 4rem 5%;
-            text-align: center;
-            color: white;
-        }
-
-        .cta-section h2 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            font-weight: 700;
-        }
-
-        .cta-section p {
-            font-size: 1.1rem;
-            margin-bottom: 2rem;
-            opacity: 0.95;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 2rem;
-            background: #eef4f3;
-            padding: 3rem 5%;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
             font-weight: 800;
-            color: #8FA8A6;
-        }
-
-        .stat-label {
+            letter-spacing: -0.02em;
+            margin-bottom: 20px;
+            line-height: 1.2;
             color: #333;
-            margin-top: 0.5rem;
+        }
+
+        .nav-link {
             font-weight: 600;
+            color: #666;
+            transition: color 0.2s;
         }
 
-        footer {
-            background: #333;
-            color: white;
-            text-align: center;
-            padding: 2rem;
-            font-size: 0.9rem;
-        }
-
-        @media (max-width: 768px) {
-            .navbar {
-                flex-direction: column;
-                gap: 1rem;
-                padding: 1rem;
-            }
-
-            .hero h1 {
-                font-size: 2rem;
-            }
-
-            .hero p {
-                font-size: 1rem;
-            }
-
-            .hero-buttons {
-                flex-direction: column;
-            }
-
-            .btn-primary, .btn-secondary {
-                width: 100%;
-            }
-        }
-
-        .scroll-indicator {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% {
-                transform: translateX(-50%) translateY(0);
-            }
-            50% {
-                transform: translateX(-50%) translateY(10px);
-            }
+        .nav-link:hover {
+            color: var(--m-primary);
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="navbar-brand">
-            <i class="fas fa-map-pin"></i> Moveet
-        </div>
-        <div class="navbar-links">
-            <a href="#features">Características</a>
-            <a href="#about">Sobre Moveet</a>
-            <a href="{{ route('preguntas.index') }}">Reseñas</a>
-            <a href="{{ route('atencion.create') }}">Atención al usuario</a>
-            <a href="{{ route('login') }}" class="btn-primary">Iniciar Sesión</a>
-        </div>
-    </nav>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Descubre Moveet</h1>
-            <p>Gamificación basada en ubicación. Completa misiones, participa en eventos, gana puntos y canjéalos por recompensas increíbles.</p>
-            <div class="hero-buttons">
-                <a href="{{ route('register') }}" class="btn-primary">Registrarse Gratis</a>
-                <a href="{{ route('login') }}" class="btn-secondary">Ya tengo cuenta</a>
+    @include('layouts.navbar_landing')
+
+    <!-- Hero -->
+    <section class="hero-section">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+                <h1 class="section-title">
+                    El mundo es tu <br>
+                    <span style="color: #444;">tablero de juego.</span>
+                </h1>
+                <p class="text-xl text-moveet-muted font-medium mb-10 max-w-lg leading-relaxed">
+                    Convierte cada paso en una misión. Explora tu ciudad, completa desafíos en tiempo real y canjea tu esfuerzo por recompensas increíbles.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <a href="{{ route('register') }}" class="btn-moveet py-4 px-10 text-lg">¡Quiero empezar ya!</a>
+                    <a href="#como-funciona" class="px-8 py-4 font-bold flex items-center gap-2 hover:bg-white/50 rounded-lg transition-all">
+                        Ver más <i class="fas fa-chevron-down text-xs"></i>
+                    </a>
+                </div>
+                
+                <div class="mt-12 flex items-center gap-6">
+                    <div class="flex -space-x-4">
+                        <img class="w-12 h-12 rounded-full border-4 border-white" src="https://i.pravatar.cc/100?u=1">
+                        <img class="w-12 h-12 rounded-full border-4 border-white" src="https://i.pravatar.cc/100?u=2">
+                        <img class="w-12 h-12 rounded-full border-4 border-white" src="https://i.pravatar.cc/100?u=3">
+                    </div>
+                    <p class="text-sm font-bold text-moveet-muted">
+                        <span class="text-moveet-text">+1,500 exploradores</span> ya están jugando
+                    </p>
+                </div>
             </div>
-            <div class="scroll-indicator">
-                <i class="fas fa-chevron-down" style="color: white; font-size: 1.5rem;"></i>
+            
+            <div class="relative">
+                <img src="{{ asset('img/hero-new.png') }}" class="rounded-xl shadow-2xl" alt="Moveet App">
+                <div class="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-xl flex items-center gap-3 border border-moveet-border">
+                    <div class="w-10 h-10 bg-moveet-primary rounded-md flex items-center justify-center text-white">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black uppercase text-moveet-muted">Misión completada</p>
+                        <p class="text-sm font-black">+50 Puntos</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section id="features" class="features">
-        <div class="feature-card">
-            <div class="feature-icon">🎯</div>
-            <h3>Misiones</h3>
-            <p>Completa misiones diarias y semanales para ganar puntos y experiencia. Elige tus objetivos y sigue tu progreso.</p>
+    <!-- Experience Grid -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 mb-12">
+            <h2 class="text-3xl font-bold">Vive la experiencia</h2>
+            <p class="text-moveet-muted font-medium">Así es como moveet transforma tu día a día.</p>
         </div>
-
-        <div class="feature-card">
-            <div class="feature-icon">📍</div>
-            <h3>Eventos Cercanos</h3>
-            <p>Descubre eventos geográficos cercanos a tu ubicación. Participa, conoce gente y acumula recompensas.</p>
-        </div>
-
-        <div class="feature-card">
-            <div class="feature-icon">🎫</div>
-            <h3>Pases de Paseo</h3>
-            <p>Disfruta de acceso exclusivo a lugares especiales y experiencias únicas con nuestro sistema de pases.</p>
-        </div>
-
-        <div class="feature-card">
-            <div class="feature-icon">🏪</div>
-            <h3>Tienda de Recompensas</h3>
-            <p>Canjea tus puntos ganados por artículos exclusivos, descuentos y experiencias premium.</p>
-        </div>
-
-        <div class="feature-card">
-            <div class="feature-icon">💬</div>
-            <h3>Chat Comunitario</h3>
-            <p>Conecta con otros usuarios, forma amistades y colabora en misiones con la comunidad Moveet.</p>
-        </div>
-
-        <div class="feature-card">
-            <div class="feature-icon">⭐</div>
-            <h3>Gamificación Completa</h3>
-            <p>Sube de nivel, desbloquea logros y compite en rankings. ¡Vive la experiencia gamificada!</p>
-        </div>
-    </section>
-
-    <!-- Stats Section -->
-    <section class="stats">
-        <div class="stat-item">
-            <div class="stat-number">1000+</div>
-            <div class="stat-label">Usuarios Activos</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-number">5000+</div>
-            <div class="stat-label">Misiones Completadas</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-number">100+</div>
-            <div class="stat-label">Lugares</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-number">50+</div>
-            <div class="stat-label">Recompensas</div>
+        
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="carousel-item">
+                <img src="{{ asset('img/carousel-1.png') }}" class="w-full aspect-[4/3] object-cover">
+                <div class="p-6 bg-white">
+                    <h4 class="font-bold text-lg">Explora tu ciudad</h4>
+                    <p class="text-sm text-moveet-muted">Nuevas rutas cada día.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="{{ asset('img/carousel-2.png') }}" class="w-full aspect-[4/3] object-cover">
+                <div class="p-6 bg-white">
+                    <h4 class="font-bold text-lg">Gana Premios</h4>
+                    <p class="text-sm text-moveet-muted">Canjea tus puntos por café, ropa o entradas.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="{{ asset('img/carousel-3.png') }}" class="w-full aspect-[4/3] object-cover">
+                <div class="p-6 bg-white">
+                    <h4 class="font-bold text-lg">Compite con amigos</h4>
+                    <p class="text-sm text-moveet-muted">Ranking global y chat integrado.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="{{ asset('img/hero-new.png') }}" class="w-full aspect-[4/3] object-cover">
+                <div class="p-6 bg-white">
+                    <h4 class="font-bold text-lg">Mejora tu Salud</h4>
+                    <p class="text-sm text-moveet-muted">Caminar nunca fue tan divertido.</p>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- CTA Section -->
-    <section id="about" class="cta-section">
-        <h2>¿Listo para Moveet?</h2>
-        <p>Únete a miles de usuarios que ya están disfrutando de la experiencia. ¡Comienza ahora!</p>
-        <a href="{{ route('register') }}" class="btn-primary">Crear mi cuenta</a>
+    <!-- How it works -->
+    <section id="como-funciona" class="py-24 bg-white border-t border-moveet-border">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="text-center mb-20">
+                <h2 class="section-title">Cómo funciona</h2>
+                <p class="text-moveet-muted font-medium text-lg">Tres pasos sencillos para empezar tu aventura.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-12">
+                <div class="text-center space-y-6">
+                    <div class="w-20 h-20 bg-moveet-bg border border-moveet-border rounded-xl flex items-center justify-center text-3xl text-moveet-primary mx-auto">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold">Elige tu ruta</h3>
+                    <p class="text-moveet-muted font-medium">Selecciona una misión en el mapa según tu ubicación y dificultad.</p>
+                </div>
+                <div class="text-center space-y-6">
+                    <div class="w-20 h-20 bg-moveet-bg border border-moveet-border rounded-xl flex items-center justify-center text-3xl text-moveet-primary mx-auto">
+                        <i class="fas fa-shoe-prints"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold">Camina y gana</h3>
+                    <p class="text-moveet-muted font-medium">Completa los puntos de control para ganar puntos y experiencia.</p>
+                </div>
+                <div class="text-center space-y-6">
+                    <div class="w-20 h-20 bg-moveet-primary rounded-xl flex items-center justify-center text-3xl text-white mx-auto">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold">Disfruta premios</h3>
+                    <p class="text-moveet-muted font-medium">Usa tus puntos en la tienda para conseguir recompensas reales.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="ventajas" class="py-24 bg-moveet-bg border-t border-moveet-border">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="space-y-8">
+                    <h2 class="section-title">Diseñado para <br> <span style="color: var(--m-primary);">moverte.</span></h2>
+                    <p class="text-lg text-moveet-muted font-medium">Hemos creado una plataforma robusta, justa y social para que disfrutes al máximo.</p>
+                    
+                    <div class="grid sm:grid-cols-2 gap-6">
+                        <div class="card-moveet">
+                            <i class="fas fa-shield-alt text-2xl text-moveet-primary mb-4"></i>
+                            <h5 class="font-bold text-lg mb-2">Anti-Cheat</h5>
+                            <p class="text-xs text-moveet-muted font-bold uppercase tracking-wider">Seguridad Total</p>
+                        </div>
+                        <div class="card-moveet">
+                            <i class="fas fa-users text-2xl text-moveet-primary mb-4"></i>
+                            <h5 class="font-bold text-lg mb-2">Social</h5>
+                            <p class="text-xs text-moveet-muted font-bold uppercase tracking-wider">Amigos y Chat</p>
+                        </div>
+                        <div class="card-moveet">
+                            <i class="fas fa-bolt text-2xl text-moveet-primary mb-4"></i>
+                            <h5 class="font-bold text-lg mb-2">Potenciadores</h5>
+                            <p class="text-xs text-moveet-muted font-bold uppercase tracking-wider">Multiplica puntos</p>
+                        </div>
+                        <div class="card-moveet">
+                            <i class="fas fa-trophy text-2xl text-moveet-primary mb-4"></i>
+                            <h5 class="font-bold text-lg mb-2">Logros</h5>
+                            <p class="text-xs text-moveet-muted font-bold uppercase tracking-wider">Colecciona medallas</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid gap-6">
+                    <div class="card-moveet flex gap-6 items-center">
+                        <div class="w-16 h-16 bg-moveet-bg border border-moveet-border rounded-xl flex items-center justify-center text-2xl text-moveet-primary">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold">Pase de Paseo</h4>
+                            <p class="text-sm text-moveet-muted">Progresión por niveles con premios premium.</p>
+                        </div>
+                    </div>
+                    <div class="card-moveet flex gap-6 items-center">
+                        <div class="w-16 h-16 bg-moveet-bg border border-moveet-border rounded-xl flex items-center justify-center text-2xl text-moveet-primary">
+                            <i class="fas fa-store"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold">Tienda Integrada</h4>
+                            <p class="text-sm text-moveet-muted">Canje instantáneo de puntos por productos.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-24 bg-white text-center">
+        <div class="max-w-4xl mx-auto px-6">
+            <h2 class="section-title mb-8">¿Estás listo para <br> tu primera misión?</h2>
+            <p class="text-xl text-moveet-muted font-medium mb-12">Únete a la comunidad y empieza a ganar premios por tus pasos hoy mismo.</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-6">
+                <a href="{{ route('register') }}" class="btn-moveet py-5 px-12 text-xl">Crear cuenta gratis</a>
+                <a href="{{ route('login') }}" class="py-5 px-12 text-xl font-bold border border-moveet-border rounded-md hover:bg-moveet-bg transition-all">Iniciar sesión</a>
+            </div>
+        </div>
     </section>
 
     <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 Moveet. Todos los derechos reservados. | Gamificación basada en ubicación</p>
+    <footer class="py-16 bg-white border-t border-moveet-border">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 grid md:grid-cols-4 gap-12">
+            <div class="col-span-2">
+                <div class="flex items-center gap-3 mb-6">
+                    <img src="{{ asset('img/LogoUsarDiaDia.png') }}" class="h-8">
+                    <span class="text-xl font-black">Moveet</span>
+                </div>
+                <p class="text-moveet-muted font-medium max-w-sm">La plataforma que convierte tu actividad física en una aventura épica con recompensas reales.</p>
+            </div>
+            <div>
+                <h5 class="font-bold mb-6 uppercase text-xs tracking-widest">Legal</h5>
+                <ul class="space-y-4 text-sm font-bold text-moveet-muted">
+                    <li><a href="#" class="hover:text-moveet-text">Privacidad</a></li>
+                    <li><a href="#" class="hover:text-moveet-text">Términos</a></li>
+                    <li><a href="{{ route('atencion.create') }}" class="hover:text-moveet-text">Contacto</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="font-bold mb-6 uppercase text-xs tracking-widest">Síguenos</h5>
+                <div class="flex gap-4">
+                    <a href="#" class="w-10 h-10 bg-moveet-bg border border-moveet-border rounded-md flex items-center justify-center hover:text-moveet-primary transition-all"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="w-10 h-10 bg-moveet-bg border border-moveet-border rounded-md flex items-center justify-center hover:text-moveet-primary transition-all"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="w-10 h-10 bg-moveet-bg border border-moveet-border rounded-md flex items-center justify-center hover:text-moveet-primary transition-all"><i class="fab fa-discord"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 mt-16 pt-8 border-t border-moveet-border text-center text-xs font-bold text-moveet-muted uppercase tracking-[0.2em]">
+            &copy; 2026 Moveet Team. Todos los derechos reservados.
+        </div>
     </footer>
 
     <script>
-        // Smooth scroll para links
+        // Menu
+        const btn = document.getElementById('mobile-menu-btn');
+        const close = document.getElementById('close-menu');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.onclick = () => menu.classList.remove('hidden');
+        close.onclick = () => menu.classList.add('hidden');
+        menu.querySelectorAll('a').forEach(a => a.onclick = () => menu.classList.add('hidden'));
+
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();

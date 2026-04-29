@@ -307,7 +307,51 @@
 }
 
 /* Responsive */
+@media (max-width: 1000px) {
+    .subs-container {
+        grid-template-columns: 1fr;
+    }
+    .subs-right {
+        order: -1;
+    }
+    .subs-wrapper {
+        margin: 20px auto;
+        padding: 16px;
+    }
+}
+
 @media (max-width: 800px) {
     .subs-container { grid-template-columns: 1fr; }
     .subs-right { order: -1; }
 }
+
+@media (max-width: 500px) {
+    .subs-header h1 {
+        font-size: 1.6rem;
+    }
+    .back-link {
+        position: static;
+        margin-bottom: 12px;
+        display: inline-flex;
+    }
+    .subs-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    .form-group input {
+        font-size: 16px; /* prevent iOS zoom */
+    }
+    .benefits-box {
+        padding: 20px 16px;
+    }
+    .card-info {
+        flex-direction: column;
+        gap: 4px;
+    }
+}
+

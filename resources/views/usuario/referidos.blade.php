@@ -12,7 +12,7 @@
     <a class="volver-link" href="{{ route('usuario.index') }}">&larr; Volver al perfil</a>
 
     <article class="panel-card" style="margin-bottom: 16px;">
-        <div class="panel-header panel-header-stack">
+        <div class="panel-header">
             <h2>Resumen de referidos</h2>
         </div>
 
@@ -52,7 +52,7 @@
     </article>
 
     <article class="panel-card inventario-panel-full">
-        <div class="panel-header panel-header-stack">
+        <div class="panel-header">
             <h2>Listado de referidos</h2>
         </div>
 

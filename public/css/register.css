@@ -1,11 +1,15 @@
-* {
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
+
+*,
+*::before,
+*::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Outfit', sans-serif;
     background: linear-gradient(135deg, #c8e6e6 0%, #a8d0d0 100%);
     min-height: 100vh;
     display: flex;
@@ -138,4 +142,34 @@ body {
 
 .error-messages ul {
     margin-left: 20px;
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 12px;
+        align-items: flex-start;
+        padding-top: 24px;
+    }
+    .register-container {
+        padding: 32px 20px;
+        border-radius: 20px;
+    }
+    .register-container h1 {
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    .form-group input {
+        padding: 14px 16px;
+        font-size: 16px; /* prevent zoom on iOS */
+        border-radius: 12px;
+    }
+    .register-btn {
+        height: 52px;
+        font-size: 17px;
+        border-radius: 12px;
+        margin-top: 16px;
+    }
 }
